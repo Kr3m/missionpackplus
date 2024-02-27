@@ -1,6 +1,6 @@
-# foundation
+# missionpackplus
 
-Foundation is a foundation to build mods on.
+missionpackplus is based on [foundation](https://github.com/RemyTek/foundation) a mod to build mods on.
 
 # Current state:
 
