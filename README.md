@@ -1,6 +1,12 @@
 # missionpackplus
 
-missionpackplus is based on [foundation](https://github.com/RemyTek/foundation) a mod to build mods on.
+missionpackplus is a Quake III Team Arena mod based on [foundation](https://github.com/RemyTek/foundation) a mod to build mods on.
+
+# Instructions
+
+Download the release file to your Quake3/missionpack folder.  Enjoy!
+
+Server up at /connect chi.kr3m.one:27946
 
 # Current state:
 
