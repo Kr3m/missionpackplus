@@ -10,9 +10,10 @@ Download the release file to your Quake3/missionpack folder.  Enjoy!
 
 Server up at /connect chi.kr3m.one:27946
 
-#Screenshots
+# Screenshots
 
 ![alt taplus screenshot1](https://taplus.kr3m.one/images/screenshot0001.jpg)
+
 ![alt taplus screenshot2](https://taplus.kr3m.one/images/screenshot0002.jpg)
 
 # Current state:
