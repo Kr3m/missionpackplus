@@ -1,0 +1,228 @@
+// Edited by ZerTerO
+//
+// The Unofficial Patch
+
+female
+
+getflag {
+	sound/voices/female3/or_01.wav	"Get the flag"
+	sound/voices/female3/or_02.wav	"Secure the flag"
+}
+
+offense {
+	sound/voices/female3/or_03.wav	"You're on offense"
+}
+
+defend {
+	sound/voices/female3/or_04.wav	"Stay Home"
+	sound/voices/female3/or_05.wav	"Guard the base"
+	sound/voices/female3/or_07.wav	"You're on defense"
+}
+
+defendflag {
+	sound/voices/female3/or_06.wav	"Guard our flag"
+}
+
+patrol {
+	sound/voices/female3/or_08.wav	"Patrol"
+	sound/voices/female3/or_09.wav	"Take point"
+	sound/voices/female3/or_10.wav	"Go on patrol"
+}
+
+followme {
+	sound/voices/female3/or_11.wav	"Follow me"
+	sound/voices/female3/or_12.wav	"Cover me"
+//	sound/voices/female3/or_13.wav	"Watch my back"
+}
+
+yes {
+	sound/voices/female3/re_01.wav	"Yessir"
+	sound/voices/female3/re_02.wav	"Yes ma'am"
+	sound/voices/female3/re_03.wav	"Aye, aye, sir"
+	sound/voices/female3/re_04.wav	"Aye, aye, ma'am"
+	sound/voices/female3/re_05.wav	"Affirmative"
+	sound/voices/female3/re_06.wav	"Copy"
+	sound/voices/female3/re_07.wav	"Roger"
+}
+
+no {
+	sound/voices/female3/re_08.wav	"No sir"
+	sound/voices/female3/re_09.wav	"No ma'am"
+	sound/voices/female3/re_10.wav	"Negative"
+	sound/voices/female3/re_11.wav	"I'm busy"
+}
+
+ihaveflag {
+	sound/voices/female3/gs_01.wav	"I'm coming in hot!"
+	sound/voices/female3/gs_02.wav	"I've secured the flag!"
+	sound/voices/female3/gs_03.wav	"I've got the flag!"
+	sound/voices/female3/gs_04.wav	"Bringing home the bacon!"
+}
+
+baseattack {
+	sound/voices/female3/gs_05.wav	"We're taking enemy fire!"
+	sound/voices/female3/gs_06.wav	"Security breach!"
+	sound/voices/female3/gs_07.wav	"Our base is under attack."
+}
+
+enemyhasflag {
+	sound/voices/female3/gs_08.wav	"Our flag is gone!"
+	sound/voices/female3/gs_09.wav	"They've got our flag!"
+	sound/voices/female3/gs_10.wav	"Enemy has secured our flag!"
+}
+
+ongetflag {
+	sound/voices/female3/ps_03.wav	"Getting the flag..."
+}
+
+onoffense {
+	sound/voices/female3/ps_01.wav	"I'm taking offense"
+	sound/voices/female3/ps_02.wav	"I'm going in..."
+}
+
+ondefense {
+	sound/voices/female3/ps_04.wav	"I'll stay home"
+	sound/voices/female3/ps_05.wav	"Securing base"
+	sound/voices/female3/ps_06.wav	"Guarding the base now"
+}
+
+onpatrol {
+	sound/voices/female3/ps_07.wav	"On patrol..."
+	sound/voices/female3/ps_08.wav	"Patroling..."
+	sound/voices/female3/ps_09.wav	"I'll take point"
+}
+
+startleader {
+	sound/voices/female3/ps_10.wav	"I'm the leader"
+	sound/voices/female3/ps_11.wav	"I'm in charge"
+}
+
+stopleader {
+	sound/voices/female3/ps_12.wav	"I don't want to lead"
+	sound/voices/female3/ps_13.wav	"Someone else lead"
+	sound/voices/female3/ps_14.wav	"I resign"
+}
+
+kill_insult {
+	sound/voices/female3/tt_06.wav	"Next time don't get up"
+	sound/voices/female3/tt_05.wav	"You're just a waste of space"
+	sound/voices/female3/tt_13.wav	"Duck next time"
+	sound/voices/female3/tt_19.wav	"Suh-weeet!"
+	sound/voices/female3/tt_20.wav	"Woo-Hoo!"
+	sound/voices/female3/tt_22.wav	"You just got schooled!"
+	sound/voices/female3/tt_35.wav	"Can't you do any better than that?"
+	sound/voices/female3/tt_36.wav	"Is that all?"
+	sound/voices/female3/tt_37.wav	"Is that all you got?"
+	sound/voices/female3/tt_39.wav	"What a shame"
+	sound/voices/female1/tt_07.wav	"Are you blind?"
+	sound/voices/female3/tt_41.wav	"Do you need some help there friend?"
+	sound/voices/female3/tt_40.wav	"Can I help you in some way?"
+	sound/voices/female3/tt_38.wav	"Tisk tisk"	
+	sound/voices/female3/tt_44.wav	"Pathetic"
+	sound/voices/female3/tt_30.wav	"Way to go dumbo!"
+	sound/voices/female3/tt_16.wav	"You talkin' ta ME?"
+}
+
+taunt {
+	sound/voices/female3/tt_18.wav	"How about some competition here?"
+	sound/voices/female3/tt_01.wav	"FRAGbait!"	
+	sound/voices/female3/tt_11.wav	"My momma shoots better!"
+	sound/voices/female3/tt_14.wav	"Try hitting that barn over there!"
+	sound/voices/female3/tt_17.wav	"Wanna BUY a shot?"
+	sound/voices/female3/tt_32.wav	"What a schmuck!"
+	sound/voices/female3/tt_34.wav	"You are such a moron!"
+	sound/voices/female3/tt_42.wav	"You are so pathetic"
+	sound/voices/female3/tt_43.wav	"You know, you are pretty pathetic"
+	sound/voices/female3/tt_03.wav	"Get a clue moron!"
+	sound/voices/female3/tt_09.wav	"MORON!"
+	sound/voices/female3/tt_02.wav	"You're such a Loser!"
+	sound/voices/female3/tt_08.wav	"LOSER!"
+	sound/voices/female3/tt_10.wav	"No-skill idiot!"
+	sound/voices/female3/tt_12.wav	"Watched that all the way..."
+}
+
+death_insult {
+	sound/voices/female3/tt_23.wav	"Bite me!"
+	sound/voices/female3/tt_25.wav	"Cheap shot!"
+	sound/voices/female3/tt_28.wav	"Lucky shot"
+	sound/voices/female3/tt_24.wav	"Screw you!"
+	sound/voices/female3/tt_26.wav	"DOH"
+	sound/voices/female3/tt_29.wav	"That's it!"
+	sound/voices/female3/tt_04.wav	"What an ass!"
+	sound/voices/female3/tt_15.wav	"Thank you sir.. may I have another!"
+}
+
+kill_gauntlet {
+	sound/voices/female3/tt_21.wav	"Eat gauntlet baby!"
+}
+
+praise {
+	sound/voices/female3/tt_27.wav	"Nice!"
+}
+
+camp {
+	sound/voices/female3/voc_01.wav	"Camp this position."
+	sound/voices/female3/voc_02.wav	"Camp here."
+}
+
+returnflag {
+	sound/voices/female3/voc_03.wav	"Get our flag!"
+	sound/voices/female3/voc_04.wav	"Return our flag!"
+	sound/voices/female3/voc_05.wav	"Recover our flag!"
+}
+
+whoisleader {
+	sound/voices/female3/voc_06.wav	"Who's our leader?"
+	sound/voices/female3/voc_07.wav	"Who's in charge?"
+	sound/voices/female3/voc_08.wav	"Who leads this team?"
+}
+
+followflagcarrier {
+	sound/voices/female3/voc_09.wav	"Follow our carrier."
+	sound/voices/female3/voc_10.wav	"Stay with the carrier."
+	sound/voices/female3/voc_11.wav	"Protect the carrier."
+	sound/voices/female3/voc_12.wav	"Cover the carrier."
+}
+
+inposition {
+	sound/voices/female3/voc_13.wav	"I'm in place."
+	sound/voices/female3/voc_14.wav	"I'm at my post."
+	sound/voices/female3/voc_15.wav	"I am in position."
+}
+
+wantondefense {
+	sound/voices/female3/voc_16.wav	"Let me defend."
+	sound/voices/female3/voc_17.wav	"I'd rather defend."
+}
+
+wantonoffense {
+	sound/voices/female3/voc_18.wav	"Let me go on offense."
+	sound/voices/female3/voc_19.wav	"I'd rather go on offense."
+}
+
+wantonpatrol {
+	sound/voices/female3/voc_20.wav	"Let me patrol."
+	sound/voices/female3/voc_21.wav	"I'd rather patrol."
+}
+
+oncamp {
+	sound/voices/female3/voc_22.wav	"I'm camping here."
+}
+
+onfollow {
+	sound/voices/female3/voc_23.wav	"I'm following."
+	sound/voices/female3/voc_24.wav	"Following!"
+}
+
+onfollowcarrier {
+	sound/voices/female3/voc_27.wav	"Guarding the carrier."
+}
+
+onreturnflag {
+	sound/voices/female3/voc_28.wav	"Getting our flag."
+}
+
+harvest {
+	sound/voices/female3/voc_25.wav	"Go collect skulls."
+	sound/voices/female3/voc_26.wav	"Harvest some skulls."
+}
