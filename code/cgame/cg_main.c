@@ -316,7 +316,7 @@ static const cvarTable_t cvarTable[] = {
 	{ &cg_recordSPDemo, "ui_recordSPDemo", "0", CVAR_ARCHIVE},
 	{ &cg_recordSPDemoName, "ui_recordSPDemoName", "", CVAR_ARCHIVE},
 	{ &cg_obeliskRespawnDelay, "g_obeliskRespawnDelay", "10", CVAR_SERVERINFO},
-	{ &cg_hudFiles, "cg_hudFiles", "ui/hud.txt", CVAR_ARCHIVE},
+	{ &cg_hudFiles, "cg_hudFiles", "ui/mpp.txt", CVAR_ARCHIVE},
 #endif
 	{ &cg_cameraOrbit, "cg_cameraOrbit", "0", CVAR_CHEAT},
 	{ &cg_cameraOrbitDelay, "cg_cameraOrbitDelay", "50", CVAR_ARCHIVE},
@@ -1564,9 +1564,9 @@ void CG_LoadMenus(const char *menuFile) {
 	len = trap_FS_FOpenFile( menuFile, &f, FS_READ );
 	if ( !f ) {
 		trap_Error( va( S_COLOR_YELLOW "menu file not found: %s, using default\n", menuFile ) );
-		len = trap_FS_FOpenFile( "ui/hud.txt", &f, FS_READ );
+		len = trap_FS_FOpenFile( "ui/mpp.txt", &f, FS_READ );
 		if (!f) {
-			trap_Error( va( S_COLOR_RED "default menu file not found: ui/hud.txt, unable to continue!\n", menuFile ) );
+			trap_Error( va( S_COLOR_RED "default menu file not found: ui/mpp.txt, unable to continue!\n", menuFile ) );
 		}
 	}
 
@@ -1928,7 +1928,7 @@ void CG_LoadHudMenu( void ) {
 	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
 	hudSet = buff;
 	if (hudSet[0] == '\0') {
-		hudSet = "ui/hud.txt";
+		hudSet = "ui/mpp.txt";
 	}
 
 	CG_LoadMenus(hudSet);
