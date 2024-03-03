@@ -22,76 +22,8 @@ gclient_t		g_clients[MAX_CLIENTS];
 	#include "g_cvar.h"
 #undef DECLARE_G_CVAR
 
-vmCvar_t	g_gametype;
-vmCvar_t	g_dmflags;
-vmCvar_t	g_fraglimit;
-vmCvar_t	g_timelimit;
-vmCvar_t	g_capturelimit;
-vmCvar_t	g_friendlyFire;
-vmCvar_t	g_password;
-vmCvar_t	g_needpass;
-vmCvar_t	g_mapname;
-vmCvar_t	sv_fps;
-vmCvar_t	g_maxclients;
-vmCvar_t	g_maxGameClients;
-vmCvar_t	g_dedicated;
-vmCvar_t	g_speed;
-vmCvar_t	g_gravity;
-vmCvar_t	g_cheats;
-vmCvar_t	g_knockback;
-vmCvar_t	g_quadfactor;
-vmCvar_t	g_forcerespawn;
-vmCvar_t	g_inactivity;
-vmCvar_t	g_debugMove;
-vmCvar_t	g_debugDamage;
-vmCvar_t	g_debugAlloc;
-vmCvar_t	g_weaponRespawn;
-vmCvar_t	g_weaponTeamRespawn;
-vmCvar_t	g_motd;
-vmCvar_t	g_synchronousClients;
-vmCvar_t	g_warmup;
-vmCvar_t	g_predictPVS;
-//vmCvar_t	g_restarted;
-vmCvar_t	g_log;
-vmCvar_t	g_logSync;
-vmCvar_t	g_blood;
-vmCvar_t	g_podiumDist;
-vmCvar_t	g_podiumDrop;
-vmCvar_t	g_allowVote;
-vmCvar_t	g_autoJoin;
-vmCvar_t	g_teamForceBalance;
-vmCvar_t	g_banIPs;
-vmCvar_t	g_filterBan;
-vmCvar_t	g_smoothClients;
-vmCvar_t	g_rotation;
-vmCvar_t	g_unlagged;
-vmCvar_t	pmove_fixed;
-vmCvar_t	pmove_msec;
-vmCvar_t	g_listEntity;
-vmCvar_t	g_instagib;
-vmCvar_t	g_railJump;
-vmCvar_t	g_noSelfDamage;
-vmCvar_t	g_startArmor;
-vmCvar_t	g_startHealth;
-#ifdef MISSIONPACK
-vmCvar_t	g_obeliskHealth;
-vmCvar_t	g_obeliskRegenPeriod;
-vmCvar_t	g_obeliskRegenAmount;
-vmCvar_t	g_obeliskRespawnDelay;
-vmCvar_t	g_cubeTimeout;
-vmCvar_t	g_redteam;
-vmCvar_t	g_blueteam;
-vmCvar_t	g_singlePlayer;
-vmCvar_t	g_enableDust;
-vmCvar_t	g_enableBreath;
-vmCvar_t	g_proxMineTimeout;
-#endif
-
 
 static cvarTable_t gameCvarTable[] = {
-	// don't override the cheat state set by the system
-	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
-
 	// noset vars
 	{ NULL, "gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
 	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
@@ -99,7 +31,6 @@ static cvarTable_t gameCvarTable[] = {
 #define G_CVAR_LIST
 	#include "g_cvar.h"
 #undef G_CVAR_LIST
-
 
 };
 
