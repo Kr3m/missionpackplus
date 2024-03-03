@@ -121,6 +121,7 @@ CG_CVAR( cg_oldRail, "cg_oldRail", "1", CVAR_ARCHIVE )
 CG_CVAR( cg_oldRocket, "cg_oldRocket", "1", CVAR_ARCHIVE )
 CG_CVAR( cg_oldPlasma, "cg_oldPlasma", "1", CVAR_ARCHIVE )
 CG_CVAR( cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE )
+CG_CVAR( cg_kickScale, "cg_kickScale", "0", CVAR_ARCHIVE )
 CG_CVAR( cg_hitSounds, "cg_hitSounds", "0", CVAR_ARCHIVE )
 CG_CVAR( cg_enemyModel, "cg_enemyModel", "", CVAR_ARCHIVE )
 CG_CVAR( cg_enemyColors, "cg_enemyColors", "", CVAR_ARCHIVE )
@@ -129,5 +130,7 @@ CG_CVAR( cg_teamColors, "cg_teamColors", "", CVAR_ARCHIVE )
 CG_CVAR( cg_deadBodyDarken, "cg_deadBodyDarken", "1", CVAR_ARCHIVE )
 CG_CVAR( cg_fovAdjust, "cg_fovAdjust", "0", CVAR_ARCHIVE )
 CG_CVAR( cg_followKiller, "cg_followKiller", "0", CVAR_ARCHIVE )
+//added by Kr3m
+CG_CVAR( cg_crosshairColor, "cg_crosshairColor", "0", CVAR_ARCHIVE )
 
 #undef CG_CVAR

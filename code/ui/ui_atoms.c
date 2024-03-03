@@ -14,10 +14,10 @@ qboolean		m_entersound;		// after a frame, so caching won't disrupt the sound
 
 void QDECL Com_Error( int level, const char *error, ... ) {
 	va_list		argptr;
-	char		text[1024];
+	char		text[2048];
 
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	ED_vsprintf (text, error, argptr);
 	va_end (argptr);
 
 	trap_Error( va("%s", text) );
@@ -25,10 +25,10 @@ void QDECL Com_Error( int level, const char *error, ... ) {
 
 void QDECL Com_Printf( const char *msg, ... ) {
 	va_list		argptr;
-	char		text[1024];
+	char		text[2048];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	ED_vsprintf (text, msg, argptr);
 	va_end (argptr);
 
 	trap_Print( va("%s", text) );
@@ -378,18 +378,10 @@ Adjusted for resolution and screen aspect ratio
 */
 void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 	// expect valid pointers
-#if 0
-	*x = *x * uiInfo.uiDC.scale + uiInfo.uiDC.bias;
-	*y *= uiInfo.uiDC.scale;
+	*x = *x * uiInfo.uiDC.scale + uiInfo.uiDC.biasX;
+	*y = *y * uiInfo.uiDC.scale + uiInfo.uiDC.biasY;
 	*w *= uiInfo.uiDC.scale;
 	*h *= uiInfo.uiDC.scale;
-#endif
-
-	*x *= uiInfo.uiDC.xscale;
-	*y *= uiInfo.uiDC.yscale;
-	*w *= uiInfo.uiDC.xscale;
-	*h *= uiInfo.uiDC.yscale;
-
 }
 
 void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname ) {
