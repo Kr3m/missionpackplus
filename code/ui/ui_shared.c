@@ -3,8 +3,6 @@
 
 #include "ui_shared.h"
 
-int ED_vsprintf( char *buffer, const char *fmt, va_list ap );
-
 #define SCROLL_TIME_START					500
 #define SCROLL_TIME_ADJUST				150
 #define SCROLL_TIME_ADJUSTOFFSET	40
@@ -99,7 +97,7 @@ void UI_InitMemory( void ) {
 	outOfMemory = qfalse;
 }
 
-qboolean UI_OutOfMemory( void ) {
+qboolean UI_OutOfMemory() {
 	return outOfMemory;
 }
 
@@ -191,7 +189,7 @@ const char *String_Alloc(const char *p) {
 	return NULL;
 }
 
-void String_Report(void) {
+void String_Report() {
 	float f;
 	Com_Printf("Memory/String Pool Info\n");
 	Com_Printf("----------------\n");
@@ -210,7 +208,7 @@ void String_Report(void) {
 String_Init
 =================
 */
-void String_Init(void) {
+void String_Init() {
 	int i;
 	for (i = 0; i < HASH_TABLE_SIZE; i++) {
 		strHandle[i] = 0;
@@ -239,7 +237,7 @@ void PC_SourceWarning(int handle, char *format, ...) {
 	static char string[4096];
 
 	va_start (argptr, format);
-	ED_vsprintf (string, format, argptr);
+	vsprintf (string, format, argptr);
 	va_end (argptr);
 
 	filename[0] = '\0';
@@ -261,7 +259,7 @@ void PC_SourceError(int handle, char *format, ...) {
 	static char string[4096];
 
 	va_start (argptr, format);
-	ED_vsprintf (string, format, argptr);
+	vsprintf (string, format, argptr);
 	va_end (argptr);
 
 	filename[0] = '\0';
@@ -584,113 +582,101 @@ void Fade(int *flags, float *f, float clamp, int *nextTime, int offsetTime, qboo
 
 
 void Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle) {
-	//float bordersize = 0;
-	vec4_t color;
-	rectDef_t fillRect = w->rect;
-	qboolean isfullscreen = qfalse;
+  //float bordersize = 0;
+  vec4_t color;
+  rectDef_t fillRect = w->rect;
 
 
-	if (debugMode) {
-		color[0] = color[1] = color[2] = color[3] = 1;
-		DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, 1, color);
-	}
+  if (debugMode) {
+    color[0] = color[1] = color[2] = color[3] = 1;
+    DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, 1, color);
+  }
 
-	if (w == NULL || (w->style == 0 && w->border == 0)) {
-		return;
-	}
+  if (w == NULL || (w->style == 0 && w->border == 0)) {
+    return;
+  }
 
-	if (w->border != 0) {
-		fillRect.x += w->borderSize;
-		fillRect.y += w->borderSize;
-		fillRect.w -= w->borderSize + 1;
-		fillRect.h -= w->borderSize + 1;
-	}
+  if (w->border != 0) {
+    fillRect.x += w->borderSize;
+    fillRect.y += w->borderSize;
+    fillRect.w -= w->borderSize + 1;
+    fillRect.h -= w->borderSize + 1;
+  }
 
-	if ( w->background && w->rect.x == 0 && w->rect.y == 0 && w->rect.w == 640 && w->rect.h == 480 ) {
-		isfullscreen = qtrue;
-	}
-
-	if (w->style == WINDOW_STYLE_FILLED) {
-		// box, but possible a shader that needs filled
+  if (w->style == WINDOW_STYLE_FILLED) {
+    // box, but possible a shader that needs filled
 		if (w->background) {
-			Fade(&w->flags, &w->backColor[3], fadeClamp, &w->nextTime, fadeCycle, qtrue, fadeAmount);
-			DC->setColor(w->backColor);
-			if( isfullscreen ) {
-				DC->drawStretchPic(0, 0, DC->glconfig.vidWidth, DC->glconfig.vidHeight, 0, 0, 1, 1, w->background);
-			} else {
-				DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
-			}
-			DC->setColor(NULL);
+		  Fade(&w->flags, &w->backColor[3], fadeClamp, &w->nextTime, fadeCycle, qtrue, fadeAmount);
+      DC->setColor(w->backColor);
+	    DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
+		  DC->setColor(NULL);
 		} else {
-			DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->backColor);
+	    DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->backColor);
 		}
-	} else if (w->style == WINDOW_STYLE_GRADIENT) {
-		GradientBar_Paint(&fillRect, w->backColor);
-		// gradient bar
-	} else if (w->style == WINDOW_STYLE_SHADER) {
-		if (w->flags & WINDOW_FORECOLORSET) {
-			DC->setColor(w->foreColor);
-		}
-		if( isfullscreen ) {
-			DC->drawStretchPic(0, 0, DC->glconfig.vidWidth, DC->glconfig.vidHeight, 0, 0, 1, 1, w->background);
-		} else {
-			DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
-		}
-		DC->setColor(NULL);
-	} else if (w->style == WINDOW_STYLE_TEAMCOLOR) {
-		if (DC->getTeamColor) {
-			DC->getTeamColor(&color);
-			DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, color);
-		}
-	} else if (w->style == WINDOW_STYLE_CINEMATIC) {
+  } else if (w->style == WINDOW_STYLE_GRADIENT) {
+    GradientBar_Paint(&fillRect, w->backColor);
+    // gradient bar
+  } else if (w->style == WINDOW_STYLE_SHADER) {
+    if (w->flags & WINDOW_FORECOLORSET) {
+      DC->setColor(w->foreColor);
+    }
+    DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
+    DC->setColor(NULL);
+  } else if (w->style == WINDOW_STYLE_TEAMCOLOR) {
+    if (DC->getTeamColor) {
+      DC->getTeamColor(&color);
+      DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, color);
+    }
+  } else if (w->style == WINDOW_STYLE_CINEMATIC) {
+		if (w->cinematic == -1) {
+			w->cinematic = DC->playCinematic(w->cinematicName, fillRect.x, fillRect.y, fillRect.w, fillRect.h);
 			if (w->cinematic == -1) {
-				w->cinematic = DC->playCinematic(w->cinematicName, fillRect.x, fillRect.y, fillRect.w, fillRect.h);
-				if (w->cinematic == -1) {
-					w->cinematic = -2;
-				}
-			} 
-			if (w->cinematic >= 0) {
-				DC->runCinematicFrame(w->cinematic);
-				DC->drawCinematic(w->cinematic, fillRect.x, fillRect.y, fillRect.w, fillRect.h);
+				w->cinematic = -2;
 			}
-	}
-
-	if (w->border == WINDOW_BORDER_FULL) {
-		// full
-		// HACK HACK HACK
-		if (w->style == WINDOW_STYLE_TEAMCOLOR) {
-			if (color[0] > 0) { 
-				// red
-				color[0] = 1;
-				color[1] = color[2] = .5;
-
-			} else {
-				color[2] = 1;
-				color[0] = color[1] = .5;
-			}
-			color[3] = 1;
-			DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, color);
-		} else {
-			DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, w->borderColor);
+		} 
+		if (w->cinematic >= 0) {
+	    DC->runCinematicFrame(w->cinematic);
+			DC->drawCinematic(w->cinematic, fillRect.x, fillRect.y, fillRect.w, fillRect.h);
 		}
-	} else if (w->border == WINDOW_BORDER_HORZ) {
-		// top/bottom
-		DC->setColor(w->borderColor);
-		DC->drawTopBottom(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
-		DC->setColor( NULL );
-	} else if (w->border == WINDOW_BORDER_VERT) {
-		// left right
-		DC->setColor(w->borderColor);
-		DC->drawSides(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
-		DC->setColor( NULL );
-	} else if (w->border == WINDOW_BORDER_KCGRADIENT) {
-		// this is just two gradient bars along each horz edge
-		rectDef_t r = w->rect;
-		r.h = w->borderSize;
-		GradientBar_Paint(&r, w->borderColor);
-		r.y = w->rect.y + w->rect.h - 1;
-		GradientBar_Paint(&r, w->borderColor);
-	}
+  }
+
+  if (w->border == WINDOW_BORDER_FULL) {
+    // full
+    // HACK HACK HACK
+    if (w->style == WINDOW_STYLE_TEAMCOLOR) {
+      if (color[0] > 0) { 
+        // red
+        color[0] = 1;
+        color[1] = color[2] = .5;
+
+      } else {
+        color[2] = 1;
+        color[0] = color[1] = .5;
+      }
+      color[3] = 1;
+      DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, color);
+    } else {
+      DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, w->borderColor);
+    }
+  } else if (w->border == WINDOW_BORDER_HORZ) {
+    // top/bottom
+    DC->setColor(w->borderColor);
+    DC->drawTopBottom(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
+  	DC->setColor( NULL );
+  } else if (w->border == WINDOW_BORDER_VERT) {
+    // left right
+    DC->setColor(w->borderColor);
+    DC->drawSides(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
+  	DC->setColor( NULL );
+  } else if (w->border == WINDOW_BORDER_KCGRADIENT) {
+    // this is just two gradient bars along each horz edge
+    rectDef_t r = w->rect;
+    r.h = w->borderSize;
+    GradientBar_Paint(&r, w->borderColor);
+    r.y = w->rect.y + w->rect.h - 1;
+    GradientBar_Paint(&r, w->borderColor);
+  }
+
 }
 
 
@@ -1025,7 +1011,7 @@ void Menus_CloseByName(const char *p) {
   }
 }
 
-void Menus_CloseAll( void ) {
+void Menus_CloseAll() {
   int i;
   for (i = 0; i < menuCount; i++) {
 		Menu_RunCloseScript(&Menus[i]);
@@ -2506,7 +2492,7 @@ static void Menu_CloseCinematics(menuDef_t *menu) {
 	}
 }
 
-static void Display_CloseCinematics( void ) {
+static void Display_CloseCinematics() {
 	int i;
 	for (i = 0; i < menuCount; i++) {
 		Menu_CloseCinematics(&Menus[i]);
@@ -2530,7 +2516,7 @@ void  Menus_Activate(menuDef_t *menu) {
 
 }
 
-int Display_VisibleMenuCount(void) {
+int Display_VisibleMenuCount() {
 	int i, count;
 	count = 0;
 	for (i = 0; i < menuCount; i++) {
@@ -3442,7 +3428,7 @@ void Item_Bind_Paint(itemDef_t *item) {
 	}
 }
 
-qboolean Display_KeyBindPending(void) {
+qboolean Display_KeyBindPending() {
 	return g_waitingForKey;
 }
 
@@ -3545,10 +3531,11 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 
 
 void AdjustFrom640(float *x, float *y, float *w, float *h) {
-	*x = *x * DC->scale + DC->biasX;
-	*y = *y * DC->scale + DC->biasY;
-	*w *= DC->scale;
-	*h *= DC->scale;
+	//*x = *x * DC->scale + DC->bias;
+	*x *= DC->xscale;
+	*y *= DC->yscale;
+	*w *= DC->xscale;
+	*h *= DC->yscale;
 }
 
 void Item_Model_Paint(itemDef_t *item) {
@@ -4067,7 +4054,7 @@ itemDef_t *Menu_GetFocusedItem(menuDef_t *menu) {
   return NULL;
 }
 
-menuDef_t *Menu_GetFocused(void) {
+menuDef_t *Menu_GetFocused() {
   int i;
   for (i = 0; i < menuCount; i++) {
     if (Menus[i].window.flags & WINDOW_HASFOCUS && Menus[i].window.flags & WINDOW_VISIBLE) {
@@ -4117,7 +4104,7 @@ void Menu_SetFeederSelection(menuDef_t *menu, int feeder, int index, const char 
 	}
 }
 
-qboolean Menus_AnyFullScreenVisible(void) {
+qboolean Menus_AnyFullScreenVisible() {
   int i;
   for (i = 0; i < menuCount; i++) {
     if (Menus[i].window.flags & WINDOW_VISIBLE && Menus[i].fullScreen) {
@@ -4249,7 +4236,7 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint) {
 	if (menu->fullScreen) {
 		// implies a background shader
 		// FIXME: make sure we have a default shader if fullscreen is set with no background
-		DC->drawStretchPic( 0, 0, DC->glconfig.vidWidth, DC->glconfig.vidHeight, 0, 0, 1, 1, menu->window.background );
+		DC->drawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, menu->window.background );
 	} else if (menu->window.background) {
 		// this allows a background shader without being full screen
 		//UI_DrawHandlePic(menu->window.rect.x, menu->window.rect.y, menu->window.rect.w, menu->window.rect.h, menu->backgroundShader);
@@ -5603,11 +5590,11 @@ void Menu_New(int handle) {
 	}
 }
 
-int Menu_Count(void) {
+int Menu_Count() {
 	return menuCount;
 }
 
-void Menu_PaintAll(void) {
+void Menu_PaintAll() {
 	int i;
 	if (captureFunc) {
 		captureFunc(captureData);
@@ -5623,11 +5610,11 @@ void Menu_PaintAll(void) {
 	}
 }
 
-void Menu_Reset(void) {
+void Menu_Reset() {
 	menuCount = 0;
 }
 
-displayContextDef_t *Display_GetContext(void) {
+displayContextDef_t *Display_GetContext() {
 	return DC;
 }
  
@@ -5732,7 +5719,7 @@ static void Menu_CacheContents(menuDef_t *menu) {
 
 }
 
-void Display_CacheAll(void) {
+void Display_CacheAll() {
 	int i;
 	for (i = 0; i < menuCount; i++) {
 		Menu_CacheContents(&Menus[i]);

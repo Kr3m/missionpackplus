@@ -243,7 +243,6 @@ int UI_AdjustTimeByGame(int time);
 void UI_ShowPostGame(qboolean newHigh);
 void UI_ClearScores();
 void UI_LoadArenas(void);
-extern void UI_VideoCheck( int time );
 
 //
 // ui_menu.c
@@ -464,8 +463,8 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 typedef struct {
 	int					frametime;
 	int					realtime;
-	float				cursorx;
-	float				cursory;
+	int					cursorx;
+	int					cursory;
 	glconfig_t 	glconfig;
 	qboolean		debug;
 	qhandle_t		whiteShader;

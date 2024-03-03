@@ -105,6 +105,7 @@ static char quake3worldMessage[] = "Visit www.quake3world.com - News, Community,
 #endif
 
 static int gamecodetoui[] = {4,2,3,0,5,1,6};
+static int uitogamecode[] = {4,6,2,3,1,5,7};
 
 
 static void UI_StartServerRefresh(qboolean full);
@@ -200,7 +201,13 @@ void AssetCache() {
 	//Com_Printf("Menu Size: %i bytes\n", sizeof(Menus));
 	uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShaderNoMip( ASSET_GRADIENTBAR );
 	uiInfo.uiDC.Assets.fxBasePic = trap_R_RegisterShaderNoMip( ART_FX_BASE );
-	uiInfo.uiDC.Assets.fxPic = trap_R_RegisterShaderNoMip( ART_FX_WHITE );
+	uiInfo.uiDC.Assets.fxPic[0] = trap_R_RegisterShaderNoMip( ART_FX_RED );
+	uiInfo.uiDC.Assets.fxPic[1] = trap_R_RegisterShaderNoMip( ART_FX_YELLOW );
+	uiInfo.uiDC.Assets.fxPic[2] = trap_R_RegisterShaderNoMip( ART_FX_GREEN );
+	uiInfo.uiDC.Assets.fxPic[3] = trap_R_RegisterShaderNoMip( ART_FX_TEAL );
+	uiInfo.uiDC.Assets.fxPic[4] = trap_R_RegisterShaderNoMip( ART_FX_BLUE );
+	uiInfo.uiDC.Assets.fxPic[5] = trap_R_RegisterShaderNoMip( ART_FX_CYAN );
+	uiInfo.uiDC.Assets.fxPic[6] = trap_R_RegisterShaderNoMip( ART_FX_WHITE );
 	uiInfo.uiDC.Assets.scrollBar = trap_R_RegisterShaderNoMip( ASSET_SCROLLBAR );
 	uiInfo.uiDC.Assets.scrollBarArrowDown = trap_R_RegisterShaderNoMip( ASSET_SCROLLBAR_ARROWDOWN );
 	uiInfo.uiDC.Assets.scrollBarArrowUp = trap_R_RegisterShaderNoMip( ASSET_SCROLLBAR_ARROWUP );
@@ -600,11 +607,9 @@ void _UI_Refresh( int realtime )
 		uiInfo.uiDC.FPS = 1000 * UI_FPS_FRAMES / total;
 	}
 
-	UI_UpdateCvars();
 
-	if ( ( trap_Key_GetCatcher() & KEYCATCH_UI ) ) {
-		UI_VideoCheck( realtime );
-	}
+
+	UI_UpdateCvars();
 
 	if (Menu_Count() > 0) {
 		// paint all the menus
@@ -620,11 +625,7 @@ void _UI_Refresh( int realtime )
 	// draw cursor
 	UI_SetColor( NULL );
 	if (Menu_Count() > 0) {
-		uiClientState_t	cstate;
-		trap_GetClientState( &cstate );
-		if(cstate.connState <= CA_DISCONNECTED || cstate.connState >= CA_ACTIVE) {
-			UI_DrawHandlePic( uiInfo.uiDC.cursorx-16, uiInfo.uiDC.cursory-16, 32, 32, uiInfo.uiDC.Assets.cursor);
-		}
+		UI_DrawHandlePic( uiInfo.uiDC.cursorx-16, uiInfo.uiDC.cursory-16, 32, 32, uiInfo.uiDC.Assets.cursor);
 	}
 
 #ifndef NDEBUG
@@ -1166,18 +1167,8 @@ static void UI_DrawTeamMember(rectDef_t *rect, float scale, vec4_t color, qboole
 }
 
 static void UI_DrawEffects(rectDef_t *rect, float scale, vec4_t color) {
-	vec4_t colors;
-	int c = uiInfo.effectsColor;
 	UI_DrawHandlePic( rect->x, rect->y - 14, 128, 8, uiInfo.uiDC.Assets.fxBasePic );
-
-	//c = item->curvalue + 1;
-	colors[0] = (c >> 0) & 1;
-	colors[1] = (c >> 1) & 1;
-	colors[2] = (c >> 2) & 1;
-	colors[3] = 1.0;
-	UI_SetColor( colors );
-	UI_DrawHandlePic( rect->x + uiInfo.effectsColor * 16 + 8, rect->y - 16, 16, 12, uiInfo.uiDC.Assets.fxPic );
-	UI_SetColor( NULL );
+	UI_DrawHandlePic( rect->x + uiInfo.effectsColor * 16 + 8, rect->y - 16, 16, 12, uiInfo.uiDC.Assets.fxPic[uiInfo.effectsColor] );
 }
 
 static void UI_DrawMapPreview(rectDef_t *rect, float scale, vec4_t color, qboolean net) {
@@ -1333,10 +1324,10 @@ static void UI_DrawNetMapCinematic(rectDef_t *rect, float scale, vec4_t color) {
 
 
 static void UI_DrawNetFilter(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
-	/*if (ui_serverFilterType.integer < 0 || ui_serverFilterType.integer > numServerFilters) {
+	if (ui_serverFilterType.integer < 0 || ui_serverFilterType.integer > numServerFilters) {
 		ui_serverFilterType.integer = 0;
-	}*/
-  Text_Paint(rect->x, rect->y, scale, color, va("Filter: %s", serverFilters[0/*ui_serverFilterType.integer*/].description), 0, 0, textStyle);
+	}
+  Text_Paint(rect->x, rect->y, scale, color, va("Filter: %s", serverFilters[ui_serverFilterType.integer].description), 0, 0, textStyle);
 }
 
 
@@ -1699,10 +1690,10 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
 			s = va("Source: %s", netSources[ui_netSource.integer]);
 			break;
 		case UI_NETFILTER:
-			/*if (ui_serverFilterType.integer < 0 || ui_serverFilterType.integer > numServerFilters) {
+			if (ui_serverFilterType.integer < 0 || ui_serverFilterType.integer > numServerFilters) {
 				ui_serverFilterType.integer = 0;
-			}*/
-			s = va("Filter: %s", serverFilters[0/*ui_serverFilterType.integer*/].description );
+			}
+			s = va("Filter: %s", serverFilters[ui_serverFilterType.integer].description );
 			break;
 		case UI_TIER:
 			break;
@@ -2280,7 +2271,7 @@ static qboolean UI_Effects_HandleKey(int flags, float *special, int key) {
 	  	uiInfo.effectsColor = 6;
 		}
 
-	  trap_Cvar_SetValue( "color1", uiInfo.effectsColor + 1 );
+	  trap_Cvar_SetValue( "color1", uitogamecode[uiInfo.effectsColor] );
     return qtrue;
   }
   return qfalse;
@@ -2514,16 +2505,16 @@ static qboolean UI_NetFilter_HandleKey(int flags, float *special, int key) {
   if (key == K_MOUSE1 || key == K_MOUSE2 || key == K_ENTER || key == K_KP_ENTER) {
 
 		if (key == K_MOUSE2) {
-			//ui_serverFilterType.integer--;
+			ui_serverFilterType.integer--;
 		} else {
-			//ui_serverFilterType.integer++;
+			ui_serverFilterType.integer++;
 		}
 
-   /* if (ui_serverFilterType.integer >= numServerFilters) {
+    if (ui_serverFilterType.integer >= numServerFilters) {
       ui_serverFilterType.integer = 0;
     } else if (ui_serverFilterType.integer < 0) {
       ui_serverFilterType.integer = numServerFilters - 1;
-		}*/
+		}
 		UI_BuildServerDisplayList(qtrue);
     return qtrue;
   }
@@ -2806,23 +2797,19 @@ static void UI_LoadMods() {
 	int		numdirs;
 	char	dirlist[2048];
 	char	*dirptr;
-	char	*descptr;
+  char  *descptr;
 	int		i;
 	int		dirlen;
 
-	uiInfo.modCount = 1;
-	uiInfo.modList[uiInfo.modCount].modName = String_Alloc("Quake III Arena"); 
-	uiInfo.modList[uiInfo.modCount].modDescr = String_Alloc("");
-
+	uiInfo.modCount = 0;
 	numdirs = trap_FS_GetFileList( "$modlist", "", dirlist, sizeof(dirlist) );
 	dirptr  = dirlist;
 	for( i = 0; i < numdirs; i++ ) {
 		dirlen = strlen( dirptr ) + 1;
-		descptr = dirptr + dirlen;
+    descptr = dirptr + dirlen;
 		uiInfo.modList[uiInfo.modCount].modName = String_Alloc(dirptr);
 		uiInfo.modList[uiInfo.modCount].modDescr = String_Alloc(descptr);
-		dirptr += dirlen + strlen(descptr) + 1;
-
+    dirptr += dirlen + strlen(descptr) + 1;
 		uiInfo.modCount++;
 		if (uiInfo.modCount >= MAX_MODS) {
 			break;
@@ -3807,12 +3794,12 @@ static void UI_BuildServerDisplayList(qboolean force) {
 				}
 			}
 				
-			/*if (ui_serverFilterType.integer > 0) {
+			if (ui_serverFilterType.integer > 0) {
 				if (Q_stricmp(Info_ValueForKey(info, "game"), serverFilters[ui_serverFilterType.integer].basedir) != 0) {
 					trap_LAN_MarkServerVisible(ui_netSource.integer, i, qfalse);
 					continue;
 				}
-			}*/
+			}
 			// make sure we never add a favorite server twice
 			if (ui_netSource.integer == AS_FAVORITES) {
 				UI_RemoveServerFromDisplayList(i);
@@ -4981,7 +4968,7 @@ static void UI_BuildQ3Model_List( void )
 		{
 			filelen = strlen(fileptr);
 
-			COM_StripExtension(fileptr,skinname,sizeof(skinname));
+			COM_StripExtension(fileptr,skinname);
 
 			// look for icon_????
 			if (Q_stricmpn(skinname, "icon_", 5) == 0 && !(Q_stricmp(skinname,"icon_blue") == 0 || Q_stricmp(skinname,"icon_red") == 0))
@@ -5026,7 +5013,19 @@ void _UI_Init( qboolean inGameLoad ) {
 	UI_InitMemory();
 
 	// cache redundant calulations
-	UI_VideoCheck( -99999 );
+	trap_GetGlconfig( &uiInfo.uiDC.glconfig );
+
+	// for 640x480 virtualized screen
+	uiInfo.uiDC.yscale = uiInfo.uiDC.glconfig.vidHeight * (1.0/480.0);
+	uiInfo.uiDC.xscale = uiInfo.uiDC.glconfig.vidWidth * (1.0/640.0);
+	if ( uiInfo.uiDC.glconfig.vidWidth * 480 > uiInfo.uiDC.glconfig.vidHeight * 640 ) {
+		// wide screen
+		uiInfo.uiDC.bias = 0.5 * ( uiInfo.uiDC.glconfig.vidWidth - ( uiInfo.uiDC.glconfig.vidHeight * (640.0/480.0) ) );
+	}
+	else {
+		// no wide screen
+		uiInfo.uiDC.bias = 0;
+	}
 
 
   //UI_Load();
@@ -5129,10 +5128,7 @@ void _UI_Init( qboolean inGameLoad ) {
 	UI_LoadBots();
 
 	// sets defaults for ui temp cvars
-	uiInfo.effectsColor = (int)trap_Cvar_VariableValue("color1")-1;
-	if ( uiInfo.effectsColor < 0 || uiInfo.effectsColor > 6) {
-		uiInfo.effectsColor = 6;
-	}
+	uiInfo.effectsColor = gamecodetoui[(int)trap_Cvar_VariableValue("color1")-1];
 	uiInfo.currentCrosshair = (int)trap_Cvar_VariableValue("cg_drawCrosshair");
 	trap_Cvar_Set("ui_mousePitch", (trap_Cvar_VariableValue("m_pitch") >= 0) ? "0" : "1");
 
@@ -5157,8 +5153,6 @@ UI_KeyEvent
 =================
 */
 void _UI_KeyEvent( int key, qboolean down ) {
-
-	UI_VideoCheck( trap_Milliseconds() );
 
   if (Menu_Count() > 0) {
     menuDef_t *menu = Menu_GetFocused();
@@ -5187,21 +5181,18 @@ UI_MouseEvent
 */
 void _UI_MouseEvent( int dx, int dy )
 {
-	// update virtual mouse cursor coordinates
-	uiInfo.uiDC.cursorx += dx * uiInfo.uiDC.cursorScaleR;
-	uiInfo.uiDC.cursory += dy * uiInfo.uiDC.cursorScaleR;
-	
-	// clamp virtual coordinates
-	if ( uiInfo.uiDC.cursorx < uiInfo.uiDC.screenXmin )
-		uiInfo.uiDC.cursorx = uiInfo.uiDC.screenXmin;
-	else if ( uiInfo.uiDC.cursorx > uiInfo.uiDC.screenXmax )
-		uiInfo.uiDC.cursorx = uiInfo.uiDC.screenXmax;
+	// update mouse screen position
+	uiInfo.uiDC.cursorx += dx;
+	if (uiInfo.uiDC.cursorx < 0)
+		uiInfo.uiDC.cursorx = 0;
+	else if (uiInfo.uiDC.cursorx > SCREEN_WIDTH)
+		uiInfo.uiDC.cursorx = SCREEN_WIDTH;
 
-	if ( uiInfo.uiDC.cursory < uiInfo.uiDC.screenYmin )
-		uiInfo.uiDC.cursory = uiInfo.uiDC.screenYmin;
-	else if ( uiInfo.uiDC.cursory > uiInfo.uiDC.screenYmax )
-		uiInfo.uiDC.cursory = uiInfo.uiDC.screenYmax;
-
+	uiInfo.uiDC.cursory += dy;
+	if (uiInfo.uiDC.cursory < 0)
+		uiInfo.uiDC.cursory = 0;
+	else if (uiInfo.uiDC.cursory > SCREEN_HEIGHT)
+		uiInfo.uiDC.cursory = SCREEN_HEIGHT;
 
   if (Menu_Count() > 0) {
     //menuDef_t *menu = Menu_GetFocused();
@@ -5617,52 +5608,6 @@ void UI_UpdateCvars( void ) {
 
 /*
 =================
-UI_VideoCheck
-=================
-*/
-void UI_VideoCheck( int time ) 
-{
-	if ( abs( time - uiInfo.uiDC.lastVideoCheck ) > 1000 ) {
-		
-		int oldWidth, oldHeight;
-		oldWidth = uiInfo.uiDC.glconfig.vidWidth;
-		oldHeight = uiInfo.uiDC.glconfig.vidHeight;
-
-		trap_GetGlconfig( &uiInfo.uiDC.glconfig );
-
-		if ( uiInfo.uiDC.glconfig.vidWidth != oldWidth || uiInfo.uiDC.glconfig.vidHeight != oldHeight ) {
-			uiInfo.uiDC.biasY = 0.0;
-			uiInfo.uiDC.biasX = 0.0;
-			// for 640x480 virtualized screen
-			if ( uiInfo.uiDC.glconfig.vidWidth * 480 > uiInfo.uiDC.glconfig.vidHeight * 640 ) {
-				// wide screen, scale by height
-				uiInfo.uiDC.scale = uiInfo.uiDC.glconfig.vidHeight * (1.0/480.0);
-				uiInfo.uiDC.biasX = 0.5 * ( uiInfo.uiDC.glconfig.vidWidth - ( uiInfo.uiDC.glconfig.vidHeight * (640.0/480.0) ) );
-			} else {
-				// no wide screen, scale by width
-				uiInfo.uiDC.scale = uiInfo.uiDC.glconfig.vidWidth * (1.0/640.0);
-				uiInfo.uiDC.biasY = 0.5 * ( uiInfo.uiDC.glconfig.vidHeight - ( uiInfo.uiDC.glconfig.vidWidth * (480.0/640) ) );
-			}
-
-			uiInfo.uiDC.screenXmin = 0.0 - (uiInfo.uiDC.biasX / uiInfo.uiDC.scale);
-			uiInfo.uiDC.screenXmax = 640.0 + (uiInfo.uiDC.biasX / uiInfo.uiDC.scale);
-
-			uiInfo.uiDC.screenYmin = 0.0 - (uiInfo.uiDC.biasY / uiInfo.uiDC.scale);
-			uiInfo.uiDC.screenYmax = 480.0 + (uiInfo.uiDC.biasY / uiInfo.uiDC.scale);
-
-			uiInfo.uiDC.cursorScaleR = 1.0 / uiInfo.uiDC.scale;
-			if ( uiInfo.uiDC.cursorScaleR < 0.5 ) {
-				uiInfo.uiDC.cursorScaleR = 0.5;
-			}
-		}
-
-		uiInfo.uiDC.lastVideoCheck = time;
-	}
-}
-
-
-/*
-=================
 ArenaServers_StopRefresh
 =================
 */
@@ -5687,6 +5632,22 @@ static void UI_StopServerRefresh( void )
 
 }
 
+/*
+=================
+ArenaServers_MaxPing
+=================
+*/
+#ifndef MISSIONPACK // bk001206
+static int ArenaServers_MaxPing( void ) {
+	int		maxPing;
+
+	maxPing = (int)trap_Cvar_VariableValue( "cl_maxPing" );
+	if( maxPing < 100 ) {
+		maxPing = 100;
+	}
+	return maxPing;
+}
+#endif
 
 /*
 =================
