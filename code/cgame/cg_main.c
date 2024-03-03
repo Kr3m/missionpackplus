@@ -14,7 +14,8 @@ int enemyModelModificationCount  = -1;
 int	enemyColorsModificationCount = -1;
 int teamModelModificationCount  = -1;
 int	teamColorsModificationCount = -1;
-static int crosshairColorModificationCount = -1;
+//static int crosshairColorModificationCount = -1;
+int cg_playback_follow;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 void CG_Shutdown( void );
@@ -162,7 +163,7 @@ void CG_ForceModelChange( void ) {
 CG_UpdateCrosshairColor
 ===================
 */
-static void CG_UpdateCrosshairColor( void ) {
+/*static void CG_UpdateCrosshairColor( void ) {
 	const char	*s = cg_crosshairColor.string;
 	int			i;
 
@@ -204,7 +205,7 @@ static void CG_UpdateCrosshairColor( void ) {
 		cgs.crosshairColor[3] = 1.0f;	// no alpha specified, default to 1
 	else if ( i != 4 )
 		cgs.crosshairColor[3] = 0.0f;	// alpha 0 means use original method
-}
+}*/
 
 
 /*
@@ -252,10 +253,10 @@ void CG_UpdateCvars( void ) {
 
 		CG_ForceModelChange();
 	}
-	if ( crosshairColorModificationCount != cg_crosshairColor.modificationCount ) {
+	/*if ( crosshairColorModificationCount != cg_crosshairColor.modificationCount ) {
 		crosshairColorModificationCount = cg_crosshairColor.modificationCount;
 		CG_UpdateCrosshairColor();
-	}
+	}*/
 }
 
 
@@ -1731,6 +1732,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_entities, 0, sizeof(cg_entities) );
 	memset( cg_weapons, 0, sizeof(cg_weapons) );
 	memset( cg_items, 0, sizeof(cg_items) );
+
+	cg_playback_follow = -1;
 
 	cg.clientNum = clientNum;
 

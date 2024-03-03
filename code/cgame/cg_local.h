@@ -1130,7 +1130,6 @@ typedef struct {
 
 	// media
 	cgMedia_t		media;
-	vec4_t			crosshairColor;
 
 	float			fov;		// clamped cg_fov value
 	float			zoomFov;	// clamped cg_zoomFov value
@@ -1159,6 +1158,7 @@ extern	centity_t		cg_entities[MAX_GENTITIES];
 extern	weaponInfo_t	cg_weapons[MAX_WEAPONS];
 extern	itemInfo_t		cg_items[MAX_ITEMS];
 extern	markPoly_t		cg_markPolys[MAX_MARK_POLYS];
+extern	int			cg_playback_follow;
 
 #define EXTERN_CG_CVAR
 	#include "cg_cvar.h"
