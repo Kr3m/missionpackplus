@@ -56,7 +56,7 @@ https://user-images.githubusercontent.com/290740/230672040-74bcfa4d-9400-4be6-a1
  * Kr3m's custom ctf_unified.shader for popping decals at any picmip setting.
  * CPMA-style fullbright skins
  * linux qvm build support
- * cg_crosshairColor support (seta cg_crosshairColor "0x00ff00ff" //for green)
+ * cg_crosshairColor support for Quake 3 colors (seta cg_crosshairColor "2" //for green)
  * cg_kickScale support with a default value of 0 to disable screen shake when taking damage.
  * added fullbright skin support for team games.
  * fixed crosshairColor overriding crosshairHealth settings.
@@ -76,7 +76,7 @@ https://user-images.githubusercontent.com/290740/230672040-74bcfa4d-9400-4be6-a1
  * ~~fix spawn times for items~~
  * bugfixes
  * add projectile delag code
- * rework crosshair colors to support color string names and q3 color codes (e.g. "Green" or "2").
+ * ~~rework crosshair colors to support color string names and q3 color codes (e.g. "Green" or "2").~~
  * add ruleset and crontab support similar to excessiveplus, edawn, etc.
  * add more gametypes
  * fix spawn times for items in single player and when g_warmup 0
