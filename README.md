@@ -63,6 +63,7 @@ https://user-images.githubusercontent.com/290740/230672040-74bcfa4d-9400-4be6-a1
  * fixed spawn times for items
  * added railJump and noSelfDamage functionality.
  * added g_startHealth and g_startArmor
+ * added custom entity support for maps
 
 # TODO:
 
