@@ -386,6 +386,13 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 	while ( client->timeResidual >= 1000 ) {
 		client->timeResidual -= 1000;
 
+		//release hook if over time
+		if(( client->grapple_release_time > 0 ) && ( client->hook )) {
+			if( level.time > client->grapple_release_time ) {
+				Weapon_HookFree(client->hook);
+			}
+		}
+
 		// regenerate
 #ifdef MISSIONPACK
 		if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
@@ -838,6 +845,10 @@ void ClientThink_real( gentity_t *ent ) {
 		Weapon_HookFree(client->hook);
 	}
 
+//qlone - grapple hook
+	Hook_Fire( ent );
+//qlone - grapple hook
+
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
 
@@ -899,6 +910,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 	pm.pmove_fixed = pmove_fixed.integer;
 	pm.pmove_msec = pmove_msec.integer;
+	pm.grapplePull = g_grapplePull.integer;
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 

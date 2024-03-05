@@ -319,6 +319,7 @@ struct gclient_s {
 #endif
 
 	char		*areabits;
+	unsigned int grapple_release_time;
 
 	// unlagged
 	clientHistory_t	history[ NUM_CLIENT_HISTORY ];

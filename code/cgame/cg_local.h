@@ -784,6 +784,7 @@ typedef struct {
 	qhandle_t	plasmaBallShader;
 	qhandle_t	waterBubbleShader;
 	qhandle_t	bloodTrailShader;
+	qhandle_t	grappleShader;	// leilei - grapple hook
 #ifdef MISSIONPACK
 	qhandle_t	nailPuffShader;
 	qhandle_t	blueProxMine;
@@ -1130,6 +1131,10 @@ typedef struct {
 
 	// media
 	cgMedia_t		media;
+
+	//hook
+	unsigned int	g_grapplePull;
+  	unsigned int	g_grappleDelayTime;
 
 	float			fov;		// clamped cg_fov value
 	float			zoomFov;	// clamped cg_zoomFov value

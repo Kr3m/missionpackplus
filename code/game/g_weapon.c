@@ -646,23 +646,76 @@ GRAPPLING HOOK
 
 void Weapon_GrapplingHook_Fire (gentity_t *ent)
 {
+//qlone - grapple hook
+	AngleVectors( ent->client->ps.viewangles, forward, right, up );
+	//uzu//CalcMuzzlePoint( ent, forward, right, up, muzzle );
+	CalcMuzzlePointOrigin( ent, muzzle_origin, forward, right, up, muzzle );
+//qlone - grapple hook
+
 	if (!ent->client->fireHeld && !ent->client->hook)
 		fire_grapple (ent, muzzle, forward);
 
 	ent->client->fireHeld = qtrue;
+  
+  	if (g_grappleHoldTime.integer > 0) {
+    	ent->client->grapple_release_time = g_grappleHoldTime.integer + level.time;
+  	} else {
+    	ent->client->grapple_release_time = 0;
+  	}
+}
+
+void Weapon_GrapplingHook_Fire( gentity_t *ent );
+
+void Hook_Fire( gentity_t *ent ) {
+	gclient_t	*client;
+	usercmd_t	*ucmd;
+
+	if (g_grapple.integer == 0) {
+		return;
+	}
+
+	client = ent->client;
+	if ( client->ps.weapon == WP_GRAPPLING_HOOK ) {
+		return;
+	}
+	if ( client->ps.pm_type != PM_NORMAL ) {
+		return;
+	}
+
+	ucmd = &client->pers.cmd;
+	if ( client->hook && !( ucmd->buttons & 32 ) ) {
+		Weapon_HookFree( client->hook );
+	}
+	if ( !client->hook && ( ucmd->buttons & 32 ) ) {
+		if ( ent->timestamp > level.time) { //timestamp holds time fired + g_grappleDelayTime<
+			return;
+		}
+		client->fireHeld = qfalse;
+		Weapon_GrapplingHook_Fire( ent );
+	}
 }
 
 
 void Weapon_HookFree (gentity_t *ent)
 {
+//qlone - grapple hook
+	//ent->parent->timestamp = level.time;
+
+	ent->parent->timestamp = level.time + g_grappleDelayTime.integer;
+//qlone - grapple hook
 	ent->parent->client->hook = NULL;
 	ent->parent->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
+	ent->parent->client->grapple_release_time = 0;
 	G_FreeEntity( ent );
 }
 
 
 void Weapon_HookThink (gentity_t *ent)
 {
+	if ((ent->parent->client->hook != ent) || (ent->parent->inuse == qfalse)) {
+		G_FreeEntity(ent);
+	}
+
 	if (ent->enemy) {
 		vec3_t v, oldorigin;
 
@@ -676,6 +729,7 @@ void Weapon_HookThink (gentity_t *ent)
 	}
 
 	VectorCopy( ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
+  	ent->nextthink = level.time + FRAMETIME;
 }
 
 
