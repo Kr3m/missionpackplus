@@ -566,8 +566,8 @@ void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi ) {
 	if (Distance( beam.origin, beam.oldorigin ) < 64 )
 		return; // Don't draw if close
 
-	beam.reType = RT_LIGHTNING;
-	beam.customShader = cgs.media.lightningShader;
+	beam.reType = RT_RAIL_CORE;
+	beam.customShader = cgs.media.grappleShader;
 
 	AxisClear( beam.axis );
 	beam.shaderRGBA[0] = 0xff;
