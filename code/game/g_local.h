@@ -751,6 +751,8 @@ qboolean ParseMapRotation( void );
 void G_LoadMap( const char *map );
 qboolean G_MapExist( const char *map );
 
+// custom weapons
+void G_RegisterWeapon( void );
 
 #include "g_team.h" // teamplay specific stuff
 

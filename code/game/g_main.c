@@ -246,6 +246,17 @@ void G_RegisterCvars( void ) {
 	trap_Cvar_Set( "g_doWarmup", "1" );
 }
 
+/*
+=================
+G_RegisterWeapon
+=================
+*/
+void G_RegisterWeapon(void) {
+	
+	if (g_grapple.integer > 0)
+		RegisterItem(BG_FindItemForWeapon(WP_GRAPPLING_HOOK));
+}
+
 
 /*
 =================

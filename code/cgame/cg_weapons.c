@@ -685,16 +685,20 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 		break;
 
-	case WP_GRAPPLING_HOOK:
+	case WP_GRAPPLING_HOOK:		
 		MAKERGB( weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f );
-		weaponInfo->missileModel = trap_R_RegisterModel( "models/ammo/rocket/rocket.md3" );
+		weaponInfo->missileModel = trap_R_RegisterModel( "models/weapons2/grapple2/grapple_grip.md3" );
 		weaponInfo->missileTrailFunc = CG_GrappleTrail;
-		weaponInfo->missileDlight = HOOK_GLOW_RADIUS;
+		weaponInfo->missileDlight = 0;
 		weaponInfo->wiTrailTime = 2000;
 		weaponInfo->trailRadius = 64;
 		MAKERGB( weaponInfo->missileDlightColor, 1, 0.75f, 0 );
-		weaponInfo->readySound = trap_S_RegisterSound( "sound/weapons/melee/fsthum.wav", qfalse );
-		weaponInfo->firingSound = trap_S_RegisterSound( "sound/weapons/melee/fstrun.wav", qfalse );
+		cgs.media.grappleShader = trap_R_RegisterShader( "grappleRope");
+		//weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/grapple/contact.wav", qfalse );
+		//weaponInfo->firingSound = trap_S_RegisterSound( "sound/weapons/grapple/firingsound.wav", qfalse);
+		weaponInfo->missileSound = trap_S_RegisterSound( "sound/weapons/grapple/grappull.wav", qfalse );
+		weaponInfo->loopFireSound = qtrue;		
+                //cgs.media.lightningShader = trap_R_RegisterShader( "lightningBoltNew");
 		break;
 
 #ifdef MISSIONPACK
