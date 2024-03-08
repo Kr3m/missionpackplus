@@ -103,6 +103,29 @@ G_CVAR( g_grappleSpeed, "g_grappleSpeed", "800", 0, 0, qtrue, qfalse )
 G_CVAR( g_grapplePull, "g_grapplePull", "800", CVAR_SERVERINFO, 0, qtrue, qfalse )
 G_CVAR( g_grappleDamage, "g_grappleDamage", "0", 0, 0, qfalse, qfalse )
 
+G_CVAR( g_startAmmoMG, "g_startAmmoMG", "50", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoSG, "g_startAmmoSG", "10", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoGL, "g_startAmmoGL", "5", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoRL, "g_startAmmoRL", "5", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoLG, "g_startAmmoLG", "60", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoRG, "g_startAmmoRG", "10", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoPG, "g_startAmmoPG", "30", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoBFG, "g_startAmmoBFG", "15", 0, 0, qfalse, qfalse )
+
+#ifdef MISSIONPACK
+G_CVAR( g_startAmmoNG, "g_startAmmoNG", "20", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoPL, "g_startAmmoPL", "10", 0, 0, qfalse, qfalse )
+G_CVAR( g_startAmmoCG, "g_startAmmoCG", "100", 0, 0, qfalse, qfalse )
+#endif
+
+G_CVAR( g_tossWeapon, "g_tossWeapon", "1", CVAR_ARCHIVE, 0, qtrue, qtrue )
+
+G_CVAR( g_removeammo, "removeammo", "0", 0, 0, qfalse, qfalse )
+G_CVAR( g_removeitem, "removeitem", "0", 0, 0, qfalse, qfalse )
+G_CVAR( g_removepowerup, "removepowerup", "0", 0, 0, qfalse, qfalse )
+G_CVAR( g_removeweapon, "removeweapon", "0", 0, 0, qfalse, qfalse )
+G_CVAR( g_wpflags, "wpflags", "0", 0, 0, qfalse, qfalse )
+
 G_CVAR( g_rotation, "g_rotation", "0", CVAR_ARCHIVE, 0, qfalse, qfalse )
 
 #undef G_CVAR

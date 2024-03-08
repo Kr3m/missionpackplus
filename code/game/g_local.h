@@ -470,6 +470,7 @@ void G_RevertVote( gclient_t *client );
 //
 // g_items.c
 //
+qboolean Registered( gitem_t *item );
 void G_CheckTeamItems( void );
 void G_RunItem( gentity_t *ent );
 void RespawnItem( gentity_t *ent );
@@ -751,8 +752,14 @@ qboolean ParseMapRotation( void );
 void G_LoadMap( const char *map );
 qboolean G_MapExist( const char *map );
 
-// custom weapons
 void G_RegisterWeapon( void );
+void G_SpawnWeapon( gclient_t *client );
+qboolean G_RemoveAmmo( gitem_t *item );
+qboolean G_RemoveItem( gitem_t *item );
+qboolean G_RemovePowerup( gitem_t *item );
+qboolean G_RemoveWeapon( gitem_t *item );
+void G_SetInfiniteAmmo ( gclient_t *client );
+void Hook_Fire( gentity_t *ent );
 
 #include "g_team.h" // teamplay specific stuff
 

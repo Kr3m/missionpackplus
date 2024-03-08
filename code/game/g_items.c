@@ -19,9 +19,9 @@
 // in vq3 most of the items appears in one frame but we will delay that a bit
 // to reduce peak bandwidth and get some nice transition effects
 #define	SPAWN_WEAPONS		0		//changed from 333
-#define	SPAWN_ARMOR			0		//changed from 1200
+#define	SPAWN_ARMOR		0		//changed from 1200
 #define	SPAWN_HEALTH		0		//changed from 900
-#define	SPAWN_AMMO			0		//changed from 600
+#define	SPAWN_AMMO		0		//changed from 600
 #define	SPAWN_HOLDABLE		0		//changed from 2500
 #define	SPAWN_MEGAHEALTH	0		//changed from 10000
 #define	SPAWN_POWERUP		45000
@@ -43,6 +43,7 @@ int SpawnTime( gentity_t *ent, qboolean firstSpawn )
 		return 0;
 
 	switch( ent->item->giType ) {
+
 	case IT_WEAPON:
 		if ( firstSpawn )
 			return SPAWN_WEAPONS;
@@ -772,6 +773,9 @@ void FinishSpawningItem( gentity_t *ent ) {
 
 
 qboolean	itemRegistered[MAX_ITEMS];
+qboolean Registered( gitem_t *item ) {
+	return ( item && itemRegistered[ item - bg_itemlist ] );
+}
 
 /*
 ==================
