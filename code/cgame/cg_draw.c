@@ -2003,15 +2003,16 @@ CG_SetCrosshairColor
 static void CG_SetCrosshairColor( void ) {
 	static int		colorNum;
 	static float	*colors[] = {
-		colorBlack,		//0
-		colorRed,		//1
-		colorGreen,		//2
-		colorYellow,	//3
-		colorBlue,		//4
-		colorCyan,		//5
-		colorMagenta,	//6
-		colorWhite,		//7
-		colorOrange		//8
+		colorBlack,
+		colorRed,
+		colorGreen,
+		colorYellow,
+		colorBlue,	
+		colorCyan,
+		colorMagenta,
+		colorWhite,
+		colorOrange,
+		colorPink
 	};
 
 	colorNum = cg_crosshairColor.integer;
@@ -2054,12 +2055,7 @@ static void CG_DrawCrosshair( void ) {
 
 		CG_ColorForHealth( hcolor );
 		trap_R_SetColor( hcolor );
-	}
-	/*else if ( cgs.crosshairColor[3] > 0.0f )
-	{
-		trap_R_SetColor( cgs.crosshairColor );
-	}*/	 
-	else {
+	} else {
 		CG_SetCrosshairColor();
 	}
 

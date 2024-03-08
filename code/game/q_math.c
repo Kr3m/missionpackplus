@@ -17,12 +17,14 @@ vec4_t		colorMagenta= {1, 0, 1, 1};
 vec4_t		colorCyan	= {0, 1, 1, 1};
 vec4_t		colorWhite	= {1, 1, 1, 1};
 vec4_t		colorOrange = {0.95, 0.61, 0.07, 1};
+vec4_t		colorPink	= {1, 0.41, 0.71, 1};
 vec4_t		colorLtGrey	= {0.75, 0.75, 0.75, 1};
 vec4_t		colorMdGrey	= {0.5, 0.5, 0.5, 1};
 vec4_t		colorDkGrey	= {0.25, 0.25, 0.25, 1};
 
-vec4_t	g_color_table[9] =
+vec4_t	g_color_table[10] =
 	{
+	{0.0, 0.0, 0.0, 1.0},
 	{1.0, 0.0, 0.0, 1.0},
 	{0.0, 1.0, 0.0, 1.0},
 	{1.0, 1.0, 0.0, 1.0},
@@ -31,7 +33,7 @@ vec4_t	g_color_table[9] =
 	{1.0, 0.0, 1.0, 1.0},
 	{1.0, 1.0, 1.0, 1.0},
 	{0.95, 0.61, 0.07, 1.0},
-	{0.0, 0.0, 0.0, 1.0},
+	{1.0, 0.41, 0.71, 1.0},
 	};
 
 
