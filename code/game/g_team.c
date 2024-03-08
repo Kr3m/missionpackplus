@@ -757,7 +757,7 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	teamgame.last_capture_team = team;
 
 #ifdef MISSIONPACK
-	if( g_gametype.integer == GT_1FCTF ) {
+	if( g_gametype.integer == GT_1FCTF && g_1FRespawn.integer ) {
 		qboolean backup_god = qfalse;
 		int backup_weapon = WP_NONE, backup_persist = 0, backup_portal = 0;
 		int backup_stats[MAX_STATS], backup_ammo[MAX_WEAPONS], backup_powerups[MAX_POWERUPS];
