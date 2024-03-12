@@ -297,7 +297,7 @@ static int getAmmoValue( const char *ammocvar ) {
 	ammo = trap_Cvar_VariableIntegerValue(ammocvar);
 	if (ammo < 0)
 		return 0;
-	if (ammo > 200)
+	if (ammo > 999)
 		return 200;
 	return ammo;
 }
