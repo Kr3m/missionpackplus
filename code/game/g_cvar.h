@@ -112,10 +112,17 @@ G_CVAR( g_startAmmoRG, "g_startAmmoRG", "10", 0, 0, qfalse, qfalse )
 G_CVAR( g_startAmmoPG, "g_startAmmoPG", "30", 0, 0, qfalse, qfalse )
 G_CVAR( g_startAmmoBFG, "g_startAmmoBFG", "15", 0, 0, qfalse, qfalse )
 
+G_CVAR( g_damageLG, "g_damageLG", "8", 0, 0, qfalse, qfalse )
+G_CVAR( g_damageRG, "g_damageRG", "100", 0, 0, qfalse, qfalse )
+
+G_CVAR( g_velocityRL, "g_velocityRL", "900", 0, 0, qfalse, qfalse )
+
 #ifdef MISSIONPACK
 G_CVAR( g_startAmmoNG, "g_startAmmoNG", "20", 0, 0, qfalse, qfalse )
 G_CVAR( g_startAmmoPL, "g_startAmmoPL", "10", 0, 0, qfalse, qfalse )
 G_CVAR( g_startAmmoCG, "g_startAmmoCG", "100", 0, 0, qfalse, qfalse )
+
+G_CVAR( g_damageNG, "g_damageNG", "20", 0, 0, qfalse, qfalse )
 #endif
 
 G_CVAR( g_tossWeapon, "g_tossWeapon", "1", CVAR_ARCHIVE, 0, qtrue, qtrue )
