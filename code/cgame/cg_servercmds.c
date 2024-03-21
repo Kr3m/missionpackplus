@@ -140,6 +140,8 @@ void CG_ParseServerinfo( void ) {
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.g_grappleDelayTime = atoi(Info_ValueForKey(info, "g_grappleDelayTime"));
 	cgs.g_grapplePull = atoi(Info_ValueForKey(info, "g_grapplePull"));
+	cgs.g_sgPelletSpread = atoi(Info_ValueForKey(info, "g_sgPelletSpread"));
+	cgs.g_sgPellets = atoi(Info_ValueForKey(info, "g_sgPellets"));
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
 	Q_strncpyz( cgs.redTeam, Info_ValueForKey( info, "g_redTeam" ), sizeof(cgs.redTeam) );

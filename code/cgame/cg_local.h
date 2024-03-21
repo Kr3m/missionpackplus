@@ -1135,6 +1135,8 @@ typedef struct {
 	//hook
 	unsigned int	g_grapplePull;
   	unsigned int	g_grappleDelayTime;
+	unsigned int	g_sgPelletSpread;
+	unsigned int	g_sgPellets;
 
 	float			fov;		// clamped cg_fov value
 	float			zoomFov;	// clamped cg_zoomFov value

@@ -111,7 +111,8 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	}
 #endif
 
-	damage = 50 * s_quadFactor;
+	//damage = 50 * s_quadFactor;
+	damage = g_damageG.integer * s_quadFactor;
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 0, MOD_GAUNTLET );
 
 	return qtrue;
@@ -301,7 +302,8 @@ static qboolean ShotgunPellet( const vec3_t start, const vec3_t end, gentity_t *
 		}
 
 		if ( traceEnt->takedamage ) {
-			damage = DEFAULT_SHOTGUN_DAMAGE * s_quadFactor;
+			//damage = DEFAULT_SHOTGUN_DAMAGE * s_quadFactor;
+			damage = g_damageSG.integer * s_quadFactor;
 #ifdef MISSIONPACK
 			if ( traceEnt->client && traceEnt->client->invulnerabilityTime > level.time ) {
 				if (G_InvulnerabilityEffect( traceEnt, forward, tr.endpos, impactpoint, bouncedir )) {
@@ -347,9 +349,12 @@ static void ShotgunPattern( const vec3_t origin, const vec3_t origin2, int seed,
 	G_DoTimeShiftFor( ent );
 
 	// generate the "random" spread pattern
-	for ( i = 0 ; i < DEFAULT_SHOTGUN_COUNT ; i++ ) {
-		r = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
-		u = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
+	//for ( i = 0 ; i < DEFAULT_SHOTGUN_COUNT ; i++ ) {
+		for ( i = 0 ; i < g_sgPellets.integer ; i++ ) {
+		/* r = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
+		u = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16; */
+		r = Q_crandom( &seed ) * g_sgPelletSpread.integer * 16;
+		u = Q_crandom( &seed ) * g_sgPelletSpread.integer * 16;
 		VectorMA( origin, ( 8192.0 * 16.0 ), forward, end );
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
@@ -955,9 +960,11 @@ void FireWeapon( gentity_t *ent ) {
 		break;
 	case WP_MACHINEGUN:
 		if ( g_gametype.integer != GT_TEAM ) {
-			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE, MOD_MACHINEGUN );
+			//Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE, MOD_MACHINEGUN );
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, g_damageMG.integer, MOD_MACHINEGUN );
 		} else {
-			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_TEAM_DAMAGE, MOD_MACHINEGUN );
+			//Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_TEAM_DAMAGE, MOD_MACHINEGUN );
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, g_damageTeamMG.integer, MOD_MACHINEGUN );
 		}
 		break;
 	case WP_GRENADE_LAUNCHER:
@@ -986,7 +993,8 @@ void FireWeapon( gentity_t *ent ) {
 		weapon_proxlauncher_fire( ent );
 		break;
 	case WP_CHAINGUN:
-		Bullet_Fire( ent, CHAINGUN_SPREAD, MACHINEGUN_DAMAGE, MOD_CHAINGUN );
+		//Bullet_Fire( ent, CHAINGUN_SPREAD, MACHINEGUN_DAMAGE, MOD_CHAINGUN );
+		Bullet_Fire( ent, CHAINGUN_SPREAD, g_damageCG.integer, MOD_CHAINGUN );
 		break;
 #endif
 	default:
