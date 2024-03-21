@@ -5,16 +5,38 @@
 	"gametype" "oneflag"
 }
 
+// entity 22
+{
+	"gametype" "harvester"
+	"classname" "team_neutralobelisk"
+	"origin" "0 0 -588"
+
+}
+
+// entity 43
+{
+	"origin" "2688 -2368 -336"
+	"classname" "team_CTF_redflag"
+	"gametype" "ctf oneflag"
+}
+
 // entity 43
 {
 	"origin" "2688 -2368 -336"
 	"classname" "team_redobelisk"
-	"gametype" "obelisk"
+	"gametype" "obelisk harvester"
+}
+
+// entity 374
+{
+	"classname" "team_CTF_blueflag"
+	"origin" "-2688 2368 -336"
+	"gametype" "ctf oneflag"
 }
 
 // entity 374
 {
 	"classname" "team_blueobelisk"
 	"origin" "-2688 2368 -336"
-	"gametype" "obelisk"
+	"gametype" "obelisk harvester"
 }
