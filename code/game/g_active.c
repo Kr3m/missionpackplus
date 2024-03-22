@@ -845,9 +845,7 @@ void ClientThink_real( gentity_t *ent ) {
 		Weapon_HookFree(client->hook);
 	}
 
-//qlone - grapple hook
 	Hook_Fire( ent );
-//qlone - grapple hook
 
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
