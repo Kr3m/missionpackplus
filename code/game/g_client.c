@@ -1231,8 +1231,13 @@ void ClientSpawn(gentity_t *ent) {
 
 		// select the highest weapon number available, after any
 		// spawn given items have fired
-		client->ps.weapon = 1;
-		for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
+		//client->ps.weapon = 1;
+		if (!g_startingWeapon.integer) {
+			client->ps.weapon = 2;
+		} else {
+			client->ps.weapon = g_startingWeapon.integer;
+		}
+		/* for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
 			if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
 				client->ps.weapon = i;
 				break;
@@ -1246,6 +1251,12 @@ void ClientSpawn(gentity_t *ent) {
 			}
 
 
+		} */
+		if (g_startArmor.integer > 0) {
+			client->ps.stats[STAT_ARMOR] = g_startArmor.integer;
+			if (client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] * 2) {
+				client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_HEALTH] * 2;
+			}
 		}
 	}
 
