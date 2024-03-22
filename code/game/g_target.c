@@ -175,11 +175,6 @@ void Use_Target_Speaker (gentity_t *ent, gentity_t *other, gentity_t *activator)
 		} else {
 			G_AddEvent( ent, EV_GENERAL_SOUND, ent->noise_index );
 		}
-//qlone - grapple hook
-		if ( activator->client && activator->client->hook ) {
-			Weapon_HookFree( activator->client->hook );
-		}
-//qlone - grapple hook
 	}
 }
 
