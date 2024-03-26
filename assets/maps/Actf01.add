@@ -1,25 +1,27 @@
 {
-	"origin" "0 0 -588"
 	"classname" "team_CTF_neutralflag"
+	"spawnflags" "1"
+	"origin" "0 0 640"
 	"gametype" "oneflag"
 }
 
 {
-	"gametype" "harvester"
 	"classname" "team_neutralobelisk"
-	"origin" "0 0 -588"
-
+	"spawnflags" "1"
+	"origin" "0 0 640"
+	"gametype" "harvester"
 }
 
 {
-	"origin" "2688 -2368 -356"
 	"classname" "team_redobelisk"
+	"angle" "90"
+	"origin" "2048 -3936 745"
 	"gametype" "obelisk harvester"
-	"angle" "180"
 }
 
 {
 	"classname" "team_blueobelisk"
-	"origin" "-2688 2368 -356"
+	"angle" "270"
+	"origin" "-2048 3936 745"
 	"gametype" "obelisk harvester"
 }

@@ -111,7 +111,6 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	}
 #endif
 
-	//damage = 50 * s_quadFactor;
 	damage = g_damageG.integer * s_quadFactor;
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 0, MOD_GAUNTLET );
 
@@ -302,7 +301,6 @@ static qboolean ShotgunPellet( const vec3_t start, const vec3_t end, gentity_t *
 		}
 
 		if ( traceEnt->takedamage ) {
-			//damage = DEFAULT_SHOTGUN_DAMAGE * s_quadFactor;
 			damage = g_damageSG.integer * s_quadFactor;
 #ifdef MISSIONPACK
 			if ( traceEnt->client && traceEnt->client->invulnerabilityTime > level.time ) {
@@ -349,10 +347,7 @@ static void ShotgunPattern( const vec3_t origin, const vec3_t origin2, int seed,
 	G_DoTimeShiftFor( ent );
 
 	// generate the "random" spread pattern
-	//for ( i = 0 ; i < DEFAULT_SHOTGUN_COUNT ; i++ ) {
-		for ( i = 0 ; i < g_sgPellets.integer ; i++ ) {
-		/* r = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
-		u = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16; */
+	for ( i = 0 ; i < g_sgPellets.integer ; i++ ) {
 		r = Q_crandom( &seed ) * g_sgPelletSpread.integer * 16;
 		u = Q_crandom( &seed ) * g_sgPelletSpread.integer * 16;
 		VectorMA( origin, ( 8192.0 * 16.0 ), forward, end );
@@ -473,7 +468,6 @@ void weapon_railgun_fire( gentity_t *ent ) {
 	int			passent;
 	gentity_t	*unlinkedEntities[MAX_RAIL_HITS];
 
-	//damage = 100 * s_quadFactor;
 	damage = g_damageRG.integer * s_quadFactor;
 
 	VectorMA( muzzle_origin, 8192.0, forward, end );
@@ -664,7 +658,7 @@ void Weapon_GrapplingHook_Fire (gentity_t *ent)
 	ent->client->fireHeld = qtrue;
   
   	if (g_grappleHoldTime.integer > 0) {
-    	ent->client->grapple_release_time = g_grappleHoldTime.integer + level.time;
+    	ent->client->grapple_release_time = ( g_grappleHoldTime.integer * 1000 ) + level.time;
   	} else {
     	ent->client->grapple_release_time = 0;
   	}
@@ -756,7 +750,6 @@ void Weapon_LightningFire( gentity_t *ent ) {
 	gentity_t	*traceEnt, *tent;
 	int			damage, i, passent;
 
-	//damage = 8 * s_quadFactor;
 	damage = g_damageLG.integer * s_quadFactor;
 
 	passent = ent->s.number;

@@ -752,6 +752,7 @@ qboolean ParseMapRotation( void );
 void G_LoadMap( const char *map );
 qboolean G_MapExist( const char *map );
 
+// custom weapons
 void G_RegisterWeapon( void );
 void G_SpawnWeapon( gclient_t *client );
 qboolean G_RemoveAmmo( gitem_t *item );

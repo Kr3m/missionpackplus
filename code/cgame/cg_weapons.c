@@ -2199,10 +2199,7 @@ static void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int othe
 	CrossProduct( forward, right, up );
 
 	// generate the "random" spread pattern
-	//for ( i = 0 ; i < DEFAULT_SHOTGUN_COUNT ; i++ ) {
 	for ( i = 0 ; i < cgs.g_sgPellets ; i++ ) {
-		//r = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
-		//u = Q_crandom( &seed ) * DEFAULT_SHOTGUN_SPREAD * 16;
 		r = Q_crandom( &seed ) * cgs.g_sgPelletSpread * 16;
 		u = Q_crandom( &seed ) * cgs.g_sgPelletSpread * 16;
 		VectorMA( origin, 8192 * 16, forward, end);

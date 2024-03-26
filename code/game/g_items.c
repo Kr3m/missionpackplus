@@ -53,19 +53,51 @@ int SpawnTime( gentity_t *ent, qboolean firstSpawn )
 			return g_weaponRespawn.value * 1000 ;
 
 	case IT_AMMO:
-		return firstSpawn ? SPAWN_AMMO : RESPAWN_AMMO;
+		if ( firstSpawn )
+			return SPAWN_AMMO;
+		if ( g_gametype.integer == GT_TEAM )
+			return g_ammoTeamRespawn.value * 1000;
+		else
+			return g_ammoRespawn.value * 1000;
+		//return firstSpawn ? SPAWN_AMMO : RESPAWN_AMMO;
 
 	case IT_ARMOR:
-		return firstSpawn ? SPAWN_ARMOR : RESPAWN_ARMOR;
+		if ( firstSpawn )
+			return SPAWN_ARMOR;
+		if ( g_gametype.integer == GT_TEAM )
+			return g_armorTeamRespawn.value * 1000;
+		else
+			return g_armorRespawn.value * 1000;
+		//return firstSpawn ? SPAWN_ARMOR : RESPAWN_ARMOR;
 
 	case IT_HEALTH:
-		if ( ent->item->quantity == 100 ) // mega health respawns slow
-			return firstSpawn ? SPAWN_MEGAHEALTH : RESPAWN_MEGAHEALTH;
+		if ( ent->item->quantity == 100 ) { // mega health respawns slow
+			if ( firstSpawn )
+				return SPAWN_MEGAHEALTH;
+			if ( g_gametype.integer == GT_TEAM )
+				return g_megahealthTeamRespawn.value * 1000;
+			else
+				return g_megahealthRespawn.value * 1000;
+			//return firstSpawn ? SPAWN_MEGAHEALTH : RESPAWN_MEGAHEALTH;
+		}
+
 		else
-			return firstSpawn ? SPAWN_HEALTH : RESPAWN_HEALTH;
+			if ( firstSpawn )
+				return SPAWN_HEALTH;
+			if ( g_gametype.integer == GT_TEAM )
+				return g_healthTeamRespawn.value * 1000;
+			else
+				return g_healthRespawn.value * 1000;
+			//return firstSpawn ? SPAWN_HEALTH : RESPAWN_HEALTH;
 
 	case IT_POWERUP:
-		return firstSpawn ? SPAWN_POWERUP : RESPAWN_POWERUP;
+		if ( firstSpawn )
+			return SPAWN_POWERUP;
+		if ( g_gametype.integer == GT_TEAM )
+			return g_powerupTeamRespawn.value * 1000;
+		else
+			return g_powerupRespawn.value * 1000;
+		//return firstSpawn ? SPAWN_POWERUP : RESPAWN_POWERUP;
 
 #ifdef MISSIONPACK
 	case IT_PERSISTANT_POWERUP:
@@ -74,7 +106,13 @@ int SpawnTime( gentity_t *ent, qboolean firstSpawn )
 #endif
 
 	case IT_HOLDABLE:
-		return firstSpawn ? SPAWN_HOLDABLE : RESPAWN_HOLDABLE;
+		if ( firstSpawn )
+			return SPAWN_HOLDABLE;
+		if ( g_gametype.integer == GT_TEAM )
+			return g_holdableTeamRespawn.value * 1000;
+		else
+			return g_holdableRespawn.value * 1000;
+		//return firstSpawn ? SPAWN_HOLDABLE : RESPAWN_HOLDABLE;
 
 	default: // IT_BAD and others
 		return 0;
