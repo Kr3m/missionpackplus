@@ -7,8 +7,8 @@ Special thanks to Ensiform for his amazing help as usual. =D
 ## New cvars
 
 * g_noSelfDamage <0|1> : default to 0. Toggle the player self damages
-* g_startAmmo*X* <0|200> : allow to define the amount of ammunitions for a weapon. *X* can be MG, SG, GL, RL, LG, RG, PG, BFG
-* g_damage*X* <0|999> : allow to define the amount of damage for a weapon. *X* can be MG, SG, GL, RL, LG, RG, PG, BFG
+* g_startAmmo*X* <0|200> : allow to define the amount of ammunitions for a weapon. *X* can be MG, SG, GL, RL, LG, RG, PG, BFG, PL, NG, CG
+* g_damage*X* <0|999> : allow to define the amount of damage for a weapon. *X* can be MG, SG, GL, RL, LG, RG, PG, BFG, PL, NG, CG
 * g_sgPellets <1|?> : number of shotgun pellets per shot
 * g_sgPelletSpread <1|?> : amount of shotgun spread defaults to 700
 * g_splashDamage*X* <1|?> : allow to define the amount of splash damage for a weapon. *X* can be GL, RL, PG, BFG
