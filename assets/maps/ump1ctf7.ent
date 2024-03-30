@@ -1,0 +1,3104 @@
+{
+"music" "music/sonic5"
+"message" "Egyptian Enigma -XceptNone-"
+"classname" "worldspawn"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "4040 -32 -208"
+}
+{
+"classname" "target_position"
+"targetname" "t9"
+"origin" "1272 536 152"
+}
+{
+"origin" "-504 -32 208"
+"targetname" "t14"
+"classname" "target_position"
+}
+{
+"target" "t15"
+"classname" "trigger_push"
+"model" "*1"
+}
+{
+"origin" "5952 -32 208"
+"targetname" "t15"
+"classname" "target_position"
+}
+{
+"classname" "trigger_push"
+"target" "t14"
+"model" "*2"
+}
+{
+"angle" "180"
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4316 -224 144"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/eagle_~4.md3"
+"origin" "-616 -240 416"
+}
+{
+"origin" "-616 176 416"
+"model" "models/mapobj~1/eagle_~4.md3"
+"classname" "misc_model"
+}
+{
+"angle" "180"
+"origin" "6064 176 416"
+"model" "models/mapobj~1/eagle_~4.md3"
+"classname" "misc_model"
+}
+{
+"notcctf" "1"
+"classname" "func_static"
+"model" "*3"
+}
+{
+"notcctf" "1"
+"classname" "func_static"
+"model" "*4"
+}
+{
+"notcctf" "1"
+"classname" "func_static"
+"model" "*5"
+}
+{
+"notcctf" "1"
+"classname" "func_static"
+"model" "*6"
+}
+{
+"classname" "info_player_deathmatch"
+"angle" "225"
+"origin" "3240 208 -344"
+}
+{
+"classname" "info_player_deathmatch"
+"angle" "45"
+"origin" "2200 -280 -344"
+}
+{
+"classname" "info_player_deathmatch"
+"angle" "90"
+"origin" "1136 -208 -256"
+}
+{
+"classname" "info_player_deathmatch"
+"angle" "270"
+"origin" "4208 392 48"
+}
+{
+"classname" "info_player_deathmatch"
+"origin" "2544 600 64"
+}
+{
+"classname" "info_player_deathmatch"
+"angle" "180"
+"origin" "2888 -664 64"
+}
+{
+"classname" "info_player_deathmatch"
+"angle" "270"
+"origin" "4288 160 -256"
+}
+{
+"classname" "info_player_deathmatch"
+"angle" "90"
+"origin" "1240 -464 40"
+}
+{
+"origin" "5112 232 64"
+"classname" "ammo_bullets"
+}
+{
+"origin" "336 232 64"
+"classname" "ammo_bullets"
+}
+{
+"origin" "272 232 64"
+"classname" "ammo_lightning"
+}
+{
+"origin" "5176 -296 64"
+"classname" "ammo_lightning"
+}
+{
+"origin" "2720 320 64"
+"classname" "ammo_shells"
+}
+{
+"origin" "2720 -384 64"
+"classname" "ammo_shells"
+}
+{
+"notcctf" "1"
+"classname" "func_static"
+"model" "*7"
+}
+{
+"notcctf" "1"
+"classname" "func_static"
+"model" "*8"
+}
+{
+"origin" "976 712 -200"
+"classname" "ammo_rockets"
+}
+{
+"classname" "ammo_rockets"
+"origin" "4432 -776 -200"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/wind1.wav"
+"origin" "3184 40 176"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "368 240 88"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/water1.wav"
+"origin" "-352 176 96"
+}
+{
+"classname" "team_CTF_redspawn"
+"angle" "180"
+"origin" "5976 688 112"
+}
+{
+"classname" "team_CTF_bluespawn"
+"origin" "-528 -752 112"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4512 -328 -192"
+"angle" "180"
+}
+{
+"angle" "0"
+"origin" "4256 -328 -192"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "1176 -672 408"
+"classname" "item_health_large"
+}
+{
+"origin" "1176 -608 408"
+"classname" "ammo_cells"
+}
+{
+"notcctf" "1"
+"origin" "2720 -32 336"
+"spawnflags" "1"
+"classname" "item_haste"
+}
+{
+"notcctf" "1"
+"classname" "trigger_push"
+"target" "t12"
+"model" "*9"
+}
+{
+"classname" "item_health"
+"origin" "3088 -32 -240"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/gratel~1/gratet~2.md3"
+"origin" "3472 112 -272"
+}
+{
+"classname" "info_player_intermission"
+"target" "t13"
+"origin" "408 -32 184"
+}
+{
+"origin" "168 -32 184"
+"targetname" "t13"
+"classname" "target_position"
+}
+{
+"origin" "1008 -296 408"
+"classname" "ammo_lightning"
+}
+{
+"origin" "2288 -32 48"
+"classname" "item_health_large"
+}
+{
+"classname" "item_armor_shard"
+"origin" "2816 448 64"
+}
+{
+"classname" "ammo_lightning"
+"origin" "4456 168 408"
+}
+{
+"classname" "team_CTF_bluespawn"
+"angle" "90"
+"origin" "3408 -784 -344"
+}
+{
+"classname" "team_CTF_redspawn"
+"angle" "90"
+"origin" "4992 -296 48"
+}
+{
+"classname" "team_CTF_redplayer"
+"angle" "90"
+"origin" "5656 -416 120"
+}
+{
+"classname" "team_CTF_redspawn"
+"angle" "180"
+"origin" "2888 -624 64"
+}
+{
+"classname" "team_CTF_bluespawn"
+"origin" "2544 560 64"
+}
+{
+"classname" "team_CTF_redspawn"
+"angle" "270"
+"origin" "4248 160 -256"
+}
+{
+"classname" "team_CTF_redspawn"
+"angle" "270"
+"origin" "2032 728 -344"
+}
+{
+"classname" "item_armor_shard"
+"origin" "2496 1200 -144"
+}
+{
+"classname" "item_health"
+"origin" "2528 1416 -144"
+}
+{
+"classname" "ammo_grenades"
+"origin" "2576 1416 -144"
+}
+{
+"classname" "ammo_rockets"
+"origin" "2480 1416 -144"
+}
+{
+"classname" "target_location"
+"message" "Blue Staircase"
+"count" "4"
+"origin" "2528 1288 176"
+}
+{
+"classname" "target_location"
+"message" "Upper Center"
+"origin" "2720 -32 176"
+}
+{
+"classname" "target_location"
+"message" "Outer Blue"
+"count" "4"
+"origin" "1792 -32 176"
+}
+{
+"classname" "target_position"
+"message" "Blue Entrance Hall"
+"count" "4"
+"origin" "1168 -32 176"
+}
+{
+"classname" "target_location"
+"message" "Blue Ankh"
+"count" "4"
+"origin" "-248 -32 176"
+}
+{
+"origin" "2720 -32 -280"
+"gametype" "oneflag"
+"classname" "team_CTF_neutralflag"
+"angle" "0"
+}
+{
+"origin" "2720 -32 -392"
+"gametype" "oneflag, harvester"
+"classname" "team_neutralobelisk"
+"angle" "90"
+}
+{
+"notcctf" "1"
+"origin" "2720 48 336"
+"classname" "target_position"
+"targetname" "t11"
+}
+{
+"notcctf" "1"
+"classname" "target_position"
+"origin" "2720 -112 336"
+"targetname" "t12"
+}
+{
+"origin" "4456 232 408"
+"classname" "ammo_rockets"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "180"
+"origin" "1032 -264 472"
+}
+{
+"classname" "team_CTF_bluespawn"
+"origin" "1464 -536 64"
+}
+{
+"classname" "team_CTF_bluespawn"
+"angle" "125"
+"origin" "1168 -776 408"
+}
+{
+"origin" "448 232 40"
+"angle" "270"
+"classname" "team_CTF_bluespawn"
+}
+{
+"classname" "team_CTF_bluespawn"
+"angle" "90"
+"origin" "448 -296 40"
+}
+{
+"classname" "team_CTF_bluespawn"
+"angle" "90"
+"origin" "1280 -464 40"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-448 56 112"
+"angle" "270"
+}
+{
+"origin" "-400 528 112"
+"angle" "270"
+"classname" "team_CTF_blueplayer"
+}
+{
+"classname" "team_CTF_blueplayer"
+"angle" "90"
+"origin" "-432 -464 112"
+}
+{
+"origin" "3608 432 72"
+"classname" "ammo_slugs"
+}
+{
+"origin" "1808 -496 72"
+"classname" "ammo_slugs"
+}
+{
+"origin" "1008 -248 408"
+"classname" "ammo_rockets"
+}
+{
+"origin" "672 -480 400"
+"classname" "weapon_railgun"
+}
+{
+"origin" "4768 416 400"
+"classname" "weapon_railgun"
+}
+{
+"origin" "2528 1328 -104"
+"notq3a" "1"
+"classname" "weapon_nailgun"
+}
+{
+"origin" "2528 1328 -144"
+"notta" "1"
+"classname" "weapon_shotgun"
+}
+{
+"classname" "light"
+"light" "25"
+"origin" "1448 256 512"
+}
+{
+"classname" "team_redobelisk"
+"angle" "180"
+"origin" "5752 -32 80"
+}
+{
+"classname" "team_CTF_redflag"
+"origin" "5752 -32 184"
+"angle" "90"
+"gametype" "ctf, oneflag"
+}
+{
+"classname" "item_armor_shard"
+"origin" "5808 680 112"
+}
+{
+"classname" "item_health_small"
+"origin" "5760 680 112"
+}
+{
+"origin" "5664 680 112"
+"classname" "item_health_small"
+}
+{
+"origin" "5712 680 112"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_health_small"
+"origin" "5856 680 112"
+}
+{
+"origin" "5856 -744 112"
+"classname" "item_health_small"
+}
+{
+"classname" "item_armor_shard"
+"origin" "5712 -744 112"
+}
+{
+"classname" "item_health_small"
+"origin" "5664 -744 112"
+}
+{
+"origin" "4848 -32 40"
+"classname" "item_armor_combat"
+}
+{
+"origin" "5984 512 104"
+"classname" "weapon_lightning"
+}
+{
+"origin" "5568 392 104"
+"classname" "ammo_shells"
+}
+{
+"origin" "5568 456 104"
+"classname" "ammo_cells"
+}
+{
+"origin" "5988 -576 112"
+"classname" "weapon_grenadelauncher"
+}
+{
+"origin" "5760 -744 112"
+"classname" "item_health_small"
+}
+{
+"origin" "5808 -744 112"
+"classname" "item_armor_shard"
+}
+{
+"origin" "5568 -456 112"
+"classname" "ammo_rockets"
+}
+{
+"origin" "5568 -536 112"
+"notq3a" "1"
+"count" "10"
+"classname" "ammo_nails"
+}
+{
+"origin" "5568 -536 168"
+"notta" "1"
+"classname" "ammo_shells"
+}
+{
+"classname" "ammo_grenades"
+"origin" "5176 232 40"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "5016 -656 -48"
+}
+{
+"origin" "5344 -656 104"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "5344 -768 104"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "5016 -768 -48"
+}
+{
+"origin" "5352 592 256"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "5024 592 408"
+}
+{
+"origin" "5512 -184 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "5512 200 16"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "180"
+"origin" "6032 -672 168"
+}
+{
+"origin" "6032 -480 168"
+"angle" "180"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "180"
+"origin" "6032 608 168"
+}
+{
+"origin" "6032 416 168"
+"angle" "180"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "5664 720 168"
+}
+{
+"origin" "5856 720 168"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "5856 -784 168"
+}
+{
+"origin" "5664 -784 168"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"angle" "180"
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "6020 -144 168"
+}
+{
+"angle" "180"
+"origin" "6020 80 168"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "5376 -304 144"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "5376 240 144"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "4992 304 144"
+}
+{
+"origin" "5184 304 144"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "5184 -368 144"
+}
+{
+"origin" "5440 200 16"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "5312 200 16"
+}
+{
+"origin" "5312 -184 16"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "5440 -184 16"
+}
+{
+"origin" "5632 192 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "5760 192 16"
+}
+{
+"origin" "5888 192 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "6016 192 16"
+}
+{
+"origin" "6016 128 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "6016 0 16"
+}
+{
+"origin" "6016 -192 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "6016 -256 16"
+}
+{
+"origin" "5888 -256 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "5760 -256 16"
+}
+{
+"angle" "180"
+"origin" "6080 -32 72"
+"model" "models/mapobjects/egypt/sarcoph.md3"
+"classname" "misc_model"
+}
+{
+"origin" "5632 -256 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"origin" "4992 -368 144"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "info_player_deathmatch"
+"origin" "5000 -64 48"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "5024 704 408"
+}
+{
+"origin" "5352 704 256"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "item_health"
+"origin" "1000 -392 40"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2808 -1032 32"
+"angle" "180"
+}
+{
+"angle" "0"
+"origin" "2632 -1032 32"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "3016 -1032 -200"
+"angle" "0"
+}
+{
+"angle" "180"
+"origin" "3192 -1032 -200"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"angle" "90"
+"origin" "2784 -1512 -80"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "3040 -1512 -80"
+"angle" "90"
+}
+{
+"classname" "item_armor_shard"
+"origin" "4368 328 40"
+}
+{
+"classname" "item_armor_shard"
+"origin" "4504 -376 40"
+}
+{
+"origin" "3672 -496 72"
+"classname" "item_health_small"
+}
+{
+"classname" "item_health_small"
+"origin" "3560 -496 72"
+}
+{
+"origin" "3584 312 -352"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_armor_shard"
+"origin" "3704 312 -312"
+}
+{
+"origin" "3584 -392 -312"
+"classname" "item_armor_shard"
+}
+{
+"origin" "3480 -568 -352"
+"classname" "item_health_small"
+}
+{
+"origin" "3480 -704 -352"
+"classname" "item_health_small"
+}
+{
+"origin" "4440 328 40"
+"classname" "item_health"
+}
+{
+"classname" "item_health"
+"origin" "4440 -376 40"
+}
+{
+"classname" "weapon_rocketlauncher"
+"origin" "4240 -32 40"
+}
+{
+"classname" "item_health"
+"origin" "4336 -776 -200"
+}
+{
+"classname" "ammo_slugs"
+"origin" "3760 96 -312"
+}
+{
+"classname" "item_health_large"
+"origin" "3904 -32 -312"
+}
+{
+"classname" "ammo_rockets"
+"origin" "3760 -160 -312"
+}
+{
+"classname" "weapon_plasmagun"
+"origin" "3488 -32 -352"
+}
+{
+"classname" "weapon_shotgun"
+"origin" "4384 96 -240"
+}
+{
+"classname" "ammo_lightning"
+"origin" "3480 -640 -352"
+}
+{
+"classname" "item_armor_shard"
+"origin" "3712 -392 -312"
+}
+{
+"classname" "ammo_cells"
+"origin" "4264 544 408"
+}
+{
+"origin" "3536 432 72"
+"classname" "ammo_bullets"
+}
+{
+"origin" "3616 -496 72"
+"classname" "item_health_small"
+}
+{
+"origin" "4264 608 408"
+"classname" "item_health_large"
+}
+{
+"origin" "4376 -376 40"
+"classname" "item_armor_shard"
+}
+{
+"origin" "4512 328 40"
+"classname" "item_armor_shard"
+}
+{
+"origin" "-312 -32 80"
+"classname" "team_blueobelisk"
+}
+{
+"origin" "-312 -32 184"
+"angle" "270"
+"classname" "team_CTF_blueflag"
+"gametype" "ctf, oneflag"
+}
+{
+"origin" "928 -392 40"
+"classname" "item_armor_shard"
+}
+{
+"origin" "1064 312 40"
+"classname" "item_armor_shard"
+}
+{
+"origin" "272 -296 40"
+"classname" "ammo_grenades"
+}
+{
+"origin" "1824 432 72"
+"classname" "item_health_small"
+}
+{
+"origin" "1872 -496 72"
+"classname" "ammo_bullets"
+}
+{
+"classname" "item_armor_shard"
+"origin" "1728 328 -312"
+}
+{
+"gametype" "ctf, obelisk"
+"classname" "holdable_invulnerability"
+"team" "center"
+"notq3a" "1"
+"origin" "2720 -32 -184"
+}
+{
+"gametype" "ctf, obelisk"
+"classname" "item_armor_body"
+"team" "center"
+"origin" "2720 -32 -224"
+}
+{
+"classname" "ammo_lightning"
+"origin" "1960 576 -352"
+}
+{
+"classname" "weapon_shotgun"
+"origin" "1056 -168 -240"
+}
+{
+"classname" "weapon_plasmagun"
+"origin" "1952 -32 -352"
+}
+{
+"classname" "ammo_rockets"
+"origin" "1680 96 -312"
+}
+{
+"classname" "item_health_large"
+"origin" "1536 -32 -312"
+}
+{
+"classname" "ammo_slugs"
+"origin" "1680 -160 -312"
+}
+{
+"classname" "item_health"
+"origin" "1104 712 -200"
+}
+{
+"classname" "weapon_rocketlauncher"
+"origin" "1200 -32 40"
+}
+{
+"classname" "item_health"
+"origin" "1000 312 40"
+}
+{
+"classname" "ammo_shells"
+"notta" "1"
+"origin" "-120 472 168"
+}
+{
+"classname" "ammo_nails"
+"count" "10"
+"notq3a" "1"
+"origin" "-120 472 112"
+}
+{
+"classname" "ammo_rockets"
+"origin" "-120 392 112"
+}
+{
+"classname" "item_armor_shard"
+"origin" "-360 680 112"
+}
+{
+"classname" "item_health_small"
+"origin" "-312 680 112"
+}
+{
+"classname" "weapon_grenadelauncher"
+"origin" "-536 512 112"
+}
+{
+"classname" "item_doubler"
+"origin" "-536 352 112"
+"spawnflags" "4"
+}
+{
+"classname" "item_guard"
+"spawnflags" "4"
+"origin" "-536 -416 112"
+}
+{
+"classname" "ammo_cells"
+"origin" "-120 -520 104"
+}
+{
+"classname" "ammo_shells"
+"origin" "-120 -456 104"
+}
+{
+"classname" "weapon_lightning"
+"origin" "-536 -576 104"
+}
+{
+"classname" "item_armor_combat"
+"origin" "608 -40 40"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "2520 -88 -368"
+}
+{
+"origin" "2928 -80 -368"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "2896 -208 -368"
+}
+{
+"origin" "2552 -208 -368"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "2800 -232 -368"
+}
+{
+"origin" "2640 -232 -368"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "trigger_push"
+"target" "t9"
+"model" "*10"
+}
+{
+"angle" "126"
+"origin" "3576 640 376"
+"model" "models/mapobj~1/multip~1/multip~2.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/multip~1/multip~2.md3"
+"origin" "3360 -720 376"
+"angle" "126"
+}
+{
+"angle" "230"
+"classname" "misc_model"
+"model" "models/mapobj~1/multip~1/multip~1.md3"
+"origin" "3352 624 376"
+}
+{
+"origin" "3904 632 376"
+"model" "models/mapobj~1/multip~1/multip~1.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/multip~1/multip~1.md3"
+"origin" "3920 -720 376"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "3728 -432 -232"
+"angle" "90"
+}
+{
+"angle" "270"
+"origin" "3728 368 -232"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4384 168 -192"
+"angle" "270"
+}
+{
+"angle" "180"
+"origin" "4512 -48 -192"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"angle" "0"
+"origin" "4152 224 144"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4152 -288 144"
+"angle" "0"
+}
+{
+"notcctf" "1"
+"origin" "4040 -120 512"
+"targetname" "t6"
+"classname" "target_position"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "4224 432 144"
+}
+{
+"origin" "4256 480 472"
+"angle" "0"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "0"
+"origin" "4256 672 472"
+}
+{
+"notcctf" "1"
+"classname" "target_position"
+"targetname" "t5"
+"origin" "4040 56 512"
+}
+{
+"classname" "light"
+"light" "25"
+"origin" "3992 -624 512"
+}
+{
+"classname" "light"
+"light" "25"
+"origin" "3992 544 512"
+}
+{
+"origin" "3640 -720 376"
+"model" "models/mapobj~1/multip~1/multip~1.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/multip~1/multip~1.md3"
+"origin" "1800 656 376"
+}
+{
+"origin" "1448 -608 512"
+"light" "25"
+"classname" "light"
+}
+{
+"origin" "1448 560 512"
+"light" "25"
+"classname" "light"
+}
+{
+"notcctf" "1"
+"origin" "1400 -120 512"
+"targetname" "t1"
+"classname" "target_position"
+}
+{
+"notcctf" "1"
+"target" "t1"
+"classname" "trigger_push"
+"model" "*11"
+}
+{
+"origin" "96 -768 256"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "424 -768 408"
+}
+{
+"classname" "info_player_deathmatch"
+"origin" "488 -296 48"
+"angle" "90"
+}
+{
+"origin" "456 304 144"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "-184 192 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"origin" "-632 -32 72"
+"model" "models/mapobjects/egypt/sarcoph.md3"
+"classname" "misc_model"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "-312 192 16"
+}
+{
+"origin" "-440 192 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "-568 192 16"
+}
+{
+"origin" "-568 128 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "-568 -64 16"
+}
+{
+"origin" "-568 -192 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "-568 -256 16"
+}
+{
+"origin" "-440 -256 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "-312 -256 16"
+}
+{
+"origin" "-184 -256 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "8 120 16"
+}
+{
+"origin" "136 120 16"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "136 -184 16"
+}
+{
+"origin" "8 -184 16"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "264 304 144"
+}
+{
+"origin" "264 -368 144"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "456 -368 144"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "72 -304 144"
+}
+{
+"origin" "72 240 144"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "-572 -144 168"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "-572 80 168"
+}
+{
+"origin" "-216 720 168"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "-408 720 168"
+}
+{
+"origin" "-408 -784 168"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "-216 -784 168"
+}
+{
+"origin" "-584 -480 168"
+"angle" "0"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "0"
+"origin" "-584 -672 168"
+}
+{
+"origin" "-584 416 168"
+"angle" "0"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "0"
+"origin" "-584 608 168"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "-64 -184 16"
+}
+{
+"origin" "-64 120 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"origin" "1184 -736 472"
+"angle" "180"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "180"
+"origin" "1184 -544 472"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "424 -656 408"
+}
+{
+"origin" "96 -656 256"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "1244 672 144"
+}
+{
+"origin" "1216 -496 144"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"notcctf" "1"
+"classname" "trigger_push"
+"target" "t2"
+"model" "*12"
+}
+{
+"notcctf" "1"
+"classname" "target_position"
+"targetname" "t2"
+"origin" "1400 56 512"
+}
+{
+"angle" "180"
+"origin" "1288 224 144"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "1288 -288 144"
+"angle" "180"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "432 704 -48"
+}
+{
+"origin" "104 704 104"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "104 592 104"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "432 592 -48"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "928 -16 -192"
+"angle" "0"
+}
+{
+"angle" "90"
+"origin" "1056 -232 -192"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "1712 -432 -272"
+"angle" "90"
+}
+{
+"angle" "270"
+"origin" "1712 368 -272"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "1520 656 376"
+"model" "models/mapobj~1/multip~1/multip~1.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/multip~1/multip~1.md3"
+"origin" "1536 -696 376"
+}
+{
+"origin" "2088 -688 376"
+"model" "models/mapobj~1/multip~1/multip~1.md3"
+"classname" "misc_model"
+"angle" "230"
+}
+{
+"angle" "126"
+"origin" "2080 656 376"
+"model" "models/mapobj~1/multip~1/multip~2.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/multip~1/multip~2.md3"
+"origin" "1864 -704 376"
+"angle" "126"
+}
+{
+"notcctf" "1"
+"target" "t6"
+"classname" "trigger_push"
+"model" "*13"
+}
+{
+"notcctf" "1"
+"classname" "trigger_push"
+"target" "t5"
+"model" "*14"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "1320 608 -136"
+"angle" "180"
+}
+{
+"angle" "0"
+"origin" "4120 -672 -136"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "4196 -736 144"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"target" "t10"
+"classname" "trigger_push"
+"model" "*15"
+}
+{
+"origin" "4168 -600 152"
+"targetname" "t10"
+"classname" "target_position"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2496 -144 160"
+"angle" "0"
+}
+{
+"angle" "0"
+"origin" "2496 64 160"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2944 64 168"
+"angle" "180"
+}
+{
+"angle" "180"
+"origin" "2944 -144 168"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "2640 168 -368"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "2800 168 -368"
+}
+{
+"origin" "2552 144 -368"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "2896 144 -368"
+}
+{
+"origin" "2928 16 -368"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "2520 24 -368"
+}
+{
+"origin" "2568 -24 -368"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "2880 -32 -368"
+}
+{
+"angle" "90"
+"origin" "2640 -320 -272"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2800 -320 -272"
+"angle" "90"
+}
+{
+"angle" "270"
+"origin" "2800 256 -272"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2640 256 -272"
+"angle" "270"
+}
+{
+"origin" "-216 680 112"
+"classname" "item_health_small"
+}
+{
+"origin" "-264 680 112"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_health_small"
+"origin" "-408 680 112"
+}
+{
+"origin" "-408 -744 112"
+"classname" "item_health_small"
+}
+{
+"classname" "item_armor_shard"
+"origin" "-264 -744 112"
+}
+{
+"classname" "item_health_small"
+"origin" "-216 -744 112"
+}
+{
+"origin" "-312 -744 112"
+"classname" "item_health_small"
+}
+{
+"origin" "-360 -744 112"
+"classname" "item_armor_shard"
+}
+{
+"origin" "1960 640 -352"
+"classname" "item_health_small"
+}
+{
+"origin" "1960 504 -352"
+"classname" "item_health_small"
+}
+{
+"origin" "1856 328 -352"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_armor_shard"
+"origin" "1736 -376 -312"
+}
+{
+"origin" "1856 -376 -352"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_health_small"
+"origin" "1880 432 72"
+}
+{
+"origin" "1768 432 72"
+"classname" "item_health_small"
+}
+{
+"classname" "item_health"
+"origin" "2720 544 64"
+}
+{
+"classname" "item_armor_shard"
+"origin" "936 312 40"
+}
+{
+"classname" "item_armor_shard"
+"origin" "1072 -392 40"
+}
+{
+"classname" "light"
+"light" "25"
+"origin" "1448 -320 512"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2400 1448 -80"
+"angle" "270"
+}
+{
+"angle" "270"
+"origin" "2656 1448 -80"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"angle" "0"
+"origin" "2248 968 -200"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2424 968 -200"
+"angle" "180"
+}
+{
+"angle" "180"
+"origin" "2808 968 32"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2632 968 32"
+"angle" "0"
+}
+{
+"origin" "2656 48 -368"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "2792 48 -368"
+}
+{
+"origin" "2792 -112 -368"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "2656 -112 -368"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "3424 368 -272"
+"angle" "270"
+}
+{
+"angle" "90"
+"origin" "2016 -432 -272"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "2720 -608 64"
+"classname" "item_health"
+}
+{
+"origin" "1016 -792 472"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "0"
+"origin" "792 -264 472"
+}
+{
+"origin" "792 -16 472"
+"angle" "0"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "656 -416 472"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "180"
+"origin" "4648 216 472"
+}
+{
+"origin" "4648 -32 472"
+"angle" "180"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "4408 216 472"
+"angle" "0"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "4792 360 472"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "4460 728 472"
+}
+{
+"origin" "4464 432 144"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "4464 272 144"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "270"
+"origin" "4472 -328 144"
+}
+{
+"origin" "4472 -496 144"
+"angle" "90"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"angle" "0"
+"origin" "4152 -288 424"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4152 224 416"
+"angle" "0"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "984 -496 144"
+}
+{
+"origin" "984 -336 144"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"angle" "270"
+"origin" "3104 -624 -272"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2952 -712 -272"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "968 264 144"
+}
+{
+"origin" "3992 -320 512"
+"light" "25"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "25"
+"origin" "3992 232 512"
+}
+{
+"origin" "5984 352 112"
+"classname" "item_guard"
+"spawnflags" "2"
+}
+{
+"origin" "5984 -416 112"
+"classname" "item_doubler"
+"spawnflags" "2"
+}
+{
+"angle" "180"
+"origin" "1288 -288 424"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "1288 224 424"
+"angle" "180"
+}
+{
+"classname" "weapon_shotgun"
+"notta" "1"
+"origin" "2912 -1392 -144"
+}
+{
+"classname" "weapon_nailgun"
+"notq3a" "1"
+"origin" "2912 -1392 -104"
+}
+{
+"angle" "180"
+"origin" "2488 656 -272"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "2320 560 -272"
+"angle" "90"
+}
+{
+"origin" "-400 -592 112"
+"angle" "90"
+"classname" "team_CTF_blueplayer"
+}
+{
+"classname" "team_CTF_blueplayer"
+"angle" "90"
+"origin" "-208 -464 112"
+}
+{
+"origin" "-432 400 112"
+"angle" "270"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-208 400 112"
+"angle" "270"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-448 -112 112"
+"classname" "team_CTF_blueplayer"
+"angle" "90"
+}
+{
+"origin" "1176 -208 -256"
+"angle" "90"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "1464 488 64"
+"classname" "team_CTF_bluespawn"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "90"
+"origin" "776 -792 472"
+}
+{
+"notcctf" "1"
+"target" "t11"
+"classname" "trigger_push"
+"model" "*16"
+}
+{
+"origin" "3648 -32 176"
+"count" "1"
+"message" "Outer Red"
+"classname" "target_location"
+}
+{
+"origin" "2720 8 -264"
+"message" "Lower Center"
+"classname" "target_location"
+}
+{
+"origin" "2912 -1352 176"
+"count" "1"
+"message" "Red Staircase"
+"classname" "target_location"
+}
+{
+"classname" "target_location"
+"message" "Red Hall of Pillars"
+"origin" "3648 48 -168"
+"count" "1"
+}
+{
+"count" "4"
+"origin" "1792 -112 -168"
+"message" "Blue Hall of Pillars"
+"classname" "target_location"
+}
+{
+"count" "1"
+"origin" "4392 -408 -168"
+"message" "Red Lower Hallway"
+"classname" "target_location"
+}
+{
+"classname" "target_location"
+"message" "Red Entrance Hall"
+"count" "1"
+"origin" "4216 -32 176"
+}
+{
+"origin" "5704 -32 176"
+"count" "1"
+"message" "Red Ankh"
+"classname" "target_location"
+}
+{
+"classname" "target_location"
+"message" "Red Railgun"
+"count" "1"
+"origin" "4488 552 448"
+}
+{
+"origin" "944 -624 448"
+"count" "4"
+"message" "Blue Railgun"
+"classname" "target_location"
+}
+{
+"classname" "target_location"
+"message" "Blue Lower Hallway"
+"origin" "1032 496 -168"
+"count" "4"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4640 -800 -136"
+"angle" "90"
+}
+{
+"angle" "270"
+"origin" "4640 -560 -136"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "800 736 -136"
+"angle" "270"
+}
+{
+"angle" "90"
+"origin" "800 496 -136"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "2560 1200 -144"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_armor_shard"
+"origin" "2880 -1264 -144"
+}
+{
+"origin" "2960 -1480 -144"
+"classname" "ammo_rockets"
+}
+{
+"origin" "2864 -1480 -144"
+"classname" "ammo_grenades"
+}
+{
+"origin" "2912 -1480 -144"
+"classname" "item_health"
+}
+{
+"origin" "2944 -1264 -144"
+"classname" "item_armor_shard"
+}
+{
+"classname" "team_CTF_bluespawn"
+"angle" "90"
+"origin" "2240 -264 -344"
+}
+{
+"origin" "3200 184 -344"
+"angle" "270"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "3976 -544 64"
+"angle" "180"
+"classname" "team_CTF_redspawn"
+}
+{
+"classname" "team_CTF_redspawn"
+"angle" "180"
+"origin" "3976 472 64"
+}
+{
+"origin" "5680 -528 120"
+"angle" "90"
+"classname" "team_CTF_redplayer"
+}
+{
+"classname" "team_CTF_redplayer"
+"angle" "90"
+"origin" "5864 -416 120"
+}
+{
+"origin" "5656 352 120"
+"angle" "270"
+"classname" "team_CTF_redplayer"
+}
+{
+"classname" "team_CTF_redplayer"
+"angle" "270"
+"origin" "5680 464 120"
+}
+{
+"origin" "5864 352 120"
+"angle" "270"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "5872 64 120"
+"angle" "270"
+"classname" "team_CTF_redplayer"
+}
+{
+"classname" "team_CTF_redplayer"
+"angle" "90"
+"origin" "5872 -128 120"
+}
+{
+"origin" "4168 392 48"
+"angle" "270"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "4304 712 416"
+"angle" "315"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "2624 448 64"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_armor_shard"
+"origin" "2864 -64 64"
+}
+{
+"origin" "2864 0 64"
+"classname" "item_armor_shard"
+}
+{
+"origin" "2624 -512 64"
+"classname" "item_armor_shard"
+}
+{
+"origin" "2816 -512 64"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_armor_shard"
+"origin" "2576 0 64"
+}
+{
+"origin" "2576 -64 64"
+"classname" "item_armor_shard"
+}
+{
+"origin" "4700 728 472"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "item_health_large"
+"origin" "3152 -32 48"
+}
+{
+"origin" "3472 -176 -272"
+"model" "models/mapobj~1/gratel~1/gratet~2.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/gratel~1/gratet~2.md3"
+"origin" "1968 -176 -272"
+"angle" "180"
+}
+{
+"origin" "1968 112 -272"
+"model" "models/mapobj~1/gratel~1/gratet~2.md3"
+"classname" "misc_model"
+"angle" "180"
+}
+{
+"origin" "2352 -32 -240"
+"classname" "item_health"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4184 -192 -192"
+"angle" "180"
+}
+{
+"angle" "180"
+"origin" "4184 128 -192"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"origin" "1004 432 144"
+"angle" "270"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"angle" "0"
+"origin" "1256 128 -192"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "1256 -192 -192"
+"angle" "0"
+}
+{
+"count" "4"
+"origin" "264 648 24"
+"message" "Blue Low Ramp"
+"classname" "target_location"
+}
+{
+"classname" "target_location"
+"message" "Blue High Ramp"
+"origin" "264 -704 312"
+"count" "4"
+}
+{
+"classname" "target_location"
+"message" "Red Low Ramp"
+"origin" "5184 -712 8"
+"count" "1"
+}
+{
+"count" "1"
+"origin" "5192 648 320"
+"message" "Red High Ramp"
+"classname" "target_location"
+}
+{
+"angle" "0"
+"origin" "928 264 -192"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "1184 264 -192"
+"angle" "180"
+}
+{
+"origin" "5760 176 96"
+"noise" "sound/world/water1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "5080 248 88"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "5760 720 176"
+}
+{
+"origin" "5760 -752 168"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "-304 -752 176"
+}
+{
+"origin" "-304 680 160"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "1688 -32 -208"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "3592 312 -208"
+}
+{
+"origin" "2600 -24 -368"
+"noise" "sound/world/water1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "1056 24 -144"
+}
+{
+"origin" "4384 24 -136"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "4264 544 480"
+}
+{
+"origin" "904 -776 480"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "2704 -1360 -104"
+}
+{
+"origin" "2328 1280 -104"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "1688 72 176"
+"noise" "sound/world/wind1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/wind1.wav"
+"origin" "2720 304 176"
+}
+{
+"origin" "6016 -72 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"origin" "5440 -264 16"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "5312 -264 16"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "5512 -264 16"
+}
+{
+"origin" "5440 120 16"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "5312 120 16"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "5512 120 16"
+}
+{
+"origin" "2720 208 -368"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "2720 -272 -368"
+}
+{
+"classname" "light"
+"light" "250"
+"_color" "0.8 0.8 1"
+"origin" "-64 200 16"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "136 200 16"
+}
+{
+"origin" "8 200 16"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"origin" "-64 -264 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "300"
+"_color" "0.8 0.8 1"
+"origin" "8 -264 16"
+}
+{
+"origin" "136 -264 16"
+"_color" "0.8 0.8 1"
+"light" "300"
+"classname" "light"
+}
+{
+"origin" "-568 0 16"
+"_color" "0.8 0.8 1"
+"light" "250"
+"classname" "light"
+}
+{
+"classname" "ammo_bullets"
+"origin" "336 -296 64"
+}
+{
+"classname" "ammo_bullets"
+"origin" "5112 -296 64"
+}
+{
+"origin" "4992 232 48"
+"angle" "270"
+"classname" "team_CTF_redspawn"
+}
+{
+"classname" "team_CTF_redplayer"
+"angle" "270"
+"origin" "5648 64 120"
+}
+{
+"origin" "5648 -128 120"
+"angle" "90"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "5840 464 120"
+"angle" "270"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "5760 328 120"
+"angle" "270"
+"classname" "team_CTF_redplayer"
+}
+{
+"classname" "team_CTF_redplayer"
+"angle" "90"
+"origin" "5840 -528 120"
+}
+{
+"origin" "5760 -392 120"
+"angle" "90"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "5760 64 120"
+"angle" "270"
+"classname" "team_CTF_redplayer"
+}
+{
+"classname" "team_CTF_redplayer"
+"angle" "90"
+"origin" "5760 -128 120"
+}
+{
+"classname" "team_CTF_blueplayer"
+"angle" "270"
+"origin" "-240 528 112"
+}
+{
+"origin" "-320 328 112"
+"angle" "270"
+"classname" "team_CTF_blueplayer"
+}
+{
+"classname" "team_CTF_blueplayer"
+"angle" "90"
+"origin" "-240 -592 112"
+}
+{
+"origin" "-320 -392 112"
+"angle" "90"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "90"
+"classname" "team_CTF_blueplayer"
+"origin" "-312 -112 112"
+}
+{
+"origin" "-176 -112 112"
+"classname" "team_CTF_blueplayer"
+"angle" "90"
+}
+{
+"angle" "270"
+"origin" "-312 56 112"
+"classname" "team_CTF_blueplayer"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-176 56 112"
+"angle" "270"
+}
+{
+"angle" "270"
+"origin" "488 232 48"
+"classname" "info_player_deathmatch"
+}
+{
+"classname" "info_player_deathmatch"
+"origin" "4952 232 48"
+"angle" "270"
+}
+{
+"angle" "90"
+"origin" "4952 -296 48"
+"classname" "info_player_deathmatch"
+}
+{
+"notq3a" "1"
+"classname" "func_static"
+"model" "*17"
+}
+{
+"classname" "func_static"
+"notq3a" "1"
+"model" "*18"
+}
+{
+"classname" "func_static"
+"notq3a" "1"
+"model" "*19"
+}
+{
+"notq3a" "1"
+"classname" "func_static"
+"model" "*20"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobj~1/eagle_~4.md3"
+"origin" "6064 -240 416"
+"angle" "180"
+}
+{
+"angle" "180"
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4316 120 144"
+}
+{
+"origin" "1124 160 144"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "1124 -192 144"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "135"
+"origin" "4744 -440 144"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "225"
+"origin" "4744 376 144"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"angle" "315"
+"origin" "700 376 144"
+}
+{
+"origin" "700 -440 144"
+"angle" "45"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"angle" "180"
+"origin" "632 -160 144"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "632 96 144"
+"angle" "180"
+}
+{
+"angle" "0"
+"origin" "4816 -152 144"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"classname" "misc_model"
+}
+{
+"classname" "misc_model"
+"model" "models/mapobjects/gratelamp/gratetorchbig.md3"
+"origin" "4816 88 144"
+"angle" "0"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "6032 -576 168"
+}
+{
+"origin" "6040 504 176"
+"noise" "sound/world/fire1.wav"
+"classname" "target_speaker"
+"spawnflags" "1"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/water1.wav"
+"origin" "5424 176 96"
+}
+{
+"origin" "5424 -224 96"
+"noise" "sound/world/water1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/water1.wav"
+"origin" "5760 -224 96"
+}
+{
+"origin" "4504 160 480"
+"noise" "sound/world/fire1.wav"
+"classname" "target_speaker"
+"spawnflags" "1"
+}
+{
+"classname" "target_speaker"
+"noise" "sound/world/fire1.wav"
+"origin" "4576 720 480"
+"spawnflags" "1"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "5088 -328 88"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "4480 -464 88"
+}
+{
+"origin" "4472 368 88"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "4416 -432 -136"
+}
+{
+"origin" "4640 -680 -136"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/water1.wav"
+"origin" "2720 128 -368"
+}
+{
+"origin" "2848 -32 -368"
+"noise" "sound/world/water1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/water1.wav"
+"origin" "2720 -184 -368"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "3784 -32 -208"
+}
+{
+"origin" "3648 -392 -208"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "920 608 -144"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "1056 384 -144"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "3536 -32 -208"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "1408 -24 -208"
+}
+{
+"origin" "1960 -32 -208"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "1792 336 -208"
+}
+{
+"origin" "1792 -376 -208"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "-576 512 160"
+}
+{
+"origin" "-576 -576 176"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "-360 -256 96"
+"noise" "sound/world/water1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/water1.wav"
+"origin" "40 -264 96"
+}
+{
+"origin" "32 168 96"
+"noise" "sound/world/water1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "1152 -640 480"
+}
+{
+"origin" "928 -184 480"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "368 -312 88"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "984 -416 88"
+}
+{
+"origin" "1000 352 88"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "1256 160 88"
+}
+{
+"origin" "1240 -200 88"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "4232 -216 88"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "4240 120 88"
+}
+{
+"origin" "3184 -112 176"
+"noise" "sound/world/wind1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "2720 -376 176"
+"noise" "sound/world/wind1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/wind1.wav"
+"origin" "1688 -144 176"
+}
+{
+"origin" "2104 -136 176"
+"noise" "sound/world/wind1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/wind1.wav"
+"origin" "2104 80 176"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/wind1.wav"
+"origin" "3584 -112 176"
+}
+{
+"origin" "3584 40 176"
+"noise" "sound/world/wind1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"origin" "3136 -1360 -104"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "3144 -1368 -104"
+}
+{
+"origin" "3360 -712 -320"
+"noise" "sound/world/fire1.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "2728 1288 -104"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/fire1.wav"
+"origin" "2024 696 -312"
+}
