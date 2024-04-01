@@ -6,6 +6,8 @@ Special thanks to Ensiform for his amazing help as usual. =D
 
 Special thanks to wiz @q3retro for his help.
 
+Added support for 167 maps found here:  [link MAPS.md](MAPS.md)
+
 ## New cvars
 
 * g_noSelfDamage <0|1> : default to 0. Toggle the player self damages
