@@ -10,6 +10,7 @@ Added support for 167 maps found here:  [MAPS.md](MAPS.md)
 
 ## New cvars
 
+* g_startingWeapon <0|13> : defaults to 0.  Choose which weapon you spawn with.
 * g_noSelfDamage <0|1> : default to 0. Toggle the player self damages
 * g_startAmmo*X* <0|200> : allow to define the amount of ammunitions for a weapon. *X* can be MG, SG, GL, RL, LG, RG, PG, BFG, NG, PL, CG
 * g_damage*X* <0|999> : allow to define the amount of damage for a weapon. *X* can be MG, SG, GL, RL, LG, RG, PG, BFG, NG, PL, CG
