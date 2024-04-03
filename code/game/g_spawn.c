@@ -792,7 +792,9 @@ void G_SpawnEntitiesFromString( void ) {
 	}
 
 	// parse custom entities
-	G_SpawnEntitiesFromFile();
+	if( g_loadCustomEnts.value > 0 ) {
+		G_SpawnEntitiesFromFile();
+	}
 
 	level.spawning = qfalse;			// any future calls to G_Spawn*() will be errors
 }
