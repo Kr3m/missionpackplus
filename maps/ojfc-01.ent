@@ -1,0 +1,134 @@
+{
+"classname" "worldspawn"
+"_q3map2_cmdline" "-meta; -vis; -light -scale 0.5 -fast -patchshadows -samples 3 -bounce 8 -gamma 2 -compensate 4 -dirty"
+"_q3map2_version" "2.5.17n-git-2f85ccc"
+}
+{
+"classname" "team_CTF_blueflag"
+"origin" "164 0 −36"
+"gametype" "ctf, oneflag"
+"angle" "270"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128.000000 320.000000 -32.000000"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128.000000 448.000000 -32.000000"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128.000000 64.000000 -32.000000"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128.000000 -136.000000 -32.000000"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128.000000 -512.000000 -32.000000"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128.000000 -384.000000 -32.000000"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128.000000 192.000000 -32.000000"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128.000000 -256.000000 -32.000000"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "2368.000000 -328.000000 -32.000000"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "2368.000000 -456.000000 -32.000000"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "2368.000000 -72.000000 -32.000000"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "2368.000000 128.000000 -32.000000"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "2368.000000 504.000000 -32.000000"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "2368.000000 376.000000 -32.000000"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "2368.000000 -200.000000 -32.000000"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "2368.000000 248.000000 -32.000000"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redflag"
+"origin" "2332 0 −36"
+"gametype" "ctf, oneflag"
+"angle" "90"
+}
+{
+"classname" "info_player_start"
+"origin" "1120.000000 -768.000000 -96.000000"
+"angle" "89.999992"
+}
+{
+"classname" "info_player_start"
+"origin" "1376.000000 -768.000000 -96.000000"
+"angle" "90.000000"
+}
+{
+"classname" "info_player_start"
+"origin" "1376.000000 768.000000 -96.000000"
+"angle" "-90.000000"
+}
+{
+"classname" "info_player_start"
+"origin" "1120.000000 768.000000 -96.000000"
+"angle" "-90.000000"
+}
+
+//added by Kr3m
+
+{
+"classname" "team_CTF_neutralflag"
+"origin" "1248 0 −96"
+"gametype" "oneflag"
+}
+{
+"classname" "team_neutralobelisk"
+"origin" "1248 0 -120"
+"angle" "90"
+"gametype" "oneflag, harvester"
+}
+
+{
+"classname" "team_redobelisk"
+"origin" "2332 0 -60"
+"angle" "180"
+}
+
+{
+"classname" "team_blueobelisk"
+"origin" "164 0 -60"
+}

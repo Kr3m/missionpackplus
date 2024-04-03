@@ -1,0 +1,128 @@
+{
+"classname" "worldspawn"
+"_q3map2_cmdline" "-meta; -vis; -light -scale 0.5 -fast -patchshadows -samples 3 -bounce 8 -gamma 2 -compensate 4 -dirty"
+"_q3map2_version" "2.5.17n-git-2f85ccc"
+}
+{
+"classname" "team_CTF_blueflag"
+"origin" "320 320 -240"
+"gametype" "ctf, oneflag"
+"angle" "270"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-64 64 -120"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "256 576 -176"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128 512 -176"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "64 320 -176"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "128 128 -176"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "256 64 -176"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-128 192 -120"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-128 448 -120"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-64 576 -120"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4600 48 -120"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4280 -464 -176"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4408 -400 -176"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4472 -208 -176"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4408 -16 -176"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4280 48 -176"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4664 -80 -120"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4664 -336 -120"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "4600 -464 -120"
+"angle" "-179.999985"
+}
+{
+"classname" "team_CTF_redflag"
+"origin" "4216 -208 -240"
+"angle" "90"
+"gametype" "ctf, oneflag"
+}
+{
+"classname" "info_player_start"
+"origin" "1088 -448 0"
+}
+
+//Added by Kr3m
+
+{
+"classname" "team_CTF_neutralflag"
+"origin" "2268 56 −16"
+"angle" "0"
+"gametype" "oneflag"
+}
+{
+"classname" "team_neutralobelisk"
+"origin" "2268 56 -40"
+"angle" "90"
+"gametype" "oneflag, harvester"
+}
+
+{
+"classname" "team_redobelisk"
+"origin" "4216 -208 -264"
+"angle" "180"
+}
+
+{
+"classname" "team_blueobelisk"
+"origin" "320 320 -264"
+}

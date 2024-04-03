@@ -1,0 +1,72 @@
+{
+"classname" "worldspawn"
+"_q3map2_cmdline" "-meta; -vis -fast; -light -scale 0.3 -fast -patchshadows -samples 3 -bounce 8 -gamma 2 -compensate 4 -dirty"
+"_q3map2_version" "2.5.17n-git-2f85ccc"
+}
+{
+"classname" "info_player_start"
+"origin" "-896 128 456"
+}
+{
+"classname" "team_CTF_blueflag"
+"origin" "-640 128 384"
+"gametype" "ctf, oneflag"
+"angle" "90"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-1216 384 440"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-1280 128 440"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-1280 256 440"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-1280 0 440"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "-1216 -128 440"
+}
+{
+"classname" "team_CTF_redflag"
+"origin" "-496 128 384"
+"angle" "270"
+"gametype" "ctf, oneflag"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "80 -128 440"
+"angle" "-180"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "144 128 440"
+"angle" "-180"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "144 0 440"
+"angle" "-180"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "144 256 440"
+"angle" "-180"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "80 384 440"
+"angle" "-180"
+}
+{
+"classname" "trigger_hurt"
+"spawnflags" "12"
+"dmg" "999"
+"model" "*1"
+}

@@ -1,0 +1,930 @@
+{
+"message" "Crossed Paths v.F3"
+"classname" "worldspawn"
+}
+{
+"origin" "720 -840 32"
+"angle" "90"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "1328 1864 32"
+"angle" "270"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "164 16 272"
+"classname" "ammo_rockets"
+}
+{
+"classname" "ammo_cells"
+"origin" "1564 1340 272"
+}
+{
+"classname" "ammo_cells"
+"origin" "484 -316 272"
+}
+{
+"classname" "target_remove_powerups"
+"targetname" "t15"
+"origin" "504 944 -560"
+}
+{
+"classname" "trigger_multiple"
+"target" "t15"
+"model" "*1"
+}
+{
+"origin" "1024 616 32"
+"classname" "info_player_start"
+}
+{
+"origin" "1376 2072 24"
+"classname" "weapon_shotgun"
+}
+{
+"classname" "trigger_hurt"
+"dmg" "999"
+"model" "*2"
+}
+{
+"origin" "2868 1700 176"
+"classname" "ammo_bullets"
+}
+{
+"classname" "ammo_shells"
+"origin" "2188 1380 -8"
+}
+{
+"classname" "ammo_shells"
+"origin" "-140 -356 -8"
+}
+{
+"origin" "1512 -560 -184"
+"count" "4"
+"message" "Lower Blue Hallway"
+"classname" "target_location"
+}
+{
+"origin" "536 1584 -184"
+"message" "Lower Red Hallway"
+"count" "1"
+"classname" "target_location"
+}
+{
+"classname" "target_location"
+"message" "Middle Blue Hallway"
+"count" "4"
+"origin" "800 -960 16"
+}
+{
+"classname" "item_armor_combat"
+"origin" "632 1464 -176"
+}
+{
+"classname" "item_armor_combat"
+"origin" "1416 -440 -176"
+}
+{
+"classname" "ammo_slugs"
+"origin" "1188 -912 24"
+}
+{
+"classname" "weapon_plasmagun"
+"origin" "-480 -1688 280"
+}
+{
+"origin" "860 1936 24"
+"classname" "ammo_slugs"
+}
+{
+"origin" "1472 -520 -168"
+"angle" "90"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "576 1544 -168"
+"angle" "270"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "1600 832 280"
+"angle" "180"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "448 192 280"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "1616 1880 248"
+"count" "1"
+"message" "Upper Red Hallway"
+"classname" "target_location"
+}
+{
+"origin" "1224 1848 16"
+"message" "Middle Red Hallway"
+"count" "1"
+"classname" "target_location"
+}
+{
+"origin" "1768 1352 -16"
+"count" "1"
+"message" "Lower Red Hallway"
+"classname" "target_location"
+}
+{
+"origin" "416 -856 248"
+"message" "Upper Blue Hallway"
+"count" "4"
+"classname" "target_location"
+}
+{
+"origin" "824 -824 16"
+"count" "4"
+"message" "Middle Blue Hallway"
+"classname" "target_location"
+}
+{
+"origin" "280 -328 -16"
+"message" "Lower Blue Hallway"
+"count" "4"
+"classname" "target_location"
+}
+{
+"origin" "1800 1288 272"
+"classname" "item_health"
+}
+{
+"origin" "248 -264 272"
+"classname" "item_health"
+}
+{
+"origin" "740 -524 -176"
+"classname" "ammo_lightning"
+}
+{
+"origin" "1308 1548 -176"
+"classname" "ammo_lightning"
+}
+{
+"classname" "team_CTF_redflag"
+"origin" "2416 2072 20"
+"gametype" "ctf, oneflag"
+"angle" "270"
+}
+{
+"origin" "-448 -1048 152"
+"count" "4"
+"message" "Blue Base"
+"classname" "target_location"
+}
+{
+"classname" "target_location"
+"message" "Red Base"
+"count" "1"
+"origin" "2496 2072 152"
+}
+{
+"origin" "1024 512 264"
+"message" "Upper Central"
+"classname" "target_location"
+}
+{
+"origin" "1112 512 136"
+"targetname" "t14"
+"classname" "info_notnull"
+}
+{
+"origin" "1632 512 592"
+"target" "t14"
+"classname" "info_player_intermission"
+}
+{
+"classname" "team_CTF_redspawn"
+"angle" "180"
+"origin" "1416 1056 32"
+}
+{
+"classname" "team_CTF_bluespawn"
+"origin" "624 -24 32"
+}
+{
+"classname" "func_door"
+"team" "reddoor1"
+"angle" "360"
+"lip" "6"
+"model" "*3"
+}
+{
+"origin" "696 -360 -168"
+"angle" "270"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "976 1384 -168"
+"angle" "90"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "1352 1384 -168"
+"angle" "90"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "2384 1392 0"
+"angle" "135"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "2448 1536 0"
+"angle" "180"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "2624 1376 192"
+"angle" "90"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "2448 1712 32"
+"angle" "90"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "1480 2000 32"
+"angle" "90"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "1880 1080 280"
+"angle" "225"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "1560 1400 280"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "1656 2696 248"
+"angle" "270"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "1488 2528 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "2752 2560 272"
+"angle" "180"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "2752 2624 272"
+"angle" "180"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "2856 2336 272"
+"angle" "180"
+"classname" "team_CTF_redspawn"
+}
+{
+"origin" "2856 2248 272"
+"angle" "180"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "392 -1672 248"
+"angle" "90"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "560 -1504 248"
+"angle" "180"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-336 -368 0"
+"angle" "315"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "-400 -512 0"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "584 -968 32"
+"angle" "270"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "496 -368 280"
+"angle" "180"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "168 -56 280"
+"angle" "45"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "-592 -352 184"
+"angle" "270"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-368 -688 32"
+"angle" "270"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "-696 -1536 272"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "-696 -1600 272"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-808 -1272 272"
+"classname" "team_CTF_bluespawn"
+}
+{
+"origin" "-808 -1224 272"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-368 -1048 20"
+"angle" "90"
+"classname" "team_CTF_blueflag"
+"gametype" "ctf, oneflag"
+}
+{
+"origin" "632 1080 184"
+"noise" "sound/world/tim_elect.wav"
+"spawnflags" "1"
+"classname" "target_speaker"
+}
+{
+"classname" "ammo_bullets"
+"origin" "452 324 272"
+}
+{
+"classname" "item_health"
+"origin" "1464 968 -208"
+}
+{
+"classname" "weapon_lightning"
+"origin" "1024 512 24"
+}
+{
+"classname" "item_health"
+"origin" "1024 1168 24"
+}
+{
+"origin" "968 512 544"
+"targetname" "t11"
+"angle" "360"
+"classname" "target_teleporter"
+}
+{
+"target" "t11"
+"classname" "trigger_teleport"
+"model" "*4"
+}
+{
+"angle" "180"
+"classname" "target_teleporter"
+"targetname" "t10"
+"origin" "1080 512 544"
+}
+{
+"classname" "trigger_teleport"
+"target" "t10"
+"model" "*5"
+}
+{
+"classname" "target_speaker"
+"noise" "sound/world/demonwind01.wav"
+"spawnflags" "1"
+"origin" "1024 512 280"
+}
+{
+"classname" "target_speaker"
+"noise" "*falling1.wav"
+"targetname" "t9"
+"origin" "904 632 -200"
+}
+{
+"classname" "trigger_multiple"
+"target" "t9"
+"model" "*6"
+}
+{
+"classname" "item_regen"
+"origin" "1024 512 528"
+"spawnflags" "1"
+}
+{
+"classname" "target_position"
+"targetname" "t4"
+"origin" "496 -72 376"
+}
+{
+"classname" "trigger_push"
+"target" "t4"
+"model" "*7"
+}
+{
+"origin" "1552 1096 384"
+"targetname" "t3"
+"classname" "target_position"
+}
+{
+"target" "t3"
+"classname" "trigger_push"
+"model" "*8"
+}
+{
+"classname" "func_door"
+"angle" "180"
+"team" "bluedoor2"
+"lip" "7"
+"model" "*9"
+}
+{
+"classname" "func_door"
+"angle" "360"
+"lip" "7"
+"team" "bluedoor2"
+"model" "*10"
+}
+{
+"lip" "7"
+"team" "reddoor2"
+"angle" "360"
+"classname" "func_door"
+"model" "*11"
+}
+{
+"team" "reddoor2"
+"lip" "7"
+"angle" "180"
+"classname" "func_door"
+"model" "*12"
+}
+{
+"origin" "1024 512 40"
+"spawnflags" "1"
+"noise" "sound/world/demonwind01.wav"
+"classname" "target_speaker"
+}
+{
+"origin" "1024 -144 24"
+"classname" "item_health"
+}
+{
+"origin" "584 56 -208"
+"classname" "item_health"
+}
+{
+"origin" "1596 700 272"
+"classname" "ammo_bullets"
+}
+{
+"classname" "ammo_shells"
+"origin" "-820 -1404 264"
+}
+{
+"classname" "ammo_bullets"
+"origin" "-820 -676 176"
+}
+{
+"classname" "item_armor_combat"
+"origin" "-736 -1256 24"
+}
+{
+"classname" "ammo_rockets"
+"origin" "-108 -1372 24"
+}
+{
+"classname" "ammo_cells"
+"origin" "844 -524 -176"
+}
+{
+"classname" "weapon_shotgun"
+"origin" "672 -1048 24"
+}
+{
+"classname" "item_health"
+"origin" "-704 -696 24"
+}
+{
+"origin" "-640 -1304 408"
+"light" "60"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "40"
+"origin" "208 16 440"
+}
+{
+"origin" "-488 -1048 200"
+"noise" "sound/world/ambience03.wav"
+"classname" "target_speaker"
+"spawnflags" "1"
+}
+{
+"origin" "432 -720 248"
+"noise" "sound/world/drone6.wav"
+"classname" "target_speaker"
+"spawnflags" "1"
+}
+{
+"origin" "256 -1048 40"
+"noise" "sound/world/xforce1.wav"
+"classname" "target_speaker"
+"spawnflags" "1"
+}
+{
+"classname" "item_health"
+"origin" "-400 -440 -8"
+}
+{
+"classname" "weapon_rocketlauncher"
+"origin" "-688 -456 176"
+}
+{
+"classname" "item_health"
+"origin" "-672 -1704 264"
+}
+{
+"spawnflags" "1"
+"classname" "weapon_railgun"
+"origin" "1024 512 272"
+"gametype" "ctf, obelisk"
+}
+{
+"classname" "light"
+"light" "100"
+"_color" "0.109804 0.552941 1.000000"
+"origin" "672 -1208 360"
+}
+{
+"classname" "light"
+"light" "60"
+"origin" "128 -440 352"
+}
+{
+"origin" "616 -1520 240"
+"classname" "item_armor_shard"
+}
+{
+"classname" "func_door"
+"lip" "6"
+"angle" "180"
+"team" "bluedoor1"
+"model" "*13"
+}
+{
+"classname" "func_door"
+"angle" "360"
+"team" "bluedoor1"
+"lip" "6"
+"model" "*14"
+}
+{
+"origin" "936 -464 64"
+"targetname" "t12"
+"classname" "target_position"
+}
+{
+"target" "t12"
+"classname" "trigger_push"
+"model" "*15"
+}
+{
+"classname" "target_position"
+"targetname" "t13"
+"origin" "24 -360 232"
+}
+{
+"classname" "trigger_push"
+"target" "t13"
+"model" "*16"
+}
+{
+"classname" "target_position"
+"targetname" "t2"
+"origin" "528 -1072 304"
+}
+{
+"classname" "trigger_push"
+"target" "t2"
+"model" "*17"
+}
+{
+"origin" "-552 -1464 320"
+"targetname" "t1"
+"classname" "target_position"
+}
+{
+"target" "t1"
+"classname" "trigger_push"
+"model" "*18"
+}
+{
+"classname" "item_armor_shard"
+"origin" "552 -1664 240"
+}
+{
+"origin" "600 -1600 240"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_armor_shard"
+"origin" "480 -1712 240"
+}
+{
+"origin" "408 -1728 240"
+"classname" "item_armor_shard"
+}
+{
+"origin" "0 -440 352"
+"light" "60"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "60"
+"origin" "-128 -440 352"
+}
+{
+"origin" "-256 -440 352"
+"light" "60"
+"classname" "light"
+}
+{
+"origin" "1072 -568 168"
+"_color" "0.109804 0.552941 1.000000"
+"light" "120"
+"classname" "light"
+}
+{
+"origin" "-304 -1704 264"
+"classname" "item_health"
+}
+{
+"classname" "light"
+"light" "60"
+"origin" "-640 -792 408"
+}
+{
+"origin" "-192 -792 408"
+"light" "60"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "60"
+"origin" "-192 -1304 408"
+}
+{
+"classname" "ammo_shells"
+"origin" "2868 2428 264"
+}
+{
+"classname" "item_armor_combat"
+"origin" "2792 2280 24"
+}
+{
+"classname" "ammo_rockets"
+"origin" "2156 2396 24"
+}
+{
+"classname" "ammo_cells"
+"origin" "1204 1548 -176"
+}
+{
+"classname" "item_health"
+"origin" "2752 1720 24"
+}
+{
+"origin" "2688 2328 408"
+"light" "60"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "40"
+"origin" "1840 1008 440"
+}
+{
+"origin" "2536 2072 200"
+"noise" "sound/world/ambience03.wav"
+"classname" "target_speaker"
+"spawnflags" "1"
+}
+{
+"origin" "1616 1744 248"
+"noise" "sound/world/drone6.wav"
+"classname" "target_speaker"
+"spawnflags" "1"
+}
+{
+"origin" "1792 2072 40"
+"noise" "sound/world/xforce1.wav"
+"classname" "target_speaker"
+"spawnflags" "1"
+}
+{
+"classname" "item_health"
+"origin" "2432 1464 -8"
+}
+{
+"classname" "weapon_rocketlauncher"
+"origin" "2736 1480 176"
+}
+{
+"classname" "item_health"
+"origin" "2720 2728 264"
+}
+{
+"classname" "light"
+"light" "100"
+"_color" "1.000000 0.125490 0.125490"
+"origin" "1376 2232 360"
+}
+{
+"classname" "light"
+"light" "60"
+"origin" "1920 1464 352"
+}
+{
+"classname" "weapon_plasmagun"
+"origin" "2528 2712 264"
+}
+{
+"origin" "1432 2544 240"
+"classname" "item_armor_shard"
+}
+{
+"classname" "func_door"
+"angle" "180"
+"team" "reddoor1"
+"lip" "6"
+"model" "*19"
+}
+{
+"origin" "1112 1488 64"
+"targetname" "rt4"
+"classname" "target_position"
+}
+{
+"target" "rt4"
+"classname" "trigger_push"
+"model" "*20"
+}
+{
+"classname" "target_position"
+"targetname" "rt3"
+"origin" "2024 1384 232"
+}
+{
+"classname" "trigger_push"
+"target" "rt3"
+"model" "*21"
+}
+{
+"classname" "target_position"
+"targetname" "rt2"
+"origin" "1520 2096 304"
+}
+{
+"classname" "trigger_push"
+"target" "rt2"
+"model" "*22"
+}
+{
+"origin" "2600 2488 320"
+"targetname" "rt1"
+"classname" "target_position"
+}
+{
+"target" "rt1"
+"classname" "trigger_push"
+"model" "*23"
+}
+{
+"classname" "item_armor_shard"
+"origin" "1496 2688 240"
+}
+{
+"origin" "1448 2624 240"
+"classname" "item_armor_shard"
+}
+{
+"classname" "item_armor_shard"
+"origin" "1568 2736 240"
+}
+{
+"origin" "1640 2752 240"
+"classname" "item_armor_shard"
+}
+{
+"origin" "2048 1464 352"
+"light" "60"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "60"
+"origin" "2176 1464 352"
+}
+{
+"origin" "2304 1464 352"
+"light" "60"
+"classname" "light"
+}
+{
+"origin" "976 1592 168"
+"_color" "1.000000 0.168627 0.168627"
+"light" "120"
+"classname" "light"
+}
+{
+"origin" "2352 2728 264"
+"classname" "item_health"
+}
+{
+"classname" "light"
+"light" "60"
+"origin" "2688 1816 408"
+}
+{
+"origin" "2240 1816 408"
+"light" "60"
+"classname" "light"
+}
+{
+"classname" "light"
+"light" "60"
+"origin" "2240 2328 408"
+}
+{
+"classname" "target_speaker"
+"spawnflags" "1"
+"noise" "sound/world/tim_elect.wav"
+"origin" "1416 -56 184"
+}
+{
+"classname" "target_location"
+"message" "Middle Central"
+"origin" "1024 512 24"
+}
+{
+"origin" "1024 512 -216"
+"message" "Lower Central"
+"classname" "target_location"
+}
+{
+"classname" "target_location"
+"count" "1"
+"message" "Middle Red Hallway"
+"origin" "1248 1984 16"
+}
+{
+"classname" "ammo_rockets"
+"origin" "1884 1008 272"
+}
+
+//Added by Kr3m
+
+{
+"classname" "team_CTF_neutralflag"
+"origin" "1024 512 276"
+"gametype" "oneflag"
+"angle" "0"
+}
+
+{
+"classname" "team_neutralobelisk"
+"origin" "1024 512 252"
+"gametype" "oneflag, harvester"
+"angle" "90"
+}
+
+{
+"classname" "team_redobelisk"
+"origin" "2416 2072 0"
+"angle" "0"
+}
+
+{
+"origin" "-368 -1048 0"
+"angle" "180"
+"classname" "team_blueobelisk"
+}

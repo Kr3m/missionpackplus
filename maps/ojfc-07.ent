@@ -1,0 +1,278 @@
+{
+"classname" "worldspawn"
+}
+{
+"angle" "0.000016"
+"origin" "3336 256 256"
+"classname" "info_player_start"
+}
+{
+"model" "*1"
+"targetname" "func_door3"
+"angle" "-2"
+"dmg" "999"
+"lip" "-8"
+"wait" "6"
+"speed" "500"
+"spawnflags" "5"
+"classname" "func_door"
+}
+{
+"model" "*2"
+"speed" "2000"
+"target" "func_door3"
+"health" "1"
+"lip" "-8"
+"wait" "9"
+"angle" "-2"
+"classname" "func_button"
+}
+{
+"model" "*3"
+"targetname" "func_door3"
+"angle" "-2"
+"dmg" "999"
+"lip" "-8"
+"wait" "6"
+"speed" "500"
+"spawnflags" "5"
+"classname" "func_door"
+}
+{
+"model" "*4"
+"target" "target_position2"
+"classname" "trigger_push"
+}
+{
+"angle" "-179.999985"
+"targetname" "target_position2"
+"origin" "1984 -832 704"
+"classname" "target_position"
+}
+{
+"angle" "-179.999985"
+"origin" "4160 -384 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "-179.999985"
+"origin" "4160 -576 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "90"
+"origin" "3840 -640 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "90"
+"origin" "3648 -640 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "90"
+"origin" "3456 -640 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "-179.999985"
+"origin" "4160 896 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "-179.999985"
+"origin" "4160 1088 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "-90"
+"origin" "3456 1152 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "-90"
+"origin" "3840 1152 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "-90"
+"origin" "3648 1152 248"
+"classname" "team_CTF_blueplayer"
+}
+{
+"angle" "180"
+"origin" "3976 256 224"
+"classname" "team_CTF_blueflag"
+"gametype" "ctf, oneflag"
+"angle" "90"
+}
+{
+"model" "*5"
+"dmg" "999"
+"wait" "1"
+"health" "1"
+"angle" "-1"
+"speed" "500"
+"spawnflags" "5"
+"classname" "func_door"
+}
+{
+"model" "*6"
+"dmg" "999"
+"wait" "1"
+"angle" "-2"
+"speed" "500"
+"health" "1"
+"spawnflags" "5"
+"classname" "func_door"
+}
+{
+"angle" "-179.999985"
+"origin" "56 256 256"
+"classname" "info_player_start"
+}
+{
+"model" "*7"
+"targetname" "func_door1"
+"angle" "-2"
+"dmg" "999"
+"lip" "-8"
+"wait" "6"
+"speed" "500"
+"spawnflags" "5"
+"classname" "func_door"
+}
+{
+"model" "*8"
+"speed" "2000"
+"target" "func_door1"
+"health" "1"
+"lip" "-8"
+"wait" "9"
+"angle" "-2"
+"classname" "func_button"
+}
+{
+"model" "*9"
+"targetname" "func_door1"
+"angle" "-2"
+"dmg" "999"
+"lip" "-8"
+"wait" "6"
+"speed" "500"
+"spawnflags" "5"
+"classname" "func_door"
+}
+{
+"model" "*10"
+"target" "target_position3"
+"classname" "trigger_push"
+}
+{
+"angle" "0.000016"
+"targetname" "target_position3"
+"origin" "1408 1344 704"
+"classname" "target_position"
+}
+{
+"model" "*11"
+"dmg" "999"
+"wait" "1"
+"health" "1"
+"angle" "-1"
+"speed" "500"
+"spawnflags" "5"
+"classname" "func_door"
+}
+{
+"model" "*12"
+"dmg" "999"
+"wait" "1"
+"angle" "-2"
+"speed" "500"
+"health" "1"
+"spawnflags" "5"
+"classname" "func_door"
+}
+{
+"angle" "0.000016"
+"origin" "-768 896 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "0.000016"
+"origin" "-768 1088 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-90"
+"origin" "-448 1152 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-90"
+"origin" "-256 1152 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-90"
+"origin" "-64 1152 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "0.000016"
+"origin" "-768 -384 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "0.000016"
+"origin" "-768 -576 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "90"
+"origin" "-64 -640 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "90"
+"origin" "-448 -640 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "90"
+"origin" "-256 -640 248"
+"classname" "team_CTF_redplayer"
+}
+{
+"origin" "-584 256 224"
+"classname" "team_CTF_redflag"
+"gametype" "ctf, oneflag"
+"angle" "270"
+}
+
+//Added by Kr3m
+
+{
+"origin" "1696 256 154"
+"classname" "team_CTF_neutralflag"
+"gametype" "oneflag"
+}
+
+{
+"origin" "1696 256 130"
+"classname" "team_neutralobelisk"
+"gametype" "oneflag, harvester"
+"angle" "90"
+}
+
+{
+"origin" "-584 256 200"
+"classname" "team_redobelisk"
+}
+
+{
+"angle" "180"
+"origin" "3976 256 200"
+"classname" "team_blueobelisk"
+}

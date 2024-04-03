@@ -1,0 +1,429 @@
+{
+"classname" "worldspawn"
+"_q3map2_cmdline" "-meta; -vis -fast; -light -fast -patchshadows -samples 3 -bounce 8 -gamma 2 -compensate 4 -dirty"
+"_q3map2_version" "2.5.17n-git-f77b8e43"
+}
+{
+"classname" "trigger_multiple"
+"target" "target_relay1"
+"model" "*1"
+}
+{
+"classname" "target_relay"
+"origin" "1708 508 -1600"
+"targetname" "target_relay1"
+"spawnflags" "2"
+"target" "b1"
+}
+{
+"classname" "func_door"
+"spawnflags" "4"
+"speed" "700"
+"lip" "36"
+"dmg" "999"
+"angle" "270"
+"targetname" "b1"
+"model" "*2"
+}
+{
+"classname" "func_door"
+"spawnflags" "4"
+"speed" "700"
+"lip" "36"
+"dmg" "999"
+"angle" "90"
+"targetname" "b1"
+"model" "*3"
+}
+{
+"classname" "func_door"
+"dmg" "999"
+"lip" "16"
+"spawnflags" "4"
+"speed" "700"
+"angle" "0"
+"targetname" "r1"
+"wait" "8"
+"model" "*4"
+}
+{
+"classname" "func_door"
+"dmg" "999"
+"lip" "16"
+"spawnflags" "4"
+"speed" "700"
+"angle" "180"
+"targetname" "r1"
+"wait" "8"
+"model" "*5"
+}
+{
+"classname" "func_door"
+"dmg" "999"
+"lip" "16"
+"spawnflags" "4"
+"speed" "700"
+"angle" "0"
+"targetname" "r1"
+"wait" "8"
+"model" "*6"
+}
+{
+"classname" "func_door"
+"dmg" "999"
+"lip" "16"
+"spawnflags" "4"
+"speed" "700"
+"angle" "180"
+"targetname" "r1"
+"wait" "8"
+"model" "*7"
+}
+{
+"classname" "func_button"
+"angle" "90"
+"speed" "300"
+"wait" "10"
+"target" "r1"
+"model" "*8"
+}
+{
+"classname" "team_CTF_redflag"
+"origin" "1248 480 -1708"
+"gametype" "ctf, oneflag"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "1280 624 -1696"
+"angle" "90"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "1216 624 -1696"
+"angle" "90"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "1344 624 -1696"
+"angle" "90"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "1152 624 -1696"
+"angle" "90"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "1408 624 -1696"
+"angle" "90"
+}
+{
+"classname" "team_CTF_blueplayer"
+"origin" "1088 624 -1696"
+"angle" "90"
+}
+{
+"classname" "info_player_start"
+"origin" "736 -64 -1536"
+}
+{
+"classname" "target_speaker"
+"origin" "1808 568 -1672"
+"spawnflags" "4"
+"targetname" "r1"
+"noise" "sound/world/1shot_gong.wav"
+}
+{
+"classname" "func_button"
+"angle" "-2"
+"health" "1"
+"target" "blinds"
+"speed" "500"
+"wait" "7"
+"lip" "-6"
+"model" "*9"
+}
+{
+"classname" "func_door"
+"targetname" "blinds"
+"spawnflags" "1"
+"angle" "-1"
+"speed" "500"
+"wait" "5"
+"lip" "-36"
+"model" "*10"
+}
+{
+"classname" "trigger_multiple"
+"target" "target_relay2"
+"model" "*11"
+}
+{
+"classname" "target_relay"
+"origin" "788 1028 -1600"
+"targetname" "target_relay2"
+"target" "b2"
+"angle" "-180"
+"spawnflags" "1"
+}
+{
+"classname" "func_door"
+"spawnflags" "4"
+"speed" "700"
+"lip" "36"
+"dmg" "999"
+"angle" "90"
+"targetname" "b2"
+"model" "*12"
+}
+{
+"classname" "func_door"
+"spawnflags" "4"
+"speed" "700"
+"lip" "36"
+"dmg" "999"
+"angle" "270"
+"targetname" "b2"
+"model" "*13"
+}
+{
+"classname" "func_door"
+"dmg" "999"
+"lip" "16"
+"spawnflags" "4"
+"speed" "700"
+"angle" "180"
+"targetname" "r3"
+"wait" "8"
+"model" "*14"
+}
+{
+"classname" "func_door"
+"dmg" "999"
+"lip" "16"
+"spawnflags" "4"
+"speed" "700"
+"angle" "0"
+"targetname" "r3"
+"wait" "8"
+"model" "*15"
+}
+{
+"classname" "func_door"
+"dmg" "999"
+"lip" "16"
+"spawnflags" "4"
+"speed" "700"
+"angle" "180"
+"targetname" "r3"
+"wait" "8"
+"model" "*16"
+}
+{
+"classname" "func_door"
+"dmg" "999"
+"lip" "16"
+"spawnflags" "4"
+"speed" "700"
+"angle" "0"
+"targetname" "r3"
+"wait" "8"
+"model" "*17"
+}
+{
+"classname" "func_button"
+"angle" "270"
+"speed" "300"
+"wait" "10"
+"target" "r3"
+"model" "*18"
+}
+{
+"classname" "target_speaker"
+"origin" "688 968 -1672"
+"spawnflags" "4"
+"targetname" "r3"
+"noise" "sound/world/1shot_gong.wav"
+"angle" "-180"
+}
+{
+"classname" "team_CTF_blueflag"
+"origin" "1248 1056 -1708"
+"angle" "180"
+"gametype" "ctf, oneflag"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "1216 912 -1696"
+"angle" "-90"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "1280 912 -1696"
+"angle" "-90"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "1152 912 -1696"
+"angle" "-90"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "1344 912 -1696"
+"angle" "-90"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "1088 912 -1696"
+"angle" "-90"
+}
+{
+"classname" "team_CTF_redplayer"
+"origin" "1408 912 -1696"
+"angle" "-90"
+}
+{
+"classname" "info_player_intermission"
+"origin" "1520 320 -1648"
+"angle" "135"
+}
+{
+"classname" "trigger_multiple"
+"wait" "1"
+"target" "blinds1"
+"model" "*19"
+}
+{
+"classname" "func_door"
+"targetname" "blinds1"
+"spawnflags" "1"
+"angle" "-1"
+"speed" "500"
+"wait" "5"
+"lip" "-136"
+"model" "*20"
+}
+{
+"classname" "func_door"
+"spawnflags" "4"
+"angle" "-1"
+"speed" "2000"
+"wait" "6"
+"lip" "-208"
+"targetname" "func_door4"
+"dmg" "999"
+"model" "*21"
+}
+{
+"classname" "trigger_multiple"
+"wait" "1"
+"target" "target_relay3"
+"model" "*22"
+}
+{
+"classname" "target_relay"
+"origin" "1252 156 -1536"
+"spawnflags" "1"
+"targetname" "target_relay3"
+"target" "func_door1"
+}
+{
+"classname" "func_door"
+"speed" "-1"
+"wait" "2"
+"lip" "-16"
+"targetname" "func_door1"
+"angle" "-2"
+"model" "*23"
+}
+{
+"classname" "trigger_multiple"
+"wait" "1"
+"target" "target_relay4"
+"model" "*24"
+}
+{
+"classname" "target_relay"
+"origin" "1244 1380 -1536"
+"targetname" "target_relay4"
+"target" "func_door2"
+"angle" "-180"
+"spawnflags" "2"
+}
+{
+"classname" "func_door"
+"speed" "-1"
+"wait" "2"
+"lip" "-16"
+"targetname" "func_door2"
+"angle" "-2"
+"model" "*25"
+}
+{
+"classname" "trigger_multiple"
+"wait" "1"
+"target" "openmid"
+"model" "*26"
+}
+{
+"classname" "func_door"
+"speed" "-1"
+"wait" "2"
+"lip" "-16"
+"targetname" "openmid"
+"spawnflags" "1"
+"angle" "-2"
+"model" "*27"
+}
+{
+"classname" "target_laser"
+"origin" "624 592 -4104"
+"spawnflags" "1"
+}
+{
+"classname" "func_door"
+"speed" "-1"
+"wait" "5"
+"lip" "-16"
+"targetname" "func_door3"
+"target" "func_door4"
+"angle" "-2"
+"health" "1"
+"model" "*28"
+}
+{
+"classname" "team_CTF_bluespawn"
+"origin" "1812 656 -1696"
+"angle" "-90"
+}
+{
+"classname" "team_CTF_redspawn"
+"origin" "684 880 -1696"
+"angle" "90"
+}
+
+//Added by Kr3m
+
+{
+"classname" "team_CTF_neutralflag"
+"origin" "1248 768 -1904"
+"gametype" "oneflag"
+"angle" "270"
+}
+{
+"classname" "team_neutralobelisk"
+"origin" "1248 768 -1928"
+"gametype" "oneflag, harvester"
+}
+
+{
+"classname" "team_redobelisk"
+"origin" "1248 480 -1728"
+"angle" "90"
+}
+
+{
+"classname" "team_blueobelisk"
+"origin" "1248 1056 -1728"
+"angle" "270"
+}

@@ -1,0 +1,227 @@
+{
+"classname" "worldspawn"
+}
+{
+"origin" "-440 768 -1000"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-440 832 -1000"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-440 704 -1000"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-440 640 -1000"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-440 896 -1000"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-440 960 -1000"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-440 576 -1000"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-440 512 -1000"
+"classname" "team_CTF_blueplayer"
+}
+{
+"origin" "-320 736 -912"
+"classname" "info_player_start"
+}
+{
+"spawnflags" "1"
+"origin" "992 736 -1160"
+"classname" "team_CTF_blueflag"
+"gametype" "ctf, oneflag"
+}
+{
+"model" "*1"
+"targetname" "p1"
+"spawnflags" "4"
+"lip" "-32"
+"wait" "3600"
+"speed" "9999"
+"angle" "-2"
+"classname" "func_door"
+}
+{
+"model" "*2"
+"target" "p1"
+"classname" "trigger_multiple"
+}
+{
+"model" "*3"
+"targetname" "p3"
+"spawnflags" "4"
+"lip" "-32"
+"wait" "3600"
+"speed" "9999"
+"angle" "-2"
+"classname" "func_door"
+}
+{
+"model" "*4"
+"target" "p3"
+"classname" "trigger_multiple"
+}
+{
+"spawnflags" "1"
+"origin" "6752 736 -1160"
+"classname" "team_CTF_redflag"
+"gametype" "ctf, oneflag"
+}
+{
+"angle" "-179"
+"origin" "8184 768 -1000"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-179"
+"origin" "8184 832 -1000"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-179"
+"origin" "8184 704 -1000"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-179"
+"origin" "8184 640 -1000"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-179"
+"origin" "8184 896 -1000"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-179"
+"origin" "8184 960 -1000"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-179"
+"origin" "8184 576 -1000"
+"classname" "team_CTF_redplayer"
+}
+{
+"angle" "-179"
+"origin" "8184 512 -1000"
+"classname" "team_CTF_redplayer"
+}
+{
+"targetname" "br"
+"angle" "-179"
+"origin" "8416 832 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"targetname" "br"
+"angle" "-179"
+"origin" "8416 640 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"targetname" "br"
+"angle" "-179"
+"origin" "8416 736 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"model" "*5"
+"target" "ba"
+"classname" "trigger_teleport"
+}
+{
+"model" "*6"
+"target" "br"
+"classname" "trigger_teleport"
+}
+{
+"targetname" "ba"
+"angle" "90"
+"origin" "1096 -936 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"targetname" "ba"
+"angle" "90"
+"origin" "904 -936 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"targetname" "ba"
+"angle" "90"
+"origin" "1000 -936 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"model" "*7"
+"target" "ra"
+"classname" "trigger_teleport"
+}
+{
+"targetname" "rr"
+"angle" "0."
+"origin" "-672 640 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"targetname" "rr"
+"angle" "0."
+"origin" "-672 832 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"targetname" "rr"
+"angle" "0."
+"origin" "-672 736 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"model" "*8"
+"target" "rr"
+"classname" "trigger_teleport"
+}
+{
+"targetname" "ra"
+"angle" "90"
+"origin" "6848 -936 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"targetname" "ra"
+"angle" "90"
+"origin" "6656 -936 -888"
+"classname" "misc_teleporter_dest"
+}
+{
+"targetname" "ra"
+"angle" "90"
+"origin" "6752 -936 -888"
+"classname" "misc_teleporter_dest"
+}
+
+//Added by Kr3m
+
+{
+"origin" "6752 736 -1184"
+"classname" "team_redobelisk"
+"angle" "90"
+}
+
+{
+"origin" "992 736 -1184"
+"classname" "team_blueobelisk"
+"angle" "90"
+}
