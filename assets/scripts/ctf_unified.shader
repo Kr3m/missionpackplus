@@ -1235,3 +1235,112 @@ textures/ctf_unified/ta_techspawn_red
 		rgbgen identity
 	}
 }
+
+textures/x/f/ctf_blueflag
+{
+        tessSize 64
+        deformVertexes wave 194 sin 0 3 0 .4
+        deformVertexes normal .5 .1
+        surfaceparm nomarks
+        cull none
+        
+        {
+		map textures/ctf_unified/banner01_blue.tga
+		rgbGen identity
+	}
+        {
+		map textures/effects/redflagmap.tga
+                tcGen environment
+                tcmod scale 9 3
+                tcmod scroll .1 .7
+                
+                blendFunc GL_ONE GL_ONE
+                rgbGen identity
+	}
+        {
+		map textures/ctf_unified/banner01_blue.tga
+                blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbGen identity
+	}
+        {
+		map $lightmap
+                blendFunc GL_DST_COLOR GL_ONE_MINUS_DST_ALPHA
+		rgbGen identity
+	}
+        {
+        	map textures/sfx/shadow.tga
+                tcGen environment 
+                //blendFunc GL_ONE GL_ONE            
+                blendFunc GL_DST_COLOR GL_ZERO
+               rgbGen identity
+	}
+}
+
+textures/x/f/ctf_redflag
+{
+        tessSize 64
+        deformVertexes wave 194 sin 0 3 0 .4
+        deformVertexes normal .3 .2
+        surfaceparm nomarks
+        cull none
+
+        {
+		map textures/ctf_unified/banner01_red.tga
+		rgbGen identity
+	}
+        {
+		map textures/effects/blueflagmap.tga
+                 tcGen environment
+                tcmod scale 9 3
+                tcmod scroll .1 .7
+                
+                blendFunc GL_ONE GL_ONE
+                rgbGen identity
+	}
+        {
+		map textures/ctf_unified/banner01_red.tga
+                blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbGen identity
+	}
+        {
+		map $lightmap
+                blendFunc GL_DST_COLOR GL_ONE_MINUS_DST_ALPHA
+		rgbGen identity
+	}
+        {
+
+        	map textures/sfx/shadow.tga
+                tcGen environment 
+                //blendFunc GL_ONE GL_ONE            
+                blendFunc GL_DST_COLOR GL_ZERO
+               rgbGen identity
+	}
+}
+
+textures/x/f2/blueteam02
+{      
+    qer_editorimage team_icon/pagans_blue.tga
+	cull none
+	surfaceparm nolightmap
+	surfaceparm trans
+	surfaceparm nomarks
+	{
+	  	map team_icon/pagans_blue.tga
+		blendfunc GL_SRC_ALPHA GL_ONE
+		rgbGen wave sin .5 .25 0 .2
+	}
+}
+
+textures/x/f2/redteam02
+{      
+    qer_editorimage team_icon/pagans_red.tga
+	cull none
+	surfaceparm nolightmap
+	surfaceparm trans
+	surfaceparm nomarks
+	{
+	  	map team_icon/pagans_red.tga
+		blendfunc GL_SRC_ALPHA GL_ONE
+		rgbGen wave sin .5 .25 0 .2
+	}
+}
