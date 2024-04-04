@@ -299,7 +299,7 @@ textures/ctf2/redteam01
 	surfaceparm trans
 	surfaceparm nomarks
 	{
-	  	map team_icon/pagans_red.tga
+	  	map team_icon/stroggs_red.tga
 		blendfunc GL_SRC_ALPHA GL_ONE
 		rgbGen wave sin .2 .5 0 .2
 	}
@@ -307,13 +307,13 @@ textures/ctf2/redteam01
 
 textures/ctf2/redteam02
 {      
-    qer_editorimage team_icon/pagans_red.tga 
+    qer_editorimage team_icon/stroggs_red.tga 
 	cull none
 	surfaceparm nolightmap
 	surfaceparm trans
 	surfaceparm nomarks
 	{
-	  	map team_icon/pagans_red.tga
+	  	map team_icon/stroggs_red.tga
 		blendfunc GL_SRC_ALPHA GL_ONE
 		rgbGen wave sin .5 .25 0 .2
 	}
@@ -321,7 +321,7 @@ textures/ctf2/redteam02
 
 textures/ctf2/redteam03
 {      
-    qer_editorimage team_icon/pagans_red.tga	
+    qer_editorimage team_icon/stroggs_red.tga	
 	polygonOffset
 	qer_trans 0.5
 	sort 6
@@ -332,7 +332,7 @@ textures/ctf2/redteam03
 	cull none
 	nopicmip
 	{
-	  	map team_icon/pagans_red.tga
+	  	map team_icon/stroggs_red.tga
 		blendfunc add
 		rgbgen vertex
 		depthWrite
@@ -346,7 +346,7 @@ textures/ctf2/redteamscore
     surfaceparm trans
     surfaceparm nomarks
 	{
-		map team_icon/pagans_red.tga
+		map team_icon/stroggs_red.tga
 		blendfunc add
                   
 	}
@@ -474,13 +474,13 @@ textures/ctf2/xblueteam01
 textures/ctf2/xredteam01
 // Non Flashy version
 {       	
-	qer_editorimage team_icon/pagans_red.tga
+	qer_editorimage team_icon/stroggs_red.tga
 	cull none
     surfaceparm nolightmap
     surfaceparm trans
     surfaceparm nomarks
 	{
-		map team_icon/pagans_red.tga
+		map team_icon/stroggs_red.tga
 		blendfunc GL_SRC_ALPHA GL_ONE
 		rgbgen identity
 	}

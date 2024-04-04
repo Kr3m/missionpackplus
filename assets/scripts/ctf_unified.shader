@@ -8,7 +8,7 @@
 // The Red Lightning Logo leans like a 'forwardslash / '
 // The Blue Hammer Logo leans like a 'backslash \ '
 // Change the 'Horizontal Stretch' value to a positive
-// or negative number to fix backwards logos. 
+// or negative number to fix backwards logos.
 // They will appear correctly in the Radiant texture browser window.
 /////////////////////////////////////////////////////////////////////
 
@@ -442,7 +442,7 @@ textures/ctf_unified/banner02_red
 	qer_editorimage textures/ctf_unified/banner02_red.tga
 	qer_trans 0.4
 	surfaceparm alphashadow
-	surfaceparm trans	
+	surfaceparm trans
 	surfaceparm nomarks
 	surfaceparm nonsolid
 	cull none
@@ -472,7 +472,7 @@ textures/ctf_unified/banner02_toast_blue
 	qer_editorimage textures/ctf_unified/banner02_toast_blue.tga
 	qer_trans 0.4
 	surfaceparm alphashadow
-	surfaceparm trans	
+	surfaceparm trans
 	surfaceparm nonsolid
 	surfaceparm nomarks
 	cull none
@@ -500,7 +500,7 @@ textures/ctf_unified/banner02_toast_red
 	qer_editorimage textures/ctf_unified/banner02_toast_red.tga
 	qer_trans 0.4
 	surfaceparm alphashadow
-	surfaceparm trans	
+	surfaceparm trans
 	surfaceparm nonsolid
 	surfaceparm nomarks
 	cull none
@@ -528,7 +528,7 @@ textures/ctf_unified/banner03_blue
 	qer_editorimage textures/ctf_unified/banner03_blue.tga
 	qer_trans 0.4
 	surfaceparm alphashadow
-	surfaceparm trans	
+	surfaceparm trans
 	surfaceparm nonsolid
 	surfaceparm nomarks
 	cull none
@@ -558,7 +558,7 @@ textures/ctf_unified/banner03_red
 	qer_editorimage textures/ctf_unified/banner03_red.tga
 	qer_trans 0.4
 	surfaceparm alphashadow
-	surfaceparm trans	
+	surfaceparm trans
 	surfaceparm nomarks
 	surfaceparm nonsolid
 	cull none
@@ -588,7 +588,7 @@ textures/ctf_unified/banner04_blue
 	qer_editorimage textures/ctf_unified/banner04_blue.tga
 	qer_trans 0.4
 	surfaceparm alphashadow
-	surfaceparm trans	
+	surfaceparm trans
 	surfaceparm nomarks
 	surfaceparm nonsolid
 	cull none
@@ -618,7 +618,7 @@ textures/ctf_unified/banner04_red
 	qer_editorimage textures/ctf_unified/banner04_red.tga
 	qer_trans 0.4
 	surfaceparm alphashadow
-	surfaceparm trans	
+	surfaceparm trans
 	surfaceparm nomarks
 	surfaceparm nonsolid
 	cull none
@@ -648,12 +648,12 @@ textures/ctf_unified/banner04_red
 /////////////////////////////////////////////////////////////////////
 
 textures/ctf_unified/wall_decal_blue
-{ 
+{
     nopicmip
 	qer_editorimage textures/ctf_unified/wall_logo_blue.tga
-	surfaceparm trans	
+	surfaceparm trans
 //	surfaceparm alphashadow
-	surfaceparm nomarks	
+	surfaceparm nomarks
 	cull none
 
        {
@@ -672,12 +672,12 @@ textures/ctf_unified/wall_decal_blue
 }
 
 textures/ctf_unified/wall_decal_red
-{ 
+{
     nopicmip
 	qer_editorimage textures/ctf_unified/wall_logo_red.tga
-	surfaceparm trans	
+	surfaceparm trans
 //	surfaceparm alphashadow
-	surfaceparm nomarks	
+	surfaceparm nomarks
 	cull none
 
        {
@@ -700,8 +700,8 @@ textures/ctf_unified/wall_decal_red
 /////////////////////////////////////////////////////////////////////
 
 textures/ctf_unified/floor_decal_blue
-{       
-	nopicmip	
+{
+	nopicmip
 	qer_editorimage textures/ctf_unified/floor_logo_blue.tga
 	qer_trans 0.4
 	surfaceparm nolightmap
@@ -719,8 +719,8 @@ textures/ctf_unified/floor_decal_blue
 }
 
 textures/ctf_unified/floor_decal_red
-{    
-	nopicmip   	
+{
+	nopicmip
 	qer_editorimage textures/ctf_unified/floor_logo_red.tga
 	qer_trans 0.4
 	surfaceparm nolightmap
@@ -743,8 +743,8 @@ textures/ctf_unified/floor_decal_red
 
 textures/ctf_unified/monologo_flash_blue
 
-{      
-	nopicmip 	
+{
+	nopicmip
 	qer_editorimage textures/ctf_unified/floor_monologo_blue.tga
 	qer_trans 0.4
 	surfaceparm nolightmap
@@ -761,8 +761,8 @@ textures/ctf_unified/monologo_flash_blue
 
 textures/ctf_unified/monologo_flash_red
 
-{    
-	nopicmip   	
+{
+	nopicmip
 	qer_editorimage textures/ctf_unified/floor_monologo_red.tga
 	qer_trans 0.4
 	surfaceparm nolightmap
@@ -779,8 +779,8 @@ textures/ctf_unified/monologo_flash_red
 
 textures/ctf_unified/monologo_noflash_blue
 
-{  
-	nopicmip     	
+{
+	nopicmip
 	qer_editorimage textures/ctf_unified/floor_monologo_blue.tga
 	qer_trans 0.4
 	surfaceparm nolightmap
@@ -796,8 +796,8 @@ textures/ctf_unified/monologo_noflash_blue
 
 textures/ctf_unified/monologo_noflash_red
 
-{     
-	nopicmip  	
+{
+	nopicmip
 	qer_editorimage textures/ctf_unified/floor_monologo_red.tga
 	qer_trans 0.4
 	surfaceparm nolightmap
@@ -818,8 +818,8 @@ textures/ctf_unified/monologo_noflash_red
 /////////////////////////////////////////////////////////////////////
 
 textures/ctf_unified/monologo_solid_blue
-{    
-	nopicmip  
+{
+	nopicmip
 	qer_editorimage textures/ctf_unified/floor_monologo_blue.tga
 	surfaceparm alphashadow
 	surfaceparm nomarks
@@ -842,8 +842,8 @@ textures/ctf_unified/monologo_solid_blue
 }
 
 textures/ctf_unified/monologo_solid_red
-{   
-	nopicmip   
+{
+	nopicmip
 	qer_editorimage textures/ctf_unified/floor_monologo_red.tga
 	surfaceparm alphashadow
 	surfaceparm nomarks
@@ -920,8 +920,8 @@ textures/ctf_unified/plaque_shiny_blue
 		map $lightmap
 		blendFunc filter
 		rgbgen identity
-	}	
-} 
+	}
+}
 
 textures/ctf_unified/plaque_shiny_red
 {
@@ -941,8 +941,8 @@ textures/ctf_unified/plaque_shiny_red
 		map $lightmap
 		blendFunc filter
 		rgbgen identity
-	}	
-} 
+	}
+}
 
 /////////////////////////////////////////////////////////////////////
 ////////// Direction Decals /////////////////////////////////////////
@@ -950,11 +950,11 @@ textures/ctf_unified/plaque_shiny_red
 
 textures/ctf_unified/direction_blue
 {
-	nopicmip    
-	surfaceparm nomarks   
+	nopicmip
+	surfaceparm nomarks
 	surfaceparm trans
 	surfaceparm pointlight
-   
+
 	{
 		map textures/ctf_unified/direction_blue.tga
                 blendFunc add
@@ -964,11 +964,11 @@ textures/ctf_unified/direction_blue
 
 textures/ctf_unified/direction_red
 {
-	nopicmip    
-	surfaceparm nomarks 
-	surfaceparm trans  
+	nopicmip
+	surfaceparm nomarks
+	surfaceparm trans
 	surfaceparm pointlight
-        
+
 	{
 		map textures/ctf_unified/direction_red.tga
                 blendFunc add
@@ -977,9 +977,9 @@ textures/ctf_unified/direction_red
 }
 
 textures/ctf_unified/direction_faded_blue
-{    
+{
 	nopicmip
-	surfaceparm nomarks   
+	surfaceparm nomarks
 	surfaceparm trans
 	surfaceparm pointlight
 
@@ -988,30 +988,30 @@ textures/ctf_unified/direction_faded_blue
                 blendFunc add
 		rgbGen vertex
 	}
-} 
+}
 
 textures/ctf_unified/direction_faded_red
-{  
-	nopicmip  
-	surfaceparm nomarks   
+{
+	nopicmip
+	surfaceparm nomarks
 	surfaceparm trans
 	surfaceparm pointlight
-   
+
 	{
 		map textures/ctf_unified/direction_faded_red.tga
                 blendFunc add
 		rgbGen vertex
 	}
-} 
+}
 
 textures/ctf_unified/pointer_blue
-{    
+{
 	nopicmip
 	qer_trans 0.4
-	surfaceparm nomarks   
+	surfaceparm nomarks
 	surfaceparm trans
 	surfaceparm pointlight
-   
+
 	{
 		map textures/ctf_unified/pointer_blue.tga
                 blendFunc add
@@ -1020,13 +1020,13 @@ textures/ctf_unified/pointer_blue
 }
 
 textures/ctf_unified/pointer_red
-{  
-	nopicmip  
+{
+	nopicmip
 	qer_trans 0.4
-	surfaceparm nomarks 
-	surfaceparm trans  
+	surfaceparm nomarks
+	surfaceparm trans
 	surfaceparm pointlight
-        
+
 	{
 		map textures/ctf_unified/pointer_red.tga
                 blendFunc add
@@ -1035,13 +1035,13 @@ textures/ctf_unified/pointer_red
 }
 
 textures/ctf_unified/pointer_left_blue
-{    
+{
 	nopicmip
 	qer_trans 0.4
-	surfaceparm nomarks   
+	surfaceparm nomarks
 	surfaceparm trans
 	surfaceparm pointlight
-   
+
 	{
 		map textures/ctf_unified/pointer_left_blue.tga
                 blendFunc add
@@ -1050,13 +1050,13 @@ textures/ctf_unified/pointer_left_blue
 }
 
 textures/ctf_unified/pointer_left_red
-{    
+{
 	nopicmip
 	qer_trans 0.4
-	surfaceparm nomarks 
-	surfaceparm trans  
+	surfaceparm nomarks
+	surfaceparm trans
 	surfaceparm pointlight
-        
+
 	{
 		map textures/ctf_unified/pointer_left_red.tga
                 blendFunc add
@@ -1065,13 +1065,13 @@ textures/ctf_unified/pointer_left_red
 }
 
 textures/ctf_unified/pointer_right_blue
-{    
+{
 	nopicmip
 	qer_trans 0.4
-	surfaceparm nomarks   
+	surfaceparm nomarks
 	surfaceparm trans
 	surfaceparm pointlight
-   
+
 	{
 		map textures/ctf_unified/pointer_right_blue.tga
                 blendFunc add
@@ -1081,12 +1081,12 @@ textures/ctf_unified/pointer_right_blue
 
 textures/ctf_unified/pointer_right_red
 {
-	nopicmip    
+	nopicmip
 	qer_trans 0.4
-	surfaceparm nomarks 
-	surfaceparm trans  
+	surfaceparm nomarks
+	surfaceparm trans
 	surfaceparm pointlight
-        
+
 	{
 		map textures/ctf_unified/pointer_right_red.tga
                 blendFunc add
