@@ -606,7 +606,7 @@ Only in CTF games
 	{
 		"team_CTF_redflag",
 		NULL,
-        { "models/flags/r_flag.md3",
+        { "models/flag3/r_flag3.md3",
 		0, 0, 0 },
 /* icon */		"icons/iconf_red1",
 /* pickup */	"Red Flag",
@@ -623,7 +623,7 @@ Only in CTF games
 	{
 		"team_CTF_blueflag",
 		NULL,
-        { "models/flags/b_flag.md3",
+        { "models/flag3/b_flag3.md3",
 		0, 0, 0 },
 /* icon */		"icons/iconf_blu1",
 /* pickup */	"Blue Flag",
@@ -804,7 +804,7 @@ Only in One Flag CTF games
 	{
 		"team_CTF_neutralflag",
 		NULL,
-        { "models/flags/n_flag.md3",
+        { "models/flag3/n_flag3.md3",
 		0, 0, 0 },
 /* icon */		"icons/iconf_neutral1",
 /* pickup */	"Neutral Flag",
