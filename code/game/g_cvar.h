@@ -105,10 +105,13 @@ G_CVAR( pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO, 0, qfalse, qfalse )
 G_CVAR( g_instagib, "g_instagib", "0", CVAR_SYSTEMINFO | CVAR_LATCH, 0, qtrue, qtrue )
 G_CVAR( g_railJump, "g_railJump", "0", CVAR_ARCHIVE, 0, qtrue, qtrue )
 G_CVAR( g_railJumpDamage, "g_railJumpDamage", "100", CVAR_ARCHIVE, 0, qtrue, qtrue )
+G_CVAR( g_fastRail, "g_fastRail", "0", 0, 0, qtrue, qtrue )
 G_CVAR( g_noSelfDamage, "g_noSelfDamage", "0", CVAR_ARCHIVE, 0, qtrue,qtrue )
 
 G_CVAR( g_startArmor, "g_startArmor", "0", 0, 0, qfalse, qfalse )
 G_CVAR( g_startHealth, "g_startHealth", "0", 0, 0, qfalse, qfalse )
+
+G_CVAR( g_fastWeaponSwitch, "g_fastWeaponSwitch", "0", 0, 0, qtrue, qtrue )
 
 G_CVAR( g_grapple, "g_grapple", "0", 0, 0, qtrue, qfalse )
 G_CVAR( g_grappleDelayTime, "g_grappleDelayTime", "400", CVAR_SERVERINFO, 0, qtrue, qfalse )
