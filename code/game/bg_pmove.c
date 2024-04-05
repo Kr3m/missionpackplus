@@ -7,6 +7,19 @@
 #include "bg_public.h"
 #include "bg_local.h"
 
+//qlone
+// thanx to Mr Pants "Excessive" mod
+int trap_Cvar_VariableIntegerValue(const char * var_name);
+const char *CG_ConfigString(int index);
+int getCvarInt(const char * name) {
+#ifdef CGAME
+	return atoi(Info_ValueForKey(CG_ConfigString(CS_SERVERINFO), name));
+#else
+	return trap_Cvar_VariableIntegerValue(name);
+#endif
+}
+//qlone
+
 pmove_t		*pm;
 pml_t		pml;
 
@@ -1477,7 +1490,8 @@ static void PM_BeginWeaponChange( int weapon ) {
 
 	PM_AddEvent( EV_CHANGE_WEAPON );
 	pm->ps->weaponstate = WEAPON_DROPPING;
-	pm->ps->weaponTime += 200;
+	//pm->ps->weaponTime += 200;
+	pm->ps->weaponTime += getCvarInt("g_fastWeaponSwitch") > 0 ? 0 : 200;
 	PM_StartTorsoAnim( TORSO_DROP );
 }
 
@@ -1502,7 +1516,8 @@ static void PM_FinishWeaponChange( void ) {
 	pm->ps->weapon = weapon;
 	pm->ps->weaponstate = WEAPON_RAISING;
 	pm->ps->eFlags &= ~EF_FIRING;
-	pm->ps->weaponTime += 250;
+	//pm->ps->weaponTime += 250;
+	pm->ps->weaponTime += getCvarInt("g_fastWeaponSwitch") > 0 ? 0 : 250;
 	PM_StartTorsoAnim( TORSO_RAISE );
 }
 
@@ -1628,7 +1643,8 @@ static void PM_Weapon( void ) {
 	// check for out of ammo
 	if ( ! pm->ps->ammo[ pm->ps->weapon ] ) {
 		PM_AddEvent( EV_NOAMMO );
-		pm->ps->weaponTime += 500;
+		//pm->ps->weaponTime += 500;
+		pm->ps->weaponTime += getCvarInt("g_fastWeaponSwitch") > 1 ? 100 : 500;
 		return;
 	}
 
@@ -1664,7 +1680,17 @@ static void PM_Weapon( void ) {
 		addTime = 100;
 		break;
 	case WP_RAILGUN:
-		addTime = 1500;
+		if( getCvarInt( "g_fastRail" ) >= 2 )
+		{
+			addTime = 1000;
+		} else if ( getCvarInt("g_fastRail") == 1 )
+		{
+			addTime = 1250;
+		}
+		else {
+			addTime = 1500;
+		}
+		
 		break;
 	case WP_BFG:
 		addTime = 200;
