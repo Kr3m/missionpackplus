@@ -205,12 +205,12 @@ void G_RemapTeamShaders( void ) {
 #ifdef MISSIONPACK
 	char string[1024];
 	float f = level.time * 0.001;
-    qboolean isTeamSet;
+    //qboolean isTeamSet;
 
-    isTeamSet = G_AreTeamStringValid();
+    //isTeamSet = G_IsTeamStringValid();
 
-    if ( !isTeamSet )
-        return;
+    //if ( !isTeamSet )
+        //return;
 
     Com_sprintf( string, sizeof(string), "team_icon/%s_red", g_redteam.string );
     AddRemap("textures/ctf2/redteam01", string, f);
@@ -224,11 +224,11 @@ void G_RemapTeamShaders( void ) {
 
 /*
 =================
-G_CheckTeam
+G_IsTeamStringValid
 =================
 */
 
-qboolean G_AreTeamStringValid( void )
+qboolean G_IsTeamStringValid( void )
 {
     const char* const red = g_redteam.string;
     const char* const blue = g_blueteam.string;
