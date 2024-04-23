@@ -205,19 +205,32 @@ void G_RemapTeamShaders( void ) {
 #ifdef MISSIONPACK
 	char string[1024];
 	float f = level.time * 0.001;
-    //qboolean isTeamSet;
 
-    //isTeamSet = G_IsTeamStringValid();
+    const char* const red = g_redteam.string;
+    const char* const blue = g_blueteam.string;
 
-    //if ( !isTeamSet )
-        //return;
+    if( G_IsTeamStringValid( red ) ) {
+        Com_sprintf( string, sizeof(string), "team_icon/%s_red", g_redteam.string );
+        AddRemap("textures/ctf2/redteam01", string, f);
+        AddRemap("textures/ctf2/redteam02", string, f);
+        AddRemap("textures/ctf2/redteam03", string, f);
+    } else {
+        AddRemap("textures/ctf2/redteam01", "textures/ctf2/redteam01", f);
+        AddRemap("textures/ctf2/redteam02", "textures/ctf2/redteam02", f);
+        AddRemap("textures/ctf2/redteam03", "textures/ctf2/redteam03", f);
+    }
 
-    Com_sprintf( string, sizeof(string), "team_icon/%s_red", g_redteam.string );
-    AddRemap("textures/ctf2/redteam01", string, f);
-    AddRemap("textures/ctf2/redteam02", string, f);
-    Com_sprintf( string, sizeof(string), "team_icon/%s_blue", g_blueteam.string );
-    AddRemap("textures/ctf2/blueteam01", string, f);
-    AddRemap("textures/ctf2/blueteam02", string, f);
+    if( G_IsTeamStringValid( blue ) ) {
+        Com_sprintf( string, sizeof(string), "team_icon/%s_blue", g_blueteam.string );
+        AddRemap("textures/ctf2/blueteam01", string, f);
+        AddRemap("textures/ctf2/blueteam02", string, f);
+        AddRemap("textures/ctf2/blueteam03", string, f);
+    } else {
+        AddRemap("textures/ctf2/blueteam01", "textures/ctf2/blueteam01", f);
+        AddRemap("textures/ctf2/blueteam02", "textures/ctf2/blueteam02", f);
+        AddRemap("textures/ctf2/blueteam03", "textures/ctf2/blueteam03", f);
+    }
+
     trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 #endif
 }
@@ -228,11 +241,9 @@ G_IsTeamStringValid
 =================
 */
 
-qboolean G_IsTeamStringValid( void )
+qboolean G_IsTeamStringValid( const char* color )
 {
-    const char* const red = g_redteam.string;
-    const char* const blue = g_blueteam.string;
-    const qboolean valid = red != NULL && red[0] != '\0' && blue != NULL && blue[0] != '\0';
+    const qboolean valid = color[0] != '\0';
 
     return valid;
 }
