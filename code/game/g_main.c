@@ -206,25 +206,24 @@ void G_RemapTeamShaders( void ) {
 	char string[1024];
 	float f = level.time * 0.001;
 
-    const char* const red = g_redteam.string;
-    const char* const blue = g_blueteam.string;
-
-    if( G_IsTeamStringValid( red ) ) {
+    if( g_redteam.string[0] != '\0' ) {
         Com_sprintf( string, sizeof(string), "team_icon/%s_red", g_redteam.string );
         AddRemap("textures/ctf2/redteam01", string, f);
         AddRemap("textures/ctf2/redteam02", string, f);
         AddRemap("textures/ctf2/redteam03", string, f);
+        AddRemap("textures/xtf2/redteam03", string, f);
     } else {
         AddRemap("textures/ctf2/redteam01", "textures/ctf2/redteam01", f);
         AddRemap("textures/ctf2/redteam02", "textures/ctf2/redteam02", f);
         AddRemap("textures/ctf2/redteam03", "textures/ctf2/redteam03", f);
     }
 
-    if( G_IsTeamStringValid( blue ) ) {
+    if( g_blueteam.string[0] != '\0' ) {
         Com_sprintf( string, sizeof(string), "team_icon/%s_blue", g_blueteam.string );
         AddRemap("textures/ctf2/blueteam01", string, f);
         AddRemap("textures/ctf2/blueteam02", string, f);
         AddRemap("textures/ctf2/blueteam03", string, f);
+        AddRemap("textures/xtf2/blueteam03", string, f);
     } else {
         AddRemap("textures/ctf2/blueteam01", "textures/ctf2/blueteam01", f);
         AddRemap("textures/ctf2/blueteam02", "textures/ctf2/blueteam02", f);
@@ -233,19 +232,6 @@ void G_RemapTeamShaders( void ) {
 
     trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 #endif
-}
-
-/*
-=================
-G_IsTeamStringValid
-=================
-*/
-
-qboolean G_IsTeamStringValid( const char* color )
-{
-    const qboolean valid = color[0] != '\0';
-
-    return valid;
 }
 
 
