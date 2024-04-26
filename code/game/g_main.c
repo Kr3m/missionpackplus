@@ -211,7 +211,6 @@ void G_RemapTeamShaders( void ) {
         AddRemap("textures/ctf2/redteam01", string, f);
         AddRemap("textures/ctf2/redteam02", string, f);
         AddRemap("textures/ctf2/redteam03", string, f);
-        AddRemap("textures/xtf2/redteam03", string, f);
     } else {
         AddRemap("textures/ctf2/redteam01", "textures/ctf2/redteam01", f);
         AddRemap("textures/ctf2/redteam02", "textures/ctf2/redteam02", f);
@@ -223,7 +222,6 @@ void G_RemapTeamShaders( void ) {
         AddRemap("textures/ctf2/blueteam01", string, f);
         AddRemap("textures/ctf2/blueteam02", string, f);
         AddRemap("textures/ctf2/blueteam03", string, f);
-        AddRemap("textures/xtf2/blueteam03", string, f);
     } else {
         AddRemap("textures/ctf2/blueteam01", "textures/ctf2/blueteam01", f);
         AddRemap("textures/ctf2/blueteam02", "textures/ctf2/blueteam02", f);
