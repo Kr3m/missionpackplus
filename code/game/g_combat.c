@@ -975,6 +975,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->flags & FL_GODMODE ) {
 			return;
 		}
+
+#ifdef MISSIONPACK
+        if ( targ == attacker && g_noSelfDamage.integer && mod != MOD_KAMIKAZE )
+            return;
+#else
+        if ( targ == attacker && g_noSelfDamage.integer )
+            return;
+#endif
 	}
 
 	// battlesuit protects from all radius damage (but takes knockback)
@@ -998,15 +1006,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 	take = damage;
 
-	//qlone - self damages
-	if ( targ == attacker && g_noSelfDamage.integer )
-		asave = 0;
-	else {
-	//qlone - self damages
-		// save some from armor
-		asave = CheckArmor( targ, take, dflags );
-		take -= asave;
-	} //qlone - self damages
+    // save some from armor
+    asave = CheckArmor( targ, take, dflags );
+    take -= asave;
 
 	if ( g_debugDamage.integer ) {
 		G_Printf( "%i: client:%i health:%i damage:%i armor:%i\n", level.time, targ->s.number,
@@ -1072,11 +1074,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		targ->client->lasthurt_client = attacker->s.number;
 		targ->client->lasthurt_mod = mod;
 	}
-
-	//qlone - self damages
-	if ( targ == attacker && g_noSelfDamage.integer )
-		return;
-	//qlone - self damages
 
 	// do the damage
 	if (take) {
