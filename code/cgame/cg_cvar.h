@@ -93,8 +93,8 @@ CG_CVAR( cg_buildScript, "com_buildScript", "0", 0 )	// force loading of all pos
 CG_CVAR( cg_paused, "cl_paused", "0", CVAR_ROM )
 CG_CVAR( cg_blood, "com_blood", "1", CVAR_ARCHIVE )
 #ifdef MISSIONPACK
-CG_CVAR( cg_redTeamName, "g_redteam", DEFAULT_REDTEAM_NAME, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO )
-CG_CVAR( cg_blueTeamName, "g_blueteam", DEFAULT_BLUETEAM_NAME, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO )
+CG_CVAR( cg_redTeamName, "g_redteam", "", CVAR_SERVERINFO | CVAR_USERINFO )
+CG_CVAR( cg_blueTeamName, "g_blueteam", "", CVAR_SERVERINFO | CVAR_USERINFO )
 CG_CVAR( cg_currentSelectedPlayer, "cg_currentSelectedPlayer", "0", CVAR_ARCHIVE )
 CG_CVAR( cg_currentSelectedPlayerName, "cg_currentSelectedPlayerName", "", CVAR_ARCHIVE )
 CG_CVAR( cg_singlePlayer, "ui_singlePlayerActive", "0", CVAR_USERINFO )
