@@ -86,9 +86,10 @@ itemDef {
 
 	itemDef {
 	name "r"
-        rect 133 25 114 44
+        rect 275 25 20 44
 	visible 1
 	decoration
+	textalign 2
 	forecolor 1 0 0 1
 	ownerdraw CG_RED_SCORE
 	}
@@ -100,7 +101,7 @@ itemDef {
 	textalign 2
 	textstyle 3
 	textscale .5
-	rect 610 45 30 23		 
+	rect 615 45 30 23		 
 	forecolor 0 .58 1 1
 	decoration
 	visible 1
@@ -108,8 +109,9 @@ itemDef {
 
 	itemDef {
 	name "b"
-        rect 393 25 114 44
+        rect 330 25 20 44
 	visible 1
+	textalign 0
 	decoration
 	forecolor 0 .58 1 1
 	ownerdraw CG_BLUE_SCORE

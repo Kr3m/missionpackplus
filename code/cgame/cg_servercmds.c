@@ -144,14 +144,14 @@ void CG_ParseServerinfo( void ) {
 	cgs.g_sgPellets = atoi(Info_ValueForKey(info, "g_sgPellets"));
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
-	Q_strncpyz( cgs.redTeam, Info_ValueForKey( info, "g_redTeam" ), sizeof(cgs.redTeam) );
-	Q_strncpyz( cgs.blueTeam, Info_ValueForKey( info, "g_blueTeam" ), sizeof(cgs.blueTeam) );
+	Q_strncpyz( cgs.redTeam, Info_ValueForKey( info, "g_redteam" ), sizeof(cgs.redTeam) );
+	Q_strncpyz( cgs.blueTeam, Info_ValueForKey( info, "g_blueteam" ), sizeof(cgs.blueTeam) );
 
 //TEAM FIX
 #ifdef MISSIONPACK
 
-    Q_strncpyz( cg_redTeamName.string, Info_ValueForKey( info, "g_redTeam" ), sizeof(cgs.redTeam) );
-    Q_strncpyz( cg_blueTeamName.string, Info_ValueForKey( info, "g_blueTeam" ), sizeof(cgs.blueTeam) );
+    Q_strncpyz( cg_redTeamName.string, Info_ValueForKey( info, "g_redteam" ), sizeof(cg_redTeamName.string) );
+    Q_strncpyz( cg_blueTeamName.string, Info_ValueForKey( info, "g_blueteam" ), sizeof(cg_blueTeamName.string) );
 
 #endif
 
