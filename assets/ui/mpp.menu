@@ -633,13 +633,13 @@ menuDef {
     	name "TeammateCount"
     	fullScreen MENU_FALSE
     	visible 1
-	rect 449 430 190 24
+	rect 439 430 200 24
 	ownerdrawflag CG_SHOW_ANYTEAMGAME
 
 	itemDef {
 	name "TeammateCountRect"
 	visible 1
-	rect 0 0 190 24
+	rect 0 0 200 24
 	border 1
 	bordersize 1
 	bordercolor .5 .5 .5 1
@@ -649,7 +649,7 @@ menuDef {
 
 	itemDef {
       	name "TeammateCountRedPix"
-        rect 0 0 24 24
+        rect 4 0 24 24
 	visible 1
    	decoration
 	bordercolor 1 1 1 1
@@ -659,7 +659,7 @@ menuDef {
 
 	itemDef {
       	name "TeammateCountRedValue"
-        rect 28 -4 48 24
+        rect 32 -4 48 24
 	textstyle 3
 	textalign 0
 	visible 1
@@ -671,7 +671,7 @@ menuDef {
 
 	itemDef {
       	name "TeammateCountBluePix"
-        rect 95 0 24 24
+        rect 104 0 24 24
 	visible 1
    	decoration
 	bordercolor 1 1 1 1
@@ -681,7 +681,7 @@ menuDef {
 
 	itemDef {
       	name "TeammateCountBlueValue"
-        rect 123 -4 48 24
+        rect 132 -4 48 24
 	textstyle 3
 	textalign 0
 	visible 1
