@@ -86,7 +86,7 @@ itemDef {
 
 	itemDef {
 	name "r"
-        rect 275 25 20 44
+        rect 50 25 250 44
 	visible 1
 	decoration
 	textalign 2
@@ -96,12 +96,13 @@ itemDef {
 
 itemDef {
 	name blueteamname
-        ownerdraw CG_BLUE_NAME
+    ownerdraw CG_BLUE_NAME
 	text " "
 	textalign 2
+	textalignx 272
 	textstyle 3
 	textscale .5
-	rect 615 45 30 23		 
+    rect 340 45 272 23
 	forecolor 0 .58 1 1
 	decoration
 	visible 1
@@ -109,9 +110,10 @@ itemDef {
 
 	itemDef {
 	name "b"
-        rect 330 25 20 44
+    rect 320 25 20 44
 	visible 1
 	textalign 0
+	textalignx 4
 	decoration
 	forecolor 0 .58 1 1
 	ownerdraw CG_BLUE_SCORE
@@ -495,12 +497,12 @@ itemdef {
 	text "TA+ by Kr3m"
 	rect 225 440 256 20
 	forecolor 1 0.75 0 1
-	textalignx 33
-	textaligny 23
+	textalignx 97
+	textaligny 21
 	visible 1 
-	textalign 0
+	textalign 1
 	decoration
-	textscale 0.45
+	textscale 0.3
 	}
 
 

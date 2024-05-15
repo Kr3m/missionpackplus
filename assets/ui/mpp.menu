@@ -659,8 +659,9 @@ menuDef {
 
 	itemDef {
       	name "TeammateCountRedValue"
-        rect 32 -4 59 24
+        rect 42 -4 49 24
 	textstyle 3
+	textalignx 30
 	textalign 1
 	visible 1
     	decoration
@@ -676,13 +677,14 @@ menuDef {
    	decoration
 	bordercolor 1 1 1 1
 	style 3
-	background "models/players/heads/Gammy/icon_blue.tga"
+	background "models/players/heads/Megan/icon_blue.tga"
 	}
 
 	itemDef {
       	name "TeammateCountBlueValue"
-        rect 142 -4 59 24
+        rect 152 -4 49 24
 	textstyle 3
+	textalignx 30
 	textalign 1
 	visible 1
     	decoration
