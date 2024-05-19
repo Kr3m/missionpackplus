@@ -1,5 +1,5 @@
 "team_icon/the fallen_red"
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -13,7 +13,7 @@
 }
 
 "team_icon/the fallen_blue"
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -55,7 +55,7 @@ team_icon/thefallen_blue
 }
 
 team_icon/intruders_red
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -69,7 +69,7 @@ team_icon/intruders_red
 }
 
 team_icon/intruders_blue
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -83,7 +83,7 @@ team_icon/intruders_blue
 }
 
 team_icon/crusaders_red
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -97,7 +97,7 @@ team_icon/crusaders_red
 }
 
 team_icon/crusaders_blue
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -111,7 +111,7 @@ team_icon/crusaders_blue
 }
 
 team_icon/pagans_red
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -125,7 +125,7 @@ team_icon/pagans_red
 }
 
 team_icon/pagans_blue
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -139,7 +139,7 @@ team_icon/pagans_blue
 }
 
 team_icon/stroggs_red
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -153,7 +153,7 @@ team_icon/stroggs_red
 }
 
 team_icon/stroggs_blue
-{       	
+{
 	cull none
         surfaceparm nolightmap
         surfaceparm trans
@@ -193,5 +193,35 @@ team_icon/^4BLUE_blue
 		blendFunc Add
 		rgbgen wave triangle 0.2 0.5 0 0.2
 
+	}
+}
+
+//redteam03 and blueteam03
+
+textures/ctf2/redteam03
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map textures/ctf2/redteam03.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+                  
+	}
+}
+
+textures/ctf2/blueteam03
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map textures/ctf2/blueteam03.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+                  
 	}
 }
