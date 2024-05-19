@@ -1594,10 +1594,10 @@ static int CG_OwnerDrawWidth(int ownerDraw, float scale) {
 			return CG_Text_Width(CG_GetKillerText(), scale, 0);
 			break;
 	  case CG_RED_NAME:
-			return CG_Text_Width(cg_redTeamName.string, scale, 0);
+			return CG_Text_Width(cgs.redTeam, scale, 0);
 			break;
 	  case CG_BLUE_NAME:
-			return CG_Text_Width(cg_blueTeamName.string, scale, 0);
+			return CG_Text_Width(cgs.blueTeam, scale, 0);
 			break;
 
 

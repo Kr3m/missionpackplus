@@ -612,11 +612,11 @@ static void CG_DrawBlueScore(rectDef_t *rect, float scale, vec4_t color, qhandle
 
 // FIXME: team name support
 static void CG_DrawRedName(rectDef_t *rect, float scale, vec4_t color, int textStyle ) {
-  CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cg_redTeamName.string , 0, 0, textStyle);
+  CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cgs.redTeam , 0, 0, textStyle);
 }
 
 static void CG_DrawBlueName(rectDef_t *rect, float scale, vec4_t color, int textStyle ) {
-  CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cg_blueTeamName.string, 0, 0, textStyle);
+  CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cgs.blueTeam, 0, 0, textStyle);
 }
 
 static void CG_DrawBlueFlagName(rectDef_t *rect, float scale, vec4_t color, int textStyle ) {
