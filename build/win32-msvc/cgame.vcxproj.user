@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerCommand>$(QUAKE3DIR)/$(QUAKE3EXE)</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments>+set fs_game $(MOD) +set vm_game 0 +set vm_cgame 0 +set vm_ui 0 +set r_fullscreen $(FULLSCREEN) +set r_mode $(RMODE) +set r_customWidth $(WIDTH) +set r_customHeight $(HEIGHT) +devmap $(MAP)</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>+set fs_game $(MOD) +set sv_pure 0 +set vm_game 0 +set vm_cgame 0 +set vm_ui 0 +set r_fullscreen $(FULLSCREEN) +set r_mode $(RMODE) +set r_customWidth $(WIDTH) +set r_customHeight $(HEIGHT) +devmap $(MAP)</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
