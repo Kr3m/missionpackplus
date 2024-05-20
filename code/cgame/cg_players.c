@@ -480,7 +480,7 @@ CG_RegisterClientSkin
 ==========================
 */
 static qboolean	CG_RegisterClientSkin( clientInfo_t *ci, const char *teamName, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName ) {
-	char filename[MAX_QPATH];
+	char filename[MAX_QPATH * 2];
 
 	/*
 	Com_sprintf( filename, sizeof( filename ), "models/players/%s/%slower_%s.skin", modelName, teamName, skinName );
@@ -539,7 +539,7 @@ CG_RegisterClientModelname
 ==========================
 */
 static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName, const char *teamName ) {
-	char	filename[MAX_QPATH];
+	char	filename[MAX_QPATH * 2];
 	const char		*headName;
 	char newTeamName[MAX_QPATH];
 
@@ -991,8 +991,8 @@ static void CG_SetSkinAndModel( clientInfo_t *newInfo,
 		char *modelName, int modelNameSize,
 		char *skinName, int skinNameSize ) 
 {
-	char modelStr[ MAX_QPATH ];
-	char newSkin[ MAX_QPATH ];
+	char modelStr[ MAX_QPATH * 2 ];
+	char newSkin[ MAX_QPATH * 2 ];
 	char *skin, *slash;
 	qboolean	pm_model;
 	qboolean	fb_model;

@@ -610,7 +610,7 @@ static void CG_DrawBlueScore(rectDef_t *rect, float scale, vec4_t color, qhandle
 	CG_Text_Paint(rect->x + rect->w - value, rect->y + rect->h, scale, color, num, 0, 0, textStyle);
 }
 
-// FIXME: team name support
+// FIXME: team name support (fixed by Kr3m leaving here)
 static void CG_DrawRedName(rectDef_t *rect, float scale, vec4_t color, int textStyle ) {
   CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cgs.redTeam , 0, 0, textStyle);
 }
