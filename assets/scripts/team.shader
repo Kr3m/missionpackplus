@@ -225,3 +225,117 @@ textures/ctf2/blueteam03
                   
 	}
 }
+
+//Dune teams by Kr3m
+
+team_icon/atreides_red
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map team_icon/atreides_red.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+
+	}
+}
+
+team_icon/atreides_blue
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map team_icon/atreides_blue.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+
+	}
+}
+
+team_icon/corrino_red
+{
+	cull none
+    surfaceparm nolightmap
+    surfaceparm trans
+    surfaceparm nomarks
+	{
+		map team_icon/corrino_red.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+
+	}
+}
+
+team_icon/corrino_blue
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map team_icon/corrino_blue.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+
+	}
+}
+
+team_icon/ginaz_red
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map team_icon/ginaz_red.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+
+	}
+}
+
+team_icon/ginaz_blue
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map team_icon/ginaz_blue.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+
+	}
+}
+
+team_icon/harkonnen_red
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map team_icon/harkonnen_red.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+
+	}
+}
+
+team_icon/harkonnen_blue
+{
+	cull none
+        surfaceparm nolightmap
+        surfaceparm trans
+        surfaceparm nomarks
+	{
+		map team_icon/harkonnen_blue.tga
+		blendFunc Add
+		rgbgen wave triangle 0.2 0.5 0 0.2
+
+	}
+}
