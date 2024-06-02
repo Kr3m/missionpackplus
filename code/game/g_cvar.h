@@ -117,6 +117,9 @@ G_CVAR( g_grappleSpeed, "g_grappleSpeed", "800", 0, 0, qtrue, qfalse )
 G_CVAR( g_grapplePull, "g_grapplePull", "800", CVAR_SERVERINFO, 0, qtrue, qfalse )
 G_CVAR( g_grappleDamage, "g_grappleDamage", "0", 0, 0, qfalse, qfalse )
 
+G_CVAR( g_fastRail, "g_fastRail", "0", CVAR_SERVERINFO, 0, qtrue, qtrue )
+G_CVAR( g_fastWeaponSwitch, "g_fastWeaponSwitch", "0", CVAR_SERVERINFO, 0, qtrue, qtrue )
+
 G_CVAR( g_startAmmoMG, "g_startAmmoMG", "50", 0, 0, qfalse, qfalse )
 G_CVAR( g_startAmmoSG, "g_startAmmoSG", "10", 0, 0, qfalse, qfalse )
 G_CVAR( g_startAmmoGL, "g_startAmmoGL", "5", 0, 0, qfalse, qfalse )
@@ -180,5 +183,7 @@ G_CVAR( g_1FRespawn, "g_1FRespawn", "0", 0, 0, qfalse, qfalse)
 G_CVAR( g_loadCustomEnts, "g_loadCustomEnts", "0", 0, 0, qfalse, qfalse)
 
 G_CVAR( g_rotation, "g_rotation", "0", CVAR_ARCHIVE, 0, qfalse, qfalse )
+
+G_CVAR( g_promode, "g_promode", "0", CVAR_SYSTEMINFO | CVAR_SERVERINFO, 0, qtrue, qtrue )
 
 #undef G_CVAR

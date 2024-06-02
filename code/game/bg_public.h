@@ -173,7 +173,12 @@ typedef struct {
 	int			pmove_fixed;
 	int			pmove_msec;
 
-	int			grapplePull;
+	int         grapplePull;
+    int         movetype;  //physics type
+
+    //fast rail and fast weapon switch
+    int         fastRail;
+    int         fastWeaponSwitch;
 
 	// callbacks to test the world
 	// these will be different functions during game and cgame
@@ -200,7 +205,8 @@ typedef enum {
 	STAT_ARMOR,				
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-	STAT_MAX_HEALTH					// health / armor limit, changable by handicap
+	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
+    	STAT_TIME_LASTJUMP
 } statIndex_t;
 
 
@@ -713,6 +719,7 @@ void	BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 void	BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
 
 qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
+qboolean	BG_ProModePlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
 
 
 #define ARENAS_PER_TIER		4

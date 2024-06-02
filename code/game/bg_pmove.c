@@ -3,9 +3,8 @@
 // bg_pmove.c -- both games player movement code
 // takes a playerstate and a usercmd as input and returns a modifed playerstate
 
-#include "q_shared.h"
-#include "bg_public.h"
-#include "bg_local.h"
+#include "bg_pmove.h"
+#include "bg_promode.h"
 
 pmove_t		*pm;
 pml_t		pml;
@@ -75,14 +74,14 @@ void PM_AddTouchEnt( int entityNum ) {
 PM_StartTorsoAnim
 ===================
 */
-static void PM_StartTorsoAnim( int anim ) {
+void PM_StartTorsoAnim( int anim ) {
 	if ( pm->ps->pm_type >= PM_DEAD ) {
 		return;
 	}
 	pm->ps->torsoAnim = ( ( pm->ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
 		| anim;
 }
-static void PM_StartLegsAnim( int anim ) {
+void PM_StartLegsAnim( int anim ) {
 	if ( pm->ps->pm_type >= PM_DEAD ) {
 		return;
 	}
@@ -93,7 +92,7 @@ static void PM_StartLegsAnim( int anim ) {
 		| anim;
 }
 
-static void PM_ContinueLegsAnim( int anim ) {
+void PM_ContinueLegsAnim( int anim ) {
 	if ( ( pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim ) {
 		return;
 	}
@@ -103,7 +102,7 @@ static void PM_ContinueLegsAnim( int anim ) {
 	PM_StartLegsAnim( anim );
 }
 
-static void PM_ContinueTorsoAnim( int anim ) {
+void PM_ContinueTorsoAnim( int anim ) {
 	if ( ( pm->ps->torsoAnim & ~ANIM_TOGGLEBIT ) == anim ) {
 		return;
 	}
@@ -113,7 +112,7 @@ static void PM_ContinueTorsoAnim( int anim ) {
 	PM_StartTorsoAnim( anim );
 }
 
-static void PM_ForceLegsAnim( int anim ) {
+void PM_ForceLegsAnim( int anim ) {
 	pm->ps->legsTimer = 0;
 	PM_StartLegsAnim( anim );
 }
@@ -130,9 +129,9 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
 	float	backoff;
 	float	change;
 	int		i;
-	
+
 	backoff = DotProduct (in, normal);
-	
+
 	if ( backoff < 0 ) {
 		backoff *= overbounce;
 	} else {
@@ -153,7 +152,7 @@ PM_Friction
 Handles both ground friction and water friction
 ==================
 */
-static void PM_Friction( void ) {
+void PM_Friction( void ) {
 	vec3_t	vec;
 	float	*vel;
 	float	speed, newspeed, control;
@@ -223,7 +222,7 @@ PM_Accelerate
 Handles user intended acceleration
 ==============
 */
-static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
+void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
 #if 1
 	// q2 style
 	int			i;
@@ -273,7 +272,7 @@ This allows the clients to use axial -127 to 127 values for all directions
 without getting a sqrt(2) distortion in speed.
 ============
 */
-static float PM_CmdScale( usercmd_t *cmd ) {
+float PM_CmdScale( usercmd_t *cmd ) {
 	int		max;
 	float	total;
 	float	scale;
@@ -305,7 +304,7 @@ Determine the rotation of the legs relative
 to the facing dir
 ================
 */
-static void PM_SetMovementDir( void ) {
+void PM_SetMovementDir( void ) {
 	if ( pm->cmd.forwardmove || pm->cmd.rightmove ) {
 		if ( pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0 ) {
 			pm->ps->movementDir = 0;
@@ -342,36 +341,36 @@ static void PM_SetMovementDir( void ) {
 PM_CheckJump
 =============
 */
-static qboolean PM_CheckJump( void ) {
-	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
-		return qfalse;		// don't allow jump until all buttons are up
+qboolean PM_CheckJump(void) {
+	if (pm->ps->pm_flags & PMF_RESPAWNED) {
+		return qfalse;  // don't allow jump until all buttons are up
 	}
 
-	if ( pm->cmd.upmove < 10 ) {
+	if (pm->cmd.upmove < 10) {
 		// not holding jump
 		return qfalse;
 	}
 
 	// must wait for jump to be released
-	if ( pm->ps->pm_flags & PMF_JUMP_HELD ) {
+	if (pm->ps->pm_flags & PMF_JUMP_HELD) {
 		// clear upmove so cmdscale doesn't lower running speed
 		pm->cmd.upmove = 0;
 		return qfalse;
 	}
 
-	pml.groundPlane = qfalse;		// jumping away
-	pml.walking = qfalse;
+	pml.groundPlane = qfalse;  // jumping away
+	pml.walking     = qfalse;
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pm->ps->velocity[2] = JUMP_VELOCITY;
-	PM_AddEvent( EV_JUMP );
+	pm->ps->velocity[2]     = JUMP_VELOCITY;
+	PM_AddEvent(EV_JUMP);
 
-	if ( pm->cmd.forwardmove >= 0 ) {
-		PM_ForceLegsAnim( LEGS_JUMP );
+	if (pm->cmd.forwardmove >= 0) {
+		PM_ForceLegsAnim(LEGS_JUMP);
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 	} else {
-		PM_ForceLegsAnim( LEGS_JUMPB );
+		PM_ForceLegsAnim(LEGS_JUMPB);
 		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
 	}
 
@@ -383,7 +382,7 @@ static qboolean PM_CheckJump( void ) {
 PM_CheckWaterJump
 =============
 */
-static qboolean	PM_CheckWaterJump( void ) {
+qboolean	PM_CheckWaterJump( void ) {
 	vec3_t	spot;
 	int		cont;
 	vec3_t	flatforward;
@@ -435,7 +434,7 @@ PM_WaterJumpMove
 Flying out of the water
 ===================
 */
-static void PM_WaterJumpMove( void ) {
+void PM_WaterJumpMove( void ) {
 	// waterjump has no control, but falls
 
 	PM_StepSlideMove( qtrue );
@@ -454,7 +453,7 @@ PM_WaterMove
 
 ===================
 */
-static void PM_WaterMove( void ) {
+void PM_WaterMove( void ) {
 	int		i;
 	vec3_t	wishvel;
 	float	wishspeed;
@@ -543,7 +542,7 @@ PM_FlyMove
 Only with the flight powerup
 ===================
 */
-static void PM_FlyMove( void ) {
+void PM_FlyMove( void ) {
 	int		i;
 	vec3_t	wishvel;
 	float	wishspeed;
@@ -584,50 +583,49 @@ PM_AirMove
 
 ===================
 */
-static void PM_AirMove( void ) {
-	int			i;
-	vec3_t		wishvel;
-	float		fmove, smove;
-	vec3_t		wishdir;
-	float		wishspeed;
-	float		scale;
-	usercmd_t	cmd;
+void PM_AirMove(void) {
+	int       i;
+	vec3_t    wishvel;
+	float     fmove, smove;
+	vec3_t    wishdir;
+	float     wishspeed;
+	float     scale;
+	usercmd_t cmd;
 
 	PM_Friction();
 
 	fmove = pm->cmd.forwardmove;
 	smove = pm->cmd.rightmove;
 
-	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd );
+	cmd   = pm->cmd;
+	scale = PM_CmdScale(&cmd);
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
 
 	// project moves down to flat plane
 	pml.forward[2] = 0;
-	pml.right[2] = 0;
-	VectorNormalize (pml.forward);
-	VectorNormalize (pml.right);
+	pml.right[2]   = 0;
+	VectorNormalize(pml.forward);
+	VectorNormalize(pml.right);
 
-	for ( i = 0 ; i < 2 ; i++ ) {
-		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
+	for (i = 0; i < 2; i++) {
+		wishvel[i] = pml.forward[i] * fmove + pml.right[i] * smove;
 	}
 	wishvel[2] = 0;
 
-	VectorCopy (wishvel, wishdir);
+	VectorCopy(wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
 	wishspeed *= scale;
 
 	// not on ground, so little effect on velocity
-	PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);
+	PM_Accelerate(wishdir, wishspeed, pm_airaccelerate);
 
 	// we may have a ground plane that is very steep, even
 	// though we don't have a groundentity
 	// slide along the steep plane
-	if ( pml.groundPlane ) {
-		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
-			pm->ps->velocity, OVERCLIP );
+	if (pml.groundPlane) {
+		PM_ClipVelocity(pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity, OVERCLIP);
 	}
 
 #if 0
@@ -640,7 +638,7 @@ static void PM_AirMove( void ) {
 		PM_SlideMove ( qtrue );
 #endif
 
-	PM_StepSlideMove ( qtrue );
+	PM_StepSlideMove(qtrue);
 }
 
 /*
@@ -649,7 +647,7 @@ PM_GrappleMove
 
 ===================
 */
-static void PM_GrappleMove( void ) {
+void PM_GrappleMove( void ) {
 	vec3_t vel, v;
 	float vlen;
 
@@ -675,7 +673,7 @@ PM_WalkMove
 
 ===================
 */
-static void PM_WalkMove( void ) {
+void PM_WalkMove( void ) {
 	int			i;
 	vec3_t		wishvel;
 	float		fmove, smove;
@@ -806,7 +804,7 @@ static void PM_WalkMove( void ) {
 PM_DeadMove
 ==============
 */
-static void PM_DeadMove( void ) {
+void PM_DeadMove( void ) {
 	float	forward;
 
 	if ( !pml.walking ) {
@@ -831,7 +829,7 @@ static void PM_DeadMove( void ) {
 PM_NoclipMove
 ===============
 */
-static void PM_NoclipMove( void ) {
+void PM_NoclipMove( void ) {
 	float	speed, drop, friction, control, newspeed;
 	int			i;
 	vec3_t		wishvel;
@@ -895,7 +893,7 @@ PM_FootstepForSurface
 Returns an event number apropriate for the groundsurface
 ================
 */
-static int PM_FootstepForSurface( void ) {
+int PM_FootstepForSurface( void ) {
 	if ( pml.groundTrace.surfaceFlags & SURF_NOSTEPS ) {
 		return 0;
 	}
@@ -913,7 +911,7 @@ PM_CrashLand
 Check for hard landings that generate sound events
 =================
 */
-static void PM_CrashLand( void ) {
+void PM_CrashLand( void ) {
 	float		delta;
 	float		dist;
 	float		vel, acc;
@@ -1013,7 +1011,7 @@ void PM_CheckStuck(void) {
 PM_CorrectAllSolid
 =============
 */
-static int PM_CorrectAllSolid( trace_t *trace ) {
+int PM_CorrectAllSolid( trace_t *trace ) {
 	int			i, j, k;
 	vec3_t		point;
 
@@ -1058,7 +1056,7 @@ PM_GroundTraceMissed
 The ground trace didn't hit a surface, so we are in freefall
 =============
 */
-static void PM_GroundTraceMissed( void ) {
+void PM_GroundTraceMissed( void ) {
 	trace_t		trace;
 	vec3_t		point;
 
@@ -1096,7 +1094,7 @@ static void PM_GroundTraceMissed( void ) {
 PM_GroundTrace
 =============
 */
-static void PM_GroundTrace( void ) {
+void PM_GroundTrace( void ) {
 	vec3_t		point;
 	trace_t		trace;
 
@@ -1194,7 +1192,7 @@ static void PM_GroundTrace( void ) {
 PM_SetWaterLevel	FIXME: avoid this twice?  certainly if not moving
 =============
 */
-static void PM_SetWaterLevel( void ) {
+void PM_SetWaterLevel( void ) {
 	vec3_t		point;
 	int			cont;
 	int			sample1;
@@ -1238,7 +1236,7 @@ PM_CheckDuck
 Sets mins, maxs, and pm->ps->viewheight
 ==============
 */
-static void PM_CheckDuck (void)
+void PM_CheckDuck (void)
 {
 	trace_t	trace;
 
@@ -1311,7 +1309,7 @@ static void PM_CheckDuck (void)
 PM_Footsteps
 ===============
 */
-static void PM_Footsteps( void ) {
+void PM_Footsteps( void ) {
 	float		bobmove;
 	float		xyspeedQ;
 	int			old;
@@ -1425,7 +1423,7 @@ PM_WaterEvents
 Generate sound events for entering and leaving water
 ==============
 */
-static void PM_WaterEvents( void ) {		// FIXME?
+void PM_WaterEvents( void ) {		// FIXME?
 	//
 	// if just entered a water volume, play a sound
 	//
@@ -1477,7 +1475,8 @@ static void PM_BeginWeaponChange( int weapon ) {
 
 	PM_AddEvent( EV_CHANGE_WEAPON );
 	pm->ps->weaponstate = WEAPON_DROPPING;
-	pm->ps->weaponTime += 200;
+	//pm->ps->weaponTime += 200;
+	pm->ps->weaponTime += pm->fastWeaponSwitch > 0 ? 0 : 200;
 	PM_StartTorsoAnim( TORSO_DROP );
 }
 
@@ -1502,7 +1501,8 @@ static void PM_FinishWeaponChange( void ) {
 	pm->ps->weapon = weapon;
 	pm->ps->weaponstate = WEAPON_RAISING;
 	pm->ps->eFlags &= ~EF_FIRING;
-	pm->ps->weaponTime += 250;
+	//pm->ps->weaponTime += 250;
+	pm->ps->weaponTime += pm->fastWeaponSwitch > 0 ? 0 : 250;
 	PM_StartTorsoAnim( TORSO_RAISE );
 }
 
@@ -1513,7 +1513,7 @@ PM_TorsoAnimation
 
 ==============
 */
-static void PM_TorsoAnimation( void ) {
+void PM_TorsoAnimation( void ) {
 	if ( pm->ps->weaponstate == WEAPON_READY ) {
 		if ( pm->ps->weapon == WP_GAUNTLET ) {
 			PM_ContinueTorsoAnim( TORSO_STAND2 );
@@ -1532,7 +1532,7 @@ PM_Weapon
 Generates weapon events and modifes the weapon counter
 ==============
 */
-static void PM_Weapon( void ) {
+void PM_Weapon( void ) {
 	int		addTime;
 
 	// don't allow attack until all buttons are up
@@ -1628,7 +1628,8 @@ static void PM_Weapon( void ) {
 	// check for out of ammo
 	if ( ! pm->ps->ammo[ pm->ps->weapon ] ) {
 		PM_AddEvent( EV_NOAMMO );
-		pm->ps->weaponTime += 500;
+		//pm->ps->weaponTime += 500;
+		pm->ps->weaponTime += pm->fastWeaponSwitch > 1 ? 100 : 500;
 		return;
 	}
 
@@ -1664,7 +1665,17 @@ static void PM_Weapon( void ) {
 		addTime = 100;
 		break;
 	case WP_RAILGUN:
-		addTime = 1500;
+		if( pm->fastRail >= 2 )
+		{
+			addTime = 1000;
+		} else if ( pm->fastRail == 1 )
+		{
+			addTime = 1250;
+		}
+		else {
+			addTime = 1500;
+		}
+		
 		break;
 	case WP_BFG:
 		addTime = 200;
@@ -1708,7 +1719,7 @@ PM_Animate
 ================
 */
 
-static void PM_Animate( void ) {
+void PM_Animate( void ) {
 	if ( pm->cmd.buttons & BUTTON_GESTURE ) {
 		if ( pm->ps->torsoTimer == 0 ) {
 			PM_StartTorsoAnim( TORSO_GESTURE );
@@ -1756,7 +1767,7 @@ static void PM_Animate( void ) {
 PM_DropTimers
 ================
 */
-static void PM_DropTimers( void ) {
+void PM_DropTimers( void ) {
 	// drop misc timing counter
 	if ( pm->ps->pm_time ) {
 		if ( pml.msec >= pm->ps->pm_time ) {
@@ -2069,7 +2080,12 @@ void Pmove (pmove_t *pmove) {
 			}
 		}
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
-		PmoveSingle( pmove );
+		if (0) {
+			PmoveSingle(pmove);
+		}  // Uses all baseq3a default PM_ functions
+		else {
+			phy_PmoveSingle(pmove);
+		}  // Uses custom move code
 
 		if ( pmove->ps->pm_flags & PMF_JUMP_HELD ) {
 			pmove->cmd.upmove = 20;

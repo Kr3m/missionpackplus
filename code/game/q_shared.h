@@ -533,6 +533,10 @@ float AngleNormalize360 ( float angle );
 float AngleNormalize180 ( float angle );
 float AngleDelta ( float angle1, float angle2 );
 
+//added by Kr3m
+float Q_powf ( float x, int y );
+void VectorMAM(float scale1, vec3_t b1, float scale2, vec3_t b2, vec3_t c);
+
 qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
 void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
 void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );

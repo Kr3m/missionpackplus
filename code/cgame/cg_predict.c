@@ -1147,6 +1147,9 @@ void CG_PredictPlayerState( void ) {
 			Pmove (&cg_pmove);
 		} else 
 #endif
+        //promode
+        cg_pmove.movetype = cgs.g_promode;
+
 		if ( /*cg_optimizePrediction.integer && */ ( cmdNum >= predictCmd || ( stateIndex + 1 ) % NUM_SAVED_STATES == cg.stateHead ) ) {
 
 			Pmove( &cg_pmove );
