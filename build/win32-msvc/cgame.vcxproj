@@ -177,6 +177,7 @@ copy $(ProjectDir)$(ARCH)\$(Configuration)\$(TargetName).pdb "$(QUAKE3DIR)\$(MOD
     <ClCompile Include="..\..\code\game\bg_lib.c" />
     <ClCompile Include="..\..\code\game\bg_misc.c" />
     <ClCompile Include="..\..\code\game\bg_pmove.c" />
+    <ClCompile Include="..\..\code\game\bg_promode.c" />
     <ClCompile Include="..\..\code\game\bg_slidemove.c" />
     <ClCompile Include="..\..\code\game\q_math.c" />
     <ClCompile Include="..\..\code\game\q_shared.c" />
@@ -188,6 +189,7 @@ copy $(ProjectDir)$(ARCH)\$(Configuration)\$(TargetName).pdb "$(QUAKE3DIR)\$(MOD
     <ClInclude Include="..\..\code\game\bg_lib.h" />
     <ClInclude Include="..\..\code\game\bg_local.h" />
     <ClInclude Include="..\..\code\game\bg_pmove.h" />
+    <ClInclude Include="..\..\code\game\bg_promode.h" />
     <ClInclude Include="..\..\code\game\bg_public.h" />
     <ClInclude Include="..\..\code\game\match.h" />
     <ClInclude Include="..\..\code\game\q_shared.h" />
