@@ -515,7 +515,8 @@ void core_Weapon(void) {
 	// check for out of ammo
 	if (!pm->ps->ammo[pm->ps->weapon]) {
 		PM_AddEvent(EV_NOAMMO);
-		pm->ps->weaponTime += 500;
+		//pm->ps->weaponTime += 500;
+        pm->ps->weaponTime += pm->fastWeaponSwitch > 1 ? 100 : 500;
 		return;
 	}
 
