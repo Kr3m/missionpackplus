@@ -554,8 +554,10 @@ void core_Weapon(void) {
         if( pm->fastRail >= 2 )
         {
             addTime = 1000;
-        } else {
+        } else if (pm->movetype == CPM) {
             addTime = 1250;
+        } else {
+            addTime = 1500;
         }
         break;
 	case WP_BFG:
@@ -565,7 +567,7 @@ void core_Weapon(void) {
 		addTime = 400;
 		break;
 
-#ifdef TEAMARENA
+#ifdef MISSIONPACK
 	case WP_NAILGUN:
 		addTime = 1000;
 		break;
@@ -578,7 +580,7 @@ void core_Weapon(void) {
 #endif
 	}
 
-#ifdef TEAMARENA
+#ifdef MISSIONPACK
 	if (bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT) {
 		addTime /= 1.5;
 	} else if (bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN) {

@@ -45,7 +45,7 @@ qboolean PM_CheckWaterJump(void);
 void     PM_WaterJumpMove(void);
 void     PM_WaterMove(void);
 
-#ifdef TEAMARENA
+#ifdef MISSIONPACK
 void PM_InvulnerabilityMove(void);
 #endif
 void PM_AirMove(void);
