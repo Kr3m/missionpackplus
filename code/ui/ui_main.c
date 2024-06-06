@@ -1008,11 +1008,13 @@ static void UI_DrawClanName(rectDef_t *rect, float scale, vec4_t color, int text
 static void UI_SetCapFragLimits(qboolean uiVars) {
 	int cap = 5;
 	int frag = 10;
+#ifdef MISSIONPACK	
 	if (uiInfo.gameTypes[ui_gameType.integer].gtEnum == GT_OBELISK) {
 		cap = 4;
 	} else if (uiInfo.gameTypes[ui_gameType.integer].gtEnum == GT_HARVESTER) {
 		cap = 15;
 	}
+#endif	
 	if (uiVars) {
 		trap_Cvar_Set("ui_captureLimit", va("%d", cap));
 		trap_Cvar_Set("ui_fragLimit", va("%d", frag));

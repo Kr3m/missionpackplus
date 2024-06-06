@@ -169,6 +169,7 @@ void UI_LoadArenas( void ) {
 			if( strstr( type, "ctf" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CTF);
 			}
+#ifdef MISSIONPACK
 			if( strstr( type, "oneflag" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_1FCTF);
 			}
@@ -178,6 +179,7 @@ void UI_LoadArenas( void ) {
 			if( strstr( type, "harvester" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_HARVESTER);
 			}
+#endif
 		} else {
 			uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_FFA);
 		}
