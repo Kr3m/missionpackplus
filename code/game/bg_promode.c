@@ -519,7 +519,7 @@ void core_Weapon(void) {
         //pm->ps->weaponTime += pm->fastWeaponSwitch > 1 ? 100 : 500;
         if (pm->fastWeaponSwitch > 1) {
             pm->ps->weaponTime += 100;
-        } else if (pm->movementType != VQ3) {
+        } else if (pm->movetype != VQ3) {
             pm->ps->weaponTime += 100;
         } else {
             pm->ps->weaponTime += 500;
