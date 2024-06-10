@@ -555,7 +555,7 @@ void core_Weapon(void) {
         if( pm->fastRail >= 2 )
         {
             addTime = 1000;
-        } else if (pm->movetype == CPM) {
+        } else if (pm->movetype == CPM || pm->fastRail == 1) {
             addTime = 1250;
         } else {
             addTime = 1500;
