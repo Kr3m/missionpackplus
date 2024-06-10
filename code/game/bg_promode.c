@@ -516,7 +516,14 @@ void core_Weapon(void) {
 	if (!pm->ps->ammo[pm->ps->weapon]) {
 		PM_AddEvent(EV_NOAMMO);
 		//pm->ps->weaponTime += 500;
-        pm->ps->weaponTime += pm->fastWeaponSwitch > 1 ? 100 : 500;
+        //pm->ps->weaponTime += pm->fastWeaponSwitch > 1 ? 100 : 500;
+        if (pm->fastWeaponSwitch > 1) {
+            pm->ps->weaponTime += 100;
+        } else if (pm->movementType != VQ3) {
+            pm->ps->weaponTime += 100;
+        } else {
+            pm->ps->weaponTime += 500;
+        }
 		return;
 	}
 
