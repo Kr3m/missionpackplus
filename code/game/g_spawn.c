@@ -378,8 +378,12 @@ void G_ParseField( const char *key, const char *value, gentity_t *ent ) {
 	}
 }
 
-
-
+#define ADJUST_AREAPORTAL() \
+	if(ent->s.eType == ET_MOVER) \
+	{ \
+		trap_LinkEntity(ent);					\
+		trap_AdjustAreaPortalState(ent, qtrue); \
+	}
 
 /*
 ===================
@@ -390,10 +394,46 @@ level.spawnVars[], then call the class specfic spawn function
 ===================
 */
 void G_SpawnGEntityFromSpawnVars( void ) {
-	int			i;
+	int			i, j, k;
 	gentity_t	*ent;
+	gentity_t	*comp, *other;
 	char		*s, *value, *gametypeName;
 	static char *gametypeNames[] = {"ffa", "tournament", "single", "team", "ctf", "oneflag", "obelisk", "harvester", "teamtournament"};
+
+	//FIXME:
+	// Check for overlapping specified items
+	const char *taitems[] = {
+		"weapon_chaingun",
+		"weapon_nailgun",
+		"weapon_prox_launcher",
+		"ammo_belt",
+		"ammo_mines",
+		"ammo_nails",
+		"holdable_invulnerability",
+		"holdable_kamikaze"
+	};
+
+	//FIXME:
+	for (i = MAX_CLIENTS; i < level.num_entities; i++) {
+    	for (j = MAX_CLIENTS; j < level.num_entities; j++) {
+        	comp = &g_entities[j];
+        	other = &g_entities[i];
+        	if (other == comp) {
+            	continue;
+        	}
+
+        	for (k = 0; k < sizeof(taitems) / sizeof(taitems[0]); k++) {
+            	if (!Q_stricmp(ent->classname, taitems[k])) {
+                	// Disable the specified item if any entity exists at the same coordinates
+                	if (VectorCompare(comp->r.currentOrigin, other->r.currentOrigin)) {
+                    	ADJUST_AREAPORTAL();
+                    	G_FreeEntity(ent);
+                    	return;
+                	}
+            	}
+        	}
+    	}
+	}
 
 	// get the next free entity
 	ent = G_Spawn();
