@@ -395,6 +395,7 @@ level.spawnVars[], then call the class specfic spawn function
 */
 void G_SpawnGEntityFromSpawnVars( void ) {
 	int			i, j, k;
+	int			otherIsInTaitems, compIsInTaitems;
 	gentity_t	*ent;
 	gentity_t	*comp, *other;
 	char		*s, *value, *gametypeName;
@@ -415,24 +416,42 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 
 	//FIXME:
 	for (i = MAX_CLIENTS; i < level.num_entities; i++) {
-    	for (j = MAX_CLIENTS; j < level.num_entities; j++) {
-        	comp = &g_entities[j];
-        	other = &g_entities[i];
-        	if (other == comp) {
-            	continue;
-        	}
+		other = &g_entities[i];
 
-        	for (k = 0; k < sizeof(taitems) / sizeof(taitems[0]); k++) {
-            	if (!Q_stricmp(ent->classname, taitems[k])) {
-                	// Disable the specified item if any entity exists at the same coordinates
-                	if (VectorCompare(comp->r.currentOrigin, other->r.currentOrigin)) {
-                    	ADJUST_AREAPORTAL();
-                    	G_FreeEntity(ent);
-                    	return;
-                	}
-            	}
-        	}
-    	}
+		// Check if 'other' is in taitems
+		otherIsInTaitems = 0;
+		for (k = 0; k < sizeof(taitems) / sizeof(taitems[0]); k++) {
+			if (!Q_stricmp(other->classname, taitems[k])) {
+				otherIsInTaitems = 1;
+				break;
+			}
+		}
+
+		if (otherIsInTaitems) {
+			for (j = MAX_CLIENTS; j < level.num_entities; j++) {
+				if (i == j) {
+					continue;
+				}
+
+				comp = &g_entities[j];
+
+				if (VectorCompare(other->r.currentOrigin, comp->r.currentOrigin)) {
+					// Check if 'comp' is not in taitems before removing it
+					compIsInTaitems = 0;
+					for (k = 0; k < sizeof(taitems) / sizeof(taitems[0]); k++) {
+						if (!Q_stricmp(comp->classname, taitems[k])) {
+							compIsInTaitems = 1;
+							break;
+						}
+					}
+
+					if (!compIsInTaitems) {
+						ADJUST_AREAPORTAL();
+						G_FreeEntity(comp);
+					}
+				}
+			}
+		}
 	}
 
 	// get the next free entity
