@@ -6,20 +6,20 @@ set INCLUDE=
 
 set cgamedir=..\..\..\..\code\cgame
 set gamedir=..\..\..\..\code\game
-set uidir=..\..\..\..\code\q3_ui
+set uidir=..\..\..\..\code\ui
 
 set tooldir=%~dp0tools\
-set pk3=%~dp0pak8a.pk3
+set pk3=%~dp0pak3a.pk3
 
-set cc1=%tooldir%q3lcc -DQ3_VM -DCGAME  -S -Wf-g -I%cgamedir% -I%gamedir% %1
-set cc2=%tooldir%q3lcc -DQ3_VM -DQAGAME -S -Wf-g -I%gamedir% %1
-set cc3=%tooldir%q3lcc -DQ3_VM -DQ3UI   -S -Wf-g -I%uidir% -I%gamedir% %1
+set cc1=%tooldir%q3lcc -DQ3_VM -DCGAME -DMISSIONPACK -S -Wf-g -I%cgamedir% -I%gamedir% -I%uidir% %1
+set cc2=%tooldir%q3lcc -DQ3_VM -DQAGAME -DMISSIONPACK -S -Wf-g -I%gamedir% %1
+set cc3=%tooldir%q3lcc -DQ3_VM -DUI -DMISSIONPACK -S -Wf-g -I%uidir% -I%gamedir% %1
 
-rem its important to set -vq3 flag for new q3asm 
+rem its important to set -vq3 flag for new q3asm
 rem or qvm's will not run on original 1.32c binaries
 set as1=%tooldir%q3asm -vq3 -r -m -v -o cgame -f %~dp0\cgame
 set as2=%tooldir%q3asm -vq3 -r -m -v -o qagame -f %~dp0\game
-set as3=%tooldir%q3asm -vq3 -r -m -v -o ui -f %~dp0\q3_ui
+set as3=%tooldir%q3asm -vq3 -r -m -v -o ui -f %~dp0\ui
 
 @rem ---------
 @rem * CGAME *
@@ -51,6 +51,8 @@ cd vm\cgame
 @if errorlevel 1 goto quit
 %cc1% %cgamedir%\cg_marks.c
 @if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_newdraw.c
+@if errorlevel 1 goto quit
 %cc1% %cgamedir%\cg_players.c
 @if errorlevel 1 goto quit
 %cc1% %cgamedir%\cg_playerstate.c
@@ -66,8 +68,11 @@ cd vm\cgame
 %cc1% %cgamedir%\cg_view.c
 @if errorlevel 1 goto quit
 %cc1% %cgamedir%\cg_weapons.c
-
 @if errorlevel 1 goto quit
+
+%cc1% %uidir%\ui_shared.c
+@if errorlevel 1 goto quit
+
 %cc1% %gamedir%\bg_lib.c
 @if errorlevel 1 goto quit
 %cc1% %gamedir%\bg_misc.c
@@ -99,11 +104,11 @@ mkdir vm\game
 cd vm\game
 @if errorlevel 1 goto quit
 
-%cc2% %gamedir%\g_main.c 
+%cc2% %gamedir%\g_main.c
 @if errorlevel 1 goto quit
-%cc2% %gamedir%\ai_chat.c 
+%cc2% %gamedir%\ai_chat.c
 @if errorlevel 1 goto quit
-%cc2% %gamedir%\ai_cmd.c 
+%cc2% %gamedir%\ai_cmd.c
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\ai_dmnet.c
 @if errorlevel 1 goto quit
@@ -117,11 +122,11 @@ cd vm\game
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\bg_lib.c
 @if errorlevel 1 goto quit
-%cc2% %gamedir%\bg_misc.c 
+%cc2% %gamedir%\bg_misc.c
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\bg_pmove.c
 @if errorlevel 1 goto quit
-%cc2% %gamedir%\bg_slidemove.c 
+%cc2% %gamedir%\bg_slidemove.c
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\g_active.c
 @if errorlevel 1 goto quit
@@ -188,86 +193,18 @@ mkdir vm\ui
 cd vm\ui
 @if errorlevel 1 goto quit
 
-%cc3% %uidir%\ui_addbots.c
+%cc3% %uidir%\ui_main.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_atoms.c
 @if errorlevel 1 goto quit
-%cc3% %uidir%\ui_cdkey.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_cinematics.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_confirm.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_connect.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_controls2.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_credits.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_demo2.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_display.c
-@if errorlevel 1 goto quit
 %cc3% %uidir%\ui_gameinfo.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_ingame.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_loadconfig.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_main.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_menu.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_mfield.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_mods.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_network.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_options.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_playermodel.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_players.c
 @if errorlevel 1 goto quit
-%cc3% %uidir%\ui_playersettings.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_preferences.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_qmenu.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_removebots.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_saveconfig.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_serverinfo.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_servers2.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_setup.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_sound.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_sparena.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_specifyserver.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_splevel.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_sppostgame.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_spskill.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_startserver.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_team.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_teamorders.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_video.c  
+%cc3% %uidir%\ui_shared.c
 @if errorlevel 1 goto quit
 
-%cc3% %gamedir%\bg_lib.c 
+%cc3% %gamedir%\bg_lib.c
 @if errorlevel 1 goto quit
 %cc3% %gamedir%\bg_misc.c
 @if errorlevel 1 goto quit

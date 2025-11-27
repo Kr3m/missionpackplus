@@ -690,8 +690,13 @@ qboolean ClientUserinfoChanged( int clientNum ) {
 #endif
 
 	// set model
-	Q_strncpyz( model, Info_ValueForKey( userinfo, "model" ), sizeof( model ) );
-	Q_strncpyz( headModel, Info_ValueForKey( userinfo, "headmodel" ), sizeof( headModel ) );
+	if ( g_gametype.integer >= GT_TEAM ) {
+		Q_strncpyz( model, Info_ValueForKey( userinfo, "team_model" ), sizeof( model ) );
+		Q_strncpyz( headModel, Info_ValueForKey( userinfo, "team_headmodel" ), sizeof( headModel ) );
+	} else {
+		Q_strncpyz( model, Info_ValueForKey( userinfo, "model" ), sizeof( model ) );
+		Q_strncpyz( headModel, Info_ValueForKey( userinfo, "headmodel" ), sizeof( headModel ) );
+	}
 
 	// team task (0 = none, 1 = offence, 2 = defence)
 	teamTask = atoi(Info_ValueForKey(userinfo, "teamtask"));

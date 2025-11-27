@@ -219,14 +219,14 @@ void AssetCache() {
 
 void _UI_DrawSides(float x, float y, float w, float h, float size) {
 	UI_AdjustFrom640( &x, &y, &w, &h );
-	size *= uiInfo.uiDC.xscale;
+	size *= uiInfo.uiDC.scale;
 	trap_R_DrawStretchPic( x, y, size, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 	trap_R_DrawStretchPic( x + w - size, y, size, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 }
 
 void _UI_DrawTopBottom(float x, float y, float w, float h, float size) {
 	UI_AdjustFrom640( &x, &y, &w, &h );
-	size *= uiInfo.uiDC.yscale;
+	size *= uiInfo.uiDC.scale;
 	trap_R_DrawStretchPic( x, y, w, size, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 	trap_R_DrawStretchPic( x, y + h - size, w, size, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 }
@@ -240,8 +240,8 @@ Coordinates are 640*480 virtual values
 void _UI_DrawRect( float x, float y, float width, float height, float size, const float *color ) {
 	trap_R_SetColor( color );
 
-  _UI_DrawTopBottom(x, y, width, height, size);
-  _UI_DrawSides(x, y, width, height, size);
+	_UI_DrawTopBottom(x, y, width, height, size);
+	_UI_DrawSides(x, y, width, height, size);
 
 	trap_R_SetColor( NULL );
 }
@@ -1266,8 +1266,8 @@ static void UI_DrawPlayerModel(rectDef_t *rect) {
 	vec3_t	moveangles;
 
 	  if (trap_Cvar_VariableValue("ui_Q3Model")) {
-	  strcpy(model, UI_Cvar_VariableString("model"));
-		strcpy(head, UI_Cvar_VariableString("headmodel"));
+		Q_strncpyz(model, UI_Cvar_VariableString("model"), sizeof(model));
+		Q_strncpyz(head, UI_Cvar_VariableString("headmodel"), sizeof(head));
 		if (!q3Model) {
 			q3Model = qtrue;
 			updateModel = qtrue;
@@ -1275,9 +1275,9 @@ static void UI_DrawPlayerModel(rectDef_t *rect) {
 		team[0] = '\0';
 	} else {
 
-		strcpy(team, UI_Cvar_VariableString("ui_teamName"));
-		strcpy(model, UI_Cvar_VariableString("team_model"));
-		strcpy(head, UI_Cvar_VariableString("team_headmodel"));
+		Q_strncpyz(team, UI_Cvar_VariableString("ui_teamName"), sizeof(team));
+		Q_strncpyz(model, UI_Cvar_VariableString("team_model"), sizeof(model));
+		Q_strncpyz(head, UI_Cvar_VariableString("team_headmodel"), sizeof(head));
 		if (q3Model) {
 			q3Model = qfalse;
 			updateModel = qtrue;
@@ -3523,8 +3523,7 @@ static void UI_RunMenuScript(char **args) {
 			int stat;
 			if ( Int_Parse( args, &stat ) )
 				trap_SetPbClStatus( stat );
-		}
-		else {
+		} else {
 			Com_Printf("unknown UI script %s\n", name);
 		}
 	}
@@ -3588,7 +3587,7 @@ UI_MapCountByTeam
 static int UI_HeadCountByTeam() {
 	static int init = 0;
 	int i, j, k, c, tIndex;
-	
+
 	c = 0;
 	if (!init) {
 		for (i = 0; i < uiInfo.characterCount; i++) {
@@ -3638,6 +3637,7 @@ static int UI_HeadCountByTeam() {
 	}
 	return c;
 }
+
 
 /*
 ==================
@@ -4418,7 +4418,7 @@ static void UI_FeederSelection(float feederID, int index) {
 	UI_SelectedHead(index, &actual);
 	index = actual;
     if (index >= 0 && index < uiInfo.characterCount) {
-		trap_Cvar_Set( "team_model", va("%s", uiInfo.characterList[index].base));
+		trap_Cvar_Set( "team_model", uiInfo.characterList[index].base);
 		trap_Cvar_Set( "team_headmodel", va("*%s", uiInfo.characterList[index].name)); 
 		updateModel = qtrue;
     }
@@ -5087,7 +5087,6 @@ void _UI_Init( qboolean inGameLoad ) {
   
 	uiInfo.uiDC.cursor	= trap_R_RegisterShaderNoMip( "menu/art/3_cursor2" );
 	uiInfo.uiDC.whiteShader = trap_R_RegisterShaderNoMip( "white" );
-
 	AssetCache();
 
 	start = trap_Milliseconds();

@@ -131,7 +131,7 @@ void CG_ParseServerinfo( void ) {
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	cgs.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
-	trap_Cvar_Set( "ui_gametype", va( "%i", cgs.gametype ) );
+	trap_Cvar_Set( "g_gametype", va( "%i", cgs.gametype ) );
 	cgs.dmflags = atoi( Info_ValueForKey( info, "dmflags" ) );
 	cgs.teamflags = atoi( Info_ValueForKey( info, "teamflags" ) );
 	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
@@ -144,20 +144,11 @@ void CG_ParseServerinfo( void ) {
 	cgs.g_sgPellets = atoi(Info_ValueForKey(info, "g_sgPellets"));
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
-
-    Q_strncpyz( cgs.redTeam, Info_ValueForKey( info, "g_redteam" ), sizeof(cgs.redTeam) );
-
-    if( cgs.redTeam[0] == '\0' ) {
-        Q_strncpyz( cgs.redTeam, "^1RED", sizeof(cgs.redTeam) );
-    }
-
-	Q_strncpyz( cgs.blueTeam, Info_ValueForKey( info, "g_blueteam" ), sizeof(cgs.blueTeam) );
-
-    if( cgs.blueTeam[0] == '\0' ) {
-        Q_strncpyz( cgs.blueTeam, "^4BLUE", sizeof(cgs.redTeam) );
-    }
+	Q_strncpyz( cgs.redTeam, Info_ValueForKey( info, "g_redTeam" ), sizeof(cgs.redTeam) );
+	trap_Cvar_Set("g_redTeam", cgs.redTeam);
+	Q_strncpyz( cgs.blueTeam, Info_ValueForKey( info, "g_blueTeam" ), sizeof(cgs.blueTeam) );
+	trap_Cvar_Set("g_blueTeam", cgs.blueTeam);
 }
-
 
 void CG_ParseSysteminfo( void ) {
 	const char	*info;
