@@ -15,6 +15,8 @@ USER INTERFACE MAIN
 
 uiInfo_t uiInfo;
 
+static void UI_CIN_SetExtents(int handle, int x, int y, int w, int h);
+
 static const char *MonthAbbrev[] = {
 	"Jan","Feb","Mar",
 	"Apr","May","Jun",
@@ -1086,7 +1088,7 @@ static void UI_DrawClanCinematic(rectDef_t *rect, float scale, vec4_t color) {
 			}
 			if (uiInfo.teamList[i].cinematic >= 0) {
 			  trap_CIN_RunCinematic(uiInfo.teamList[i].cinematic);
-				trap_CIN_SetExtents(uiInfo.teamList[i].cinematic, rect->x, rect->y, rect->w, rect->h);
+				UI_CIN_SetExtents(uiInfo.teamList[i].cinematic, rect->x, rect->y, rect->w, rect->h);
 	 			trap_CIN_DrawCinematic(uiInfo.teamList[i].cinematic);
 			} else {
 			  	trap_R_SetColor( color );
@@ -1108,12 +1110,12 @@ static void UI_DrawPreviewCinematic(rectDef_t *rect, float scale, vec4_t color) 
 		uiInfo.previewMovie = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.movieList[uiInfo.movieIndex]), 0, 0, 0, 0, (CIN_loop | CIN_silent) );
 		if (uiInfo.previewMovie >= 0) {
 		  trap_CIN_RunCinematic(uiInfo.previewMovie);
-			trap_CIN_SetExtents(uiInfo.previewMovie, rect->x, rect->y, rect->w, rect->h);
+			UI_CIN_SetExtents(uiInfo.previewMovie, rect->x, rect->y, rect->w, rect->h);
  			trap_CIN_DrawCinematic(uiInfo.previewMovie);
 		} else {
 			uiInfo.previewMovie = -2;
 		}
-	} 
+	}
 
 }
 
@@ -1242,7 +1244,7 @@ static void UI_DrawMapCinematic(rectDef_t *rect, float scale, vec4_t color, qboo
 		}
 		if (uiInfo.mapList[map].cinematic >= 0) {
 		  trap_CIN_RunCinematic(uiInfo.mapList[map].cinematic);
-		  trap_CIN_SetExtents(uiInfo.mapList[map].cinematic, rect->x, rect->y, rect->w, rect->h);
+		  UI_CIN_SetExtents(uiInfo.mapList[map].cinematic, rect->x, rect->y, rect->w, rect->h);
  			trap_CIN_DrawCinematic(uiInfo.mapList[map].cinematic);
 		} else {
 			uiInfo.mapList[map].cinematic = -2;
@@ -1323,7 +1325,7 @@ static void UI_DrawNetMapCinematic(rectDef_t *rect, float scale, vec4_t color) {
 
 	if (uiInfo.serverStatus.currentServerCinematic >= 0) {
 	  trap_CIN_RunCinematic(uiInfo.serverStatus.currentServerCinematic);
-	  trap_CIN_SetExtents(uiInfo.serverStatus.currentServerCinematic, rect->x, rect->y, rect->w, rect->h);
+	  UI_CIN_SetExtents(uiInfo.serverStatus.currentServerCinematic, rect->x, rect->y, rect->w, rect->h);
  	  trap_CIN_DrawCinematic(uiInfo.serverStatus.currentServerCinematic);
 	} else {
 		UI_DrawNetMapPreview(rect, scale, color);
@@ -4929,9 +4931,31 @@ static void UI_StopCinematic(int handle) {
 	}
 }
 
-static void UI_DrawCinematic(int handle, float x, float y, float w, float h) {
+/*
+=================
+UI_CIN_SetExtents
+
+Wrapper for trap_CIN_SetExtents that adjusts width for widescreen
+to prevent horizontal stretching of cinematic videos.
+=================
+*/
+static void UI_CIN_SetExtents(int handle, int x, int y, int w, int h) {
+	// Adjust for widescreen to prevent horizontal stretching
+	if ( uiInfo.uiDC.glconfig.vidWidth * 480 > uiInfo.uiDC.glconfig.vidHeight * 640 ) {
+		float aspectCorrection = (uiInfo.uiDC.glconfig.vidHeight * 640.0f) / (uiInfo.uiDC.glconfig.vidWidth * 480.0f);
+		float newW = w * aspectCorrection;
+		float newX = x * aspectCorrection;
+		// Offset to account for the centered 4:3 area
+		newX += (640.0f - 640.0f * aspectCorrection) * 0.5f;
+		x = (int)(newX + 0.5f);
+		w = (int)(newW + 0.5f);
+	}
 	trap_CIN_SetExtents(handle, x, y, w, h);
-  trap_CIN_DrawCinematic(handle);
+}
+
+static void UI_DrawCinematic(int handle, float x, float y, float w, float h) {
+	UI_CIN_SetExtents(handle, x, y, w, h);
+	trap_CIN_DrawCinematic(handle);
 }
 
 static void UI_RunCinematicFrame(int handle) {
