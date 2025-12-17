@@ -101,6 +101,7 @@ static gentity_t *SelectRandomFurthestSpawnPoint( const gentity_t *ent, vec3_t a
 	int			selection;
 	int			checkTelefrag;
 	int			checkType;
+	int			checkTimestamp;
 	int			checkMask;
 	qboolean	isBot;
 
@@ -108,16 +109,17 @@ static gentity_t *SelectRandomFurthestSpawnPoint( const gentity_t *ent, vec3_t a
 	checkTelefrag = qtrue;
 
 	if ( ent )
-		isBot = ((ent->r.svFlags & SVF_BOT) == SVF_BOT); 
+		isBot = ((ent->r.svFlags & SVF_BOT) == SVF_BOT);
 	else
 		isBot = qfalse;
 
-	checkMask = 3;
+	checkMask = 7;
 
 __search:
 
 	checkTelefrag = checkMask & 1;
 	checkType = checkMask & 2;
+	checkTimestamp = checkMask & 4;
 
 	numSpots = 0;
 	for ( n = 0 ; n < level.numSpawnSpots ; n++ ) {
@@ -129,13 +131,16 @@ __search:
 		if ( checkTelefrag && SpotWouldTelefrag( spot ) )
 			continue;
 
-		if ( checkType ) 
+		if ( checkType )
 		{
 			if ( (spot->flags & FL_NO_BOTS) && isBot )
 				continue;
 			if ( (spot->flags & FL_NO_HUMANS) && !isBot )
 				continue;
 		}
+
+		if ( checkTimestamp && spot->timestamp == level.time )
+			continue;
 
 		VectorSubtract( spot->s.origin, avoidPoint, delta );
 		dist = VectorLength( delta );
@@ -181,6 +186,8 @@ __search:
 	// select a random spot from the spawn points furthest away
 	selection = random() * (numSpots / 2);
 	spot = list_spot[ selection ];
+
+	spot->timestamp = level.time;
 
 	VectorCopy( spot->s.angles, angles );
 	VectorCopy( spot->s.origin, origin );
@@ -1037,8 +1044,12 @@ void ClientSpawn(gentity_t *ent) {
 	// ranging doesn't count this client
 	if ( isSpectator ) {
 		spawnPoint = SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
-	} else if (g_gametype.integer >= GT_CTF ) {
-		// all base oriented team games use the CTF spawn points
+	} else if ( g_gametype.integer >= GT_CTF ||
+				( g_gametype.integer == GT_TEAM &&
+				  level.numSpawnSpotsFFA < g_teamDMSpawnThreshold.integer &&
+				  level.numSpawnSpotsTeam > 0 ) ) {
+		// team-based games use CTF spawn points
+		// GT_TEAM also uses them when FFA spawns are below threshold
 		spawnPoint = SelectCTFSpawnPoint( ent, client->sess.sessionTeam, client->pers.teamState.state, spawn_origin, spawn_angles );
 	} else {
 		do {
