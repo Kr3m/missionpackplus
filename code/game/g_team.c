@@ -1016,16 +1016,18 @@ gentity_t *SelectRandomTeamSpawnPoint( gentity_t *ent, int teamstate, team_t tea
 	int			n;
 	qboolean	checkState;
 	qboolean	checkTelefrag;
+	qboolean	checkTimestamp;
 
 	if ( team != TEAM_RED && team != TEAM_BLUE )
 		return NULL;
 
-	checkMask = 3;
+	checkMask = 7;
 
 __rescan:
 
 	checkTelefrag = checkMask & 1;
 	checkState = checkMask & 2;
+	checkTimestamp = checkMask & 4;
 	numSpots = 0;
 
 	for ( n = 0 ; n < level.numSpawnSpots ; n++ ) {
@@ -1043,6 +1045,8 @@ __rescan:
 					continue;
 			}
 		}
+		if ( checkTimestamp && spot->timestamp == level.time )
+			continue;
 		spots[ numSpots++ ] = spot;
 		if ( numSpots >= MAX_TEAM_SPAWN_POINTS )
 			break;
@@ -1057,6 +1061,7 @@ __rescan:
 	}
 
 	selection = rand() % numSpots;
+	spots[ selection ]->timestamp = level.time;
 	return spots[ selection ];
 }
 
@@ -1068,6 +1073,86 @@ SelectCTFSpawnPoint
 */
 gentity_t *SelectCTFSpawnPoint( gentity_t *ent, team_t team, int teamstate, vec3_t origin, vec3_t angles ) {
 	gentity_t	*spot;
+
+	// In team DM, pool all available spawns (FFA + team) and select randomly
+	if ( g_gametype.integer == GT_TEAM ) {
+		int n;
+		int numSpots = 0;
+		int checkMask;
+		int selection;
+		qboolean checkTelefrag;
+		qboolean checkState;
+		qboolean checkTimestamp;
+
+		checkMask = 7;
+
+	__rescan:
+		checkTelefrag = checkMask & 1;
+		checkState = checkMask & 2;
+		checkTimestamp = checkMask & 4;
+		numSpots = 0;
+
+		// Count all valid spawns (FFA and team spawns for this team)
+		for ( n = 0; n < level.numSpawnSpots; n++ ) {
+			spot = level.spawnSpots[n];
+			// Accept FFA spawns or team spawns matching our team
+			if ( spot->fteam != TEAM_FREE && spot->fteam != team )
+				continue;
+			if ( checkTelefrag && SpotWouldTelefrag( spot ) )
+				continue;
+			if ( checkTimestamp && spot->timestamp == level.time )
+				continue;
+			// For team spawns, check teamstate (initial vs active)
+			if ( spot->fteam == team && checkState ) {
+				if ( teamstate == TEAM_BEGIN ) {
+					if ( spot->count != 0 )
+						continue;
+				} else {
+					if ( spot->count == 0 )
+						continue;
+				}
+			}
+			numSpots++;
+		}
+
+		if ( numSpots > 0 ) {
+			// Pick randomly, then iterate again to find the selected spot
+			selection = rand() % numSpots;
+			for ( n = 0; n < level.numSpawnSpots; n++ ) {
+				spot = level.spawnSpots[n];
+				if ( spot->fteam != TEAM_FREE && spot->fteam != team )
+					continue;
+				if ( checkTelefrag && SpotWouldTelefrag( spot ) )
+					continue;
+				if ( checkTimestamp && spot->timestamp == level.time )
+					continue;
+				if ( spot->fteam == team && checkState ) {
+					if ( teamstate == TEAM_BEGIN ) {
+						if ( spot->count != 0 )
+							continue;
+					} else {
+						if ( spot->count == 0 )
+							continue;
+					}
+				}
+				if ( selection-- == 0 ) {
+					spot->timestamp = level.time;
+					VectorCopy( spot->s.origin, origin );
+					VectorCopy( spot->s.angles, angles );
+					origin[2] += 9.0f;
+					return spot;
+				}
+			}
+		}
+
+		// No valid spawns found, relax constraints and try again
+		if ( checkMask > 0 ) {
+			checkMask--;
+			goto __rescan;
+		}
+		// Ultimate fallback
+		return SelectSpawnPoint( ent, vec3_origin, origin, angles );
+	}
 
 	spot = SelectRandomTeamSpawnPoint( ent, teamstate, team );
 
