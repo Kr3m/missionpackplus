@@ -15,6 +15,8 @@ USER INTERFACE MAIN
 
 uiInfo_t uiInfo;
 
+static void UI_CIN_SetExtents(int handle, int x, int y, int w, int h);
+
 static const char *MonthAbbrev[] = {
 	"Jan","Feb","Mar",
 	"Apr","May","Jun",
@@ -219,14 +221,14 @@ void AssetCache() {
 
 void _UI_DrawSides(float x, float y, float w, float h, float size) {
 	UI_AdjustFrom640( &x, &y, &w, &h );
-	size *= uiInfo.uiDC.xscale;
+	size *= uiInfo.uiDC.scale;
 	trap_R_DrawStretchPic( x, y, size, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 	trap_R_DrawStretchPic( x + w - size, y, size, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 }
 
 void _UI_DrawTopBottom(float x, float y, float w, float h, float size) {
 	UI_AdjustFrom640( &x, &y, &w, &h );
-	size *= uiInfo.uiDC.yscale;
+	size *= uiInfo.uiDC.scale;
 	trap_R_DrawStretchPic( x, y, w, size, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 	trap_R_DrawStretchPic( x, y + h - size, w, size, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 }
@@ -240,8 +242,8 @@ Coordinates are 640*480 virtual values
 void _UI_DrawRect( float x, float y, float width, float height, float size, const float *color ) {
 	trap_R_SetColor( color );
 
-  _UI_DrawTopBottom(x, y, width, height, size);
-  _UI_DrawSides(x, y, width, height, size);
+	_UI_DrawTopBottom(x, y, width, height, size);
+	_UI_DrawSides(x, y, width, height, size);
 
 	trap_R_SetColor( NULL );
 }
@@ -1086,7 +1088,7 @@ static void UI_DrawClanCinematic(rectDef_t *rect, float scale, vec4_t color) {
 			}
 			if (uiInfo.teamList[i].cinematic >= 0) {
 			  trap_CIN_RunCinematic(uiInfo.teamList[i].cinematic);
-				trap_CIN_SetExtents(uiInfo.teamList[i].cinematic, rect->x, rect->y, rect->w, rect->h);
+				UI_CIN_SetExtents(uiInfo.teamList[i].cinematic, rect->x, rect->y, rect->w, rect->h);
 	 			trap_CIN_DrawCinematic(uiInfo.teamList[i].cinematic);
 			} else {
 			  	trap_R_SetColor( color );
@@ -1108,12 +1110,12 @@ static void UI_DrawPreviewCinematic(rectDef_t *rect, float scale, vec4_t color) 
 		uiInfo.previewMovie = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.movieList[uiInfo.movieIndex]), 0, 0, 0, 0, (CIN_loop | CIN_silent) );
 		if (uiInfo.previewMovie >= 0) {
 		  trap_CIN_RunCinematic(uiInfo.previewMovie);
-			trap_CIN_SetExtents(uiInfo.previewMovie, rect->x, rect->y, rect->w, rect->h);
+			UI_CIN_SetExtents(uiInfo.previewMovie, rect->x, rect->y, rect->w, rect->h);
  			trap_CIN_DrawCinematic(uiInfo.previewMovie);
 		} else {
 			uiInfo.previewMovie = -2;
 		}
-	} 
+	}
 
 }
 
@@ -1242,7 +1244,7 @@ static void UI_DrawMapCinematic(rectDef_t *rect, float scale, vec4_t color, qboo
 		}
 		if (uiInfo.mapList[map].cinematic >= 0) {
 		  trap_CIN_RunCinematic(uiInfo.mapList[map].cinematic);
-		  trap_CIN_SetExtents(uiInfo.mapList[map].cinematic, rect->x, rect->y, rect->w, rect->h);
+		  UI_CIN_SetExtents(uiInfo.mapList[map].cinematic, rect->x, rect->y, rect->w, rect->h);
  			trap_CIN_DrawCinematic(uiInfo.mapList[map].cinematic);
 		} else {
 			uiInfo.mapList[map].cinematic = -2;
@@ -1266,8 +1268,8 @@ static void UI_DrawPlayerModel(rectDef_t *rect) {
 	vec3_t	moveangles;
 
 	  if (trap_Cvar_VariableValue("ui_Q3Model")) {
-	  strcpy(model, UI_Cvar_VariableString("model"));
-		strcpy(head, UI_Cvar_VariableString("headmodel"));
+		Q_strncpyz(model, UI_Cvar_VariableString("model"), sizeof(model));
+		Q_strncpyz(head, UI_Cvar_VariableString("headmodel"), sizeof(head));
 		if (!q3Model) {
 			q3Model = qtrue;
 			updateModel = qtrue;
@@ -1275,9 +1277,9 @@ static void UI_DrawPlayerModel(rectDef_t *rect) {
 		team[0] = '\0';
 	} else {
 
-		strcpy(team, UI_Cvar_VariableString("ui_teamName"));
-		strcpy(model, UI_Cvar_VariableString("team_model"));
-		strcpy(head, UI_Cvar_VariableString("team_headmodel"));
+		Q_strncpyz(team, UI_Cvar_VariableString("ui_teamName"), sizeof(team));
+		Q_strncpyz(model, UI_Cvar_VariableString("team_model"), sizeof(model));
+		Q_strncpyz(head, UI_Cvar_VariableString("team_headmodel"), sizeof(head));
 		if (q3Model) {
 			q3Model = qfalse;
 			updateModel = qtrue;
@@ -1323,7 +1325,7 @@ static void UI_DrawNetMapCinematic(rectDef_t *rect, float scale, vec4_t color) {
 
 	if (uiInfo.serverStatus.currentServerCinematic >= 0) {
 	  trap_CIN_RunCinematic(uiInfo.serverStatus.currentServerCinematic);
-	  trap_CIN_SetExtents(uiInfo.serverStatus.currentServerCinematic, rect->x, rect->y, rect->w, rect->h);
+	  UI_CIN_SetExtents(uiInfo.serverStatus.currentServerCinematic, rect->x, rect->y, rect->w, rect->h);
  	  trap_CIN_DrawCinematic(uiInfo.serverStatus.currentServerCinematic);
 	} else {
 		UI_DrawNetMapPreview(rect, scale, color);
@@ -3523,8 +3525,7 @@ static void UI_RunMenuScript(char **args) {
 			int stat;
 			if ( Int_Parse( args, &stat ) )
 				trap_SetPbClStatus( stat );
-		}
-		else {
+		} else {
 			Com_Printf("unknown UI script %s\n", name);
 		}
 	}
@@ -3588,7 +3589,7 @@ UI_MapCountByTeam
 static int UI_HeadCountByTeam() {
 	static int init = 0;
 	int i, j, k, c, tIndex;
-	
+
 	c = 0;
 	if (!init) {
 		for (i = 0; i < uiInfo.characterCount; i++) {
@@ -3638,6 +3639,7 @@ static int UI_HeadCountByTeam() {
 	}
 	return c;
 }
+
 
 /*
 ==================
@@ -4418,7 +4420,7 @@ static void UI_FeederSelection(float feederID, int index) {
 	UI_SelectedHead(index, &actual);
 	index = actual;
     if (index >= 0 && index < uiInfo.characterCount) {
-		trap_Cvar_Set( "team_model", va("%s", uiInfo.characterList[index].base));
+		trap_Cvar_Set( "team_model", uiInfo.characterList[index].base);
 		trap_Cvar_Set( "team_headmodel", va("*%s", uiInfo.characterList[index].name)); 
 		updateModel = qtrue;
     }
@@ -4929,9 +4931,31 @@ static void UI_StopCinematic(int handle) {
 	}
 }
 
-static void UI_DrawCinematic(int handle, float x, float y, float w, float h) {
+/*
+=================
+UI_CIN_SetExtents
+
+Wrapper for trap_CIN_SetExtents that adjusts width for widescreen
+to prevent horizontal stretching of cinematic videos.
+=================
+*/
+static void UI_CIN_SetExtents(int handle, int x, int y, int w, int h) {
+	// Adjust for widescreen to prevent horizontal stretching
+	if ( uiInfo.uiDC.glconfig.vidWidth * 480 > uiInfo.uiDC.glconfig.vidHeight * 640 ) {
+		float aspectCorrection = (uiInfo.uiDC.glconfig.vidHeight * 640.0f) / (uiInfo.uiDC.glconfig.vidWidth * 480.0f);
+		float newW = w * aspectCorrection;
+		float newX = x * aspectCorrection;
+		// Offset to account for the centered 4:3 area
+		newX += (640.0f - 640.0f * aspectCorrection) * 0.5f;
+		x = (int)(newX + 0.5f);
+		w = (int)(newW + 0.5f);
+	}
 	trap_CIN_SetExtents(handle, x, y, w, h);
-  trap_CIN_DrawCinematic(handle);
+}
+
+static void UI_DrawCinematic(int handle, float x, float y, float w, float h) {
+	UI_CIN_SetExtents(handle, x, y, w, h);
+	trap_CIN_DrawCinematic(handle);
 }
 
 static void UI_RunCinematicFrame(int handle) {
@@ -5087,7 +5111,6 @@ void _UI_Init( qboolean inGameLoad ) {
   
 	uiInfo.uiDC.cursor	= trap_R_RegisterShaderNoMip( "menu/art/3_cursor2" );
 	uiInfo.uiDC.whiteShader = trap_R_RegisterShaderNoMip( "white" );
-
 	AssetCache();
 
 	start = trap_Milliseconds();

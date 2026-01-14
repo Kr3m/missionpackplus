@@ -396,16 +396,12 @@ static qboolean	CG_FindClientHeadFile( char *filename, int length, clientInfo_t 
 
 	if ( cgs.gametype >= GT_TEAM ) {
 		switch ( ci->team ) {
-			case TEAM_RED: {
-				team = "red";
-				break;
-			}
 			case TEAM_BLUE: {
 				team = "blue";
 				break;
 			}
 			default: {
-				team = "default";
+				team = "red";
 				break;
 			}
 		}
@@ -746,7 +742,7 @@ This will usually be deferred to a safe time
 ===================
 */
 static void CG_LoadClientInfo( clientInfo_t *ci ) {
-	const char	*dir;
+	const char	*dir, *fallback;
 	int			i, modelloaded;
 	const char	*s;
 	int			clientNum;
@@ -783,12 +779,12 @@ static void CG_LoadClientInfo( clientInfo_t *ci ) {
 		if( cgs.gametype >= GT_TEAM) {
 			// keep skin name
 			if( ci->team == TEAM_BLUE ) {
-				Q_strncpyz(teamname, DEFAULT_BLUETEAM_NAME, sizeof(teamname) );
+				Com_sprintf(teamname, sizeof(teamname), "%s/", DEFAULT_BLUETEAM_NAME);
 			} else {
-				Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname) );
+				Com_sprintf(teamname, sizeof(teamname), "%s/", DEFAULT_REDTEAM_NAME);
 			}
-			if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, ci->skinName, DEFAULT_MODEL, ci->skinName, teamname ) ) {
-				CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_MODEL, ci->skinName );
+			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) {
+				CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
 			}
 		} else {
 			if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, "default", DEFAULT_MODEL, "default", teamname ) ) {
@@ -809,6 +805,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci ) {
 
 	// sounds
 	dir = ci->modelName;
+	fallback = (cgs.gametype >= GT_TEAM) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
 
 	for ( i = 0 ; i < MAX_CUSTOM_SOUNDS ; i++ ) {
 		s = cg_customSoundNames[i];
@@ -821,7 +818,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci ) {
 			ci->sounds[i] = trap_S_RegisterSound( va("sound/player/%s/%s", dir, s + 1), qfalse );
 		}
 		if ( !ci->sounds[i] ) {
-			ci->sounds[i] = trap_S_RegisterSound( va("sound/player/%s/%s", DEFAULT_MODEL, s + 1), qfalse );
+			ci->sounds[i] = trap_S_RegisterSound( va("sound/player/%s/%s", fallback, s + 1), qfalse );
 		}
 	}
 
