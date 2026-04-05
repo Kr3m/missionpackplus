@@ -140,7 +140,7 @@ void CG_RegisterCvars( void ) {
 }
 
 
-/*																																			
+/*
 ===================
 CG_ForceModelChange
 ===================
@@ -239,7 +239,7 @@ void CG_UpdateCvars( void ) {
 	}
 
 	// if model changed
-	if ( forceModelModificationCount != cg_forceModel.modificationCount 
+	if ( forceModelModificationCount != cg_forceModel.modificationCount
 		|| enemyModelModificationCount != cg_enemyModel.modificationCount
 		|| enemyColorsModificationCount != cg_enemyColors.modificationCount
 		|| teamModelModificationCount != cg_teamModel.modificationCount
@@ -328,7 +328,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 CG_Argv
 ================
 */
-const char *CG_Argv( int arg ) 
+const char *CG_Argv( int arg )
 {
 	static char	buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int index = 0;
@@ -374,7 +374,7 @@ static void CG_RegisterItemSounds( int itemNum ) {
 
 		len = s-start;
 		if (len >= MAX_QPATH || len < 5) {
-			CG_Error( "PrecacheItem: %s has bad precache string", 
+			CG_Error( "PrecacheItem: %s has bad precache string",
 				item->classname);
 			return;
 		}
@@ -806,7 +806,7 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.overloadEnergyModel = trap_R_RegisterModel( "models/powerups/overload_energy.md3" );
 	}
 
-	if ( cgs.gametype == GT_HARVESTER || cg_buildScript.integer ) {
+	if ( cgs.gametype == GT_HARVESTER || cgs.gametype == GT_1FCTF || cg_buildScript.integer ) {
 		cgs.media.harvesterModel = trap_R_RegisterModel( "models/powerups/harvester/harvester.md3" );
 		cgs.media.harvesterRedSkin = trap_R_RegisterSkin( "models/powerups/harvester/red.skin" );
 		cgs.media.harvesterBlueSkin = trap_R_RegisterSkin( "models/powerups/harvester/blue.skin" );
@@ -931,10 +931,10 @@ static void CG_RegisterGraphics( void ) {
 		}
 		cgs.gameModels[i] = trap_R_RegisterModel( modelName );
 	}
-	
+
 #ifdef MIISSIONPACK
 	cgs.media.cursor = trap_R_RegisterShaderNoMip( "ui/assets/3_cursor3" );
-#else	
+#else
 	cgs.media.cursor = trap_R_RegisterShaderNoMip( "menu/art/3_cursor2" );
 #endif
 #ifdef MISSIONPACK
@@ -979,7 +979,7 @@ static void CG_RegisterGraphics( void ) {
 
 
 
-/*																																			
+/*
 =======================
 CG_BuildSpectatorString
 
@@ -1001,7 +1001,7 @@ void CG_BuildSpectatorString( void ) {
 }
 
 
-/*																																			
+/*
 ===================
 CG_RegisterClients
 ===================
@@ -1101,7 +1101,7 @@ qboolean CG_Asset_Parse(int handle) {
 	if (Q_stricmp(token.string, "{") != 0) {
 		return qfalse;
 	}
-    
+
 	while ( 1 ) {
 		if (!trap_PC_ReadToken(handle, &token))
 			return qfalse;
@@ -1297,7 +1297,7 @@ qboolean CG_Load_Menu(char **p) {
 	while ( 1 ) {
 
 		token = COM_ParseExt(p, qtrue);
-    
+
 		if (Q_stricmp(token, "}") == 0) {
 			return qtrue;
 		}
@@ -1306,7 +1306,7 @@ qboolean CG_Load_Menu(char **p) {
 			return qfalse;
 		}
 
-		CG_ParseMenu(token); 
+		CG_ParseMenu(token);
 	}
 	return qfalse;
 }
@@ -1340,7 +1340,7 @@ void CG_LoadMenus(const char *menuFile) {
 	trap_FS_Read( buf, len, f );
 	buf[len] = 0;
 	trap_FS_FCloseFile( f );
-	
+
 	COM_Compress(buf);
 
 	Menu_Reset();
@@ -1537,7 +1537,7 @@ static const char *CG_FeederItemText(float feederID, int index, int column, qhan
 			case 6:
 				if ( sp->ping == -1 ) {
 					return "connecting";
-				} 
+				}
 				return va("%4i", sp->ping);
 			break;
 		}
@@ -1642,7 +1642,7 @@ void CG_LoadHudMenu( void ) {
 	cgDC.registerModel = &trap_R_RegisterModel;
 	cgDC.modelBounds = &trap_R_ModelBounds;
 	cgDC.fillRect = &CG_FillRect;
-	cgDC.drawRect = &CG_DrawRect;   
+	cgDC.drawRect = &CG_DrawRect;
 	cgDC.drawSides = &CG_DrawSides;
 	cgDC.drawTopBottom = &CG_DrawTopBottom;
 	cgDC.clearScene = &trap_R_ClearScene;
@@ -1670,8 +1670,8 @@ void CG_LoadHudMenu( void ) {
 	//cgDC.getBindingBuf = &trap_Key_GetBindingBuf;
 	//cgDC.keynumToStringBuf = &trap_Key_KeynumToStringBuf;
 	//cgDC.executeText = &trap_Cmd_ExecuteText;
-	cgDC.Error = &Com_Error; 
-	cgDC.Print = &Com_Printf; 
+	cgDC.Error = &Com_Error;
+	cgDC.Print = &Com_Printf;
 	cgDC.ownerDrawWidth = &CG_OwnerDrawWidth;
 	//cgDC.Pause = &CG_Pause;
 	cgDC.registerSound = &trap_S_RegisterSound;
@@ -1681,11 +1681,11 @@ void CG_LoadHudMenu( void ) {
 	cgDC.stopCinematic = &CG_StopCinematic;
 	cgDC.drawCinematic = &CG_DrawCinematic;
 	cgDC.runCinematicFrame = &CG_RunCinematicFrame;
-	
+
 	Init_Display(&cgDC);
 
 	Menu_Reset();
-	
+
 	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
 	hudSet = buff;
 	if (hudSet[0] == '\0') {
@@ -1787,7 +1787,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	cgs.screenXBias = 0.0;
 	cgs.screenYBias = 0.0;
-	
+
 	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 ) {
 		// wide screen, scale by height
 		cgs.screenXScale = cgs.screenYScale = cgs.glconfig.vidHeight * (1.0/480.0);
@@ -1921,7 +1921,7 @@ CG_EventHandling
       3 - hud editor
 */
 #ifndef MISSIONPACK
-void CG_EventHandling( cgame_event_t type ) 
+void CG_EventHandling( cgame_event_t type )
 {
 
 }
@@ -1936,7 +1936,7 @@ void CG_SetScoreCatcher( qboolean enable )
 
 	if ( currentCatcher & KEYCATCH_CONSOLE || !cg.snap )
 		return;
-	
+
 	spectator = cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR || cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW );
 
 	if ( enable && spectator ) {
@@ -1965,10 +1965,10 @@ void CG_SetScoreCatcher( qboolean enable )
 }
 
 
-void CG_KeyEvent( int key, qboolean down ) 
+void CG_KeyEvent( int key, qboolean down )
 {
 	// process scoreboard clicks etc.
-	if ( cgs.score_catched && down ) 
+	if ( cgs.score_catched && down )
 	{
 		if ( key == /*K_TAB*/ cgs.score_key )
 			return;
