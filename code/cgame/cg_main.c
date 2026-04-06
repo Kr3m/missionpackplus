@@ -881,6 +881,11 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.medalAssist = trap_R_RegisterShaderNoMip( "medal_assist" );
 	cgs.media.medalCapture = trap_R_RegisterShaderNoMip( "medal_capture" );
 
+	// Flag POI shaders
+	cgs.media.flagAttackPOI = trap_R_RegisterShaderNoMip( "gfx/2d/ad/poi_attack" );
+	cgs.media.flagDefendPOI = trap_R_RegisterShaderNoMip( "gfx/2d/ad/poi_defend" );
+	cgs.media.flagCapturePOI = trap_R_RegisterShaderNoMip( "gfx/2d/ad/poi_capture" );
+
 
 	memset( cg_items, 0, sizeof( cg_items ) );
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
@@ -1732,6 +1737,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_entities, 0, sizeof(cg_entities) );
 	memset( cg_weapons, 0, sizeof(cg_weapons) );
 	memset( cg_items, 0, sizeof(cg_items) );
+	CG_ClearFlagPOIs();
 
 	cg_playback_follow = -1;
 

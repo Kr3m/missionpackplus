@@ -199,6 +199,8 @@ static void CG_Speaker( centity_t *cent ) {
 	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
 }
 
+static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item );
+
 /*
 ==================
 CG_Item
@@ -234,6 +236,12 @@ static void CG_Item( centity_t *cent ) {
 	}
 
 	item = &bg_itemlist[ es->modelindex ];
+
+	// Always record the flag POI regardless of rendering mode.
+	if ( item->giType == IT_TEAM ) {
+		CG_DrawFlagPOI( cent, item );
+	}
+
 	if ( cg_simpleItems.integer /*&& item->giType != IT_TEAM*/ ) {
 		memset( &ent, 0, sizeof( ent ) );
 		ent.reType = RT_SPRITE;
@@ -393,6 +401,175 @@ static void CG_Item( centity_t *cent ) {
 			}
 		}
 	}
+}
+
+/*
+===============
+CG_DrawFlagPOI
+
+Draws POI (Point of Interest) icons above flags based on user settings
+and CTF game rules
+===============
+*/
+// Per-team persistent flag anchors — updated whenever the flag entity is in
+// the snapshot, kept across frames so the icon remains visible through walls
+// and PVS gaps.  Reset only at map initialisation, not per-frame.
+typedef struct {
+	vec3_t   origin;  /* trBase + (0,0,96) — near top of flag model */
+	qboolean valid;   /* has been seen at least once this session   */
+} flagPOICache_t;
+
+static flagPOICache_t s_flagPOI[2]; /* [0] = red (PW_REDFLAG), [1] = blue */
+
+void CG_ClearFlagPOIs( void ) {
+	s_flagPOI[0].valid = s_flagPOI[1].valid = qfalse;
+}
+
+/*
+===============
+CG_DrawFlagPOIs
+
+Called from CG_Draw2D (after trap_R_RenderScene) so the 2D overlay
+appears on top of the rendered scene.  Projects each stored flag world
+position to screen space and draws the icon there.
+===============
+*/
+void CG_DrawFlagPOIs( void ) {
+	int			idx;
+	int			ourTeam, ourClientNum;
+	qboolean	hasRedFlag, hasBlueFlag, weHaveFlag;
+	qboolean	redFlagAtBase, blueFlagAtBase;
+
+	if ( !cg_flagPOIs.integer ) {
+		return;
+	}
+	if ( cgs.gametype != GT_CTF ) {
+		return;
+	}
+	if ( !cg.snap ) {
+		return;
+	}
+	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
+		return;
+	}
+
+	ourClientNum   = cg.snap->ps.clientNum;
+	ourTeam        = cgs.clientinfo[ourClientNum].team;
+	hasRedFlag     = cg.snap->ps.powerups[PW_REDFLAG]  != 0;
+	hasBlueFlag    = cg.snap->ps.powerups[PW_BLUEFLAG] != 0;
+	weHaveFlag     = hasRedFlag || hasBlueFlag;
+	redFlagAtBase  = ( cgs.redflag  == FLAG_ATBASE );
+	blueFlagAtBase = ( cgs.blueflag == FLAG_ATBASE );
+
+	for ( idx = 0; idx < 2; idx++ ) {
+		flagPOICache_t	*c = &s_flagPOI[idx];
+		vec4_t			color4;
+		vec3_t			trans;
+		qhandle_t		shader;
+		float			py, hf, z, sx, sy;
+		float			iconHalf = 16.0f;
+		float			above    = 8.0f;
+
+		if ( !c->valid ) {
+			continue;
+		}
+
+		/* Determine which icon to show for this flag. */
+		shader = 0;
+		if ( idx == 0 ) {  /* red flag */
+			color4[0] = 1; color4[1] = 0; color4[2] = 0; color4[3] = 1;
+			if ( ourTeam == TEAM_RED ) {
+				if ( weHaveFlag && redFlagAtBase ) {
+					shader = cgs.media.flagCapturePOI;
+				} else if ( redFlagAtBase || cgs.redflag == FLAG_DROPPED ) {
+					shader = cgs.media.flagDefendPOI;
+				}
+			} else {
+				shader = cgs.media.flagAttackPOI;
+			}
+		} else {  /* blue flag */
+			color4[0] = 0; color4[1] = 0.5f; color4[2] = 1; color4[3] = 1;
+			if ( ourTeam == TEAM_BLUE ) {
+				if ( weHaveFlag && blueFlagAtBase ) {
+					shader = cgs.media.flagCapturePOI;
+				} else if ( blueFlagAtBase || cgs.blueflag == FLAG_DROPPED ) {
+					shader = cgs.media.flagDefendPOI;
+				}
+			} else {
+				shader = cgs.media.flagAttackPOI;
+			}
+		}
+
+		if ( !shader ) {
+			continue;
+		}
+
+		/* Project the cached world position (top of flag model) to screen.
+		   Use fov_y-derived focal length for both axes so the icon stays
+		   correct on any aspect ratio.                                    */
+		VectorSubtract( c->origin, cg.refdef.vieworg, trans );
+		z = DotProduct( trans, cg.refdef.viewaxis[0] );
+		if ( z <= 0.1f ) {
+			continue;  /* flag is behind the camera */
+		}
+
+		py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
+		hf = 240.0f / ( z * py );
+
+		sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
+		sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
+
+		/* Position the icon above the projected flag-top. */
+		sy = sy - above - iconHalf * 2.0f;
+
+		if ( sx < iconHalf || sx > 640.0f - iconHalf ||
+		     sy < 0 || sy + iconHalf * 2.0f > 480.0f ) {
+			continue;
+		}
+
+		trap_R_SetColor( color4 );
+		CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
+	}
+
+	trap_R_SetColor( NULL );
+}
+
+/*
+===============
+CG_DrawFlagPOI
+
+Called during entity processing to cache the flag's world position.
+The actual drawing and shader selection is handled by CG_DrawFlagPOIs
+in CG_Draw2D, so the icon persists through walls and PVS gaps on every
+frame after the flag has been seen at least once since map load.
+===============
+*/
+static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
+	int	idx;
+
+	if ( !cg_flagPOIs.integer ) {
+		return;
+	}
+	if ( cgs.gametype != GT_CTF ) {
+		return;
+	}
+	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
+		return;
+	}
+
+	if ( item->giTag == PW_REDFLAG ) {
+		idx = 0;
+	} else if ( item->giTag == PW_BLUEFLAG ) {
+		idx = 1;
+	} else {
+		return;
+	}
+
+	/* Cache the anchor near the top of the flag model so the projected
+	   position tracks the flag tip rather than the base.            */
+	VectorCopy( cent->currentState.pos.trBase, s_flagPOI[idx].origin );
+	s_flagPOI[idx].origin[2] += 96;
+	s_flagPOI[idx].valid = qtrue;
 }
 
 //============================================================================

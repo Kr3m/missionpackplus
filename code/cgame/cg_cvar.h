@@ -131,5 +131,6 @@ CG_CVAR( cg_teamColors, "cg_teamColors", "", CVAR_ARCHIVE )
 CG_CVAR( cg_deadBodyDarken, "cg_deadBodyDarken", "1", CVAR_ARCHIVE )
 CG_CVAR( cg_fovAdjust, "cg_fovAdjust", "0", CVAR_ARCHIVE )
 CG_CVAR( cg_followKiller, "cg_followKiller", "0", CVAR_ARCHIVE )
+CG_CVAR( cg_flagPOIs, "cg_flagPOIs", "1", CVAR_ARCHIVE )
 
 #undef CG_CVAR
