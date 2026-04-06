@@ -1011,6 +1011,17 @@ void G_SpawnItem( gentity_t *ent, gitem_t *item ) {
 		return;
 	}
 
+#ifdef MISSIONPACK
+	if ( !g_runes.integer && (
+		!Q_stricmp( item->classname, "item_guard" ) ||
+		!Q_stricmp( item->classname, "item_doubler" ) ||
+		!Q_stricmp( item->classname, "item_ammoregen" ) ||
+		!Q_stricmp( item->classname, "item_scout" ) ) ) {
+		ent->tag = TAG_DONTSPAWN;
+		return;
+	}
+#endif
+
 	ent->item = item;
 	// some movers spawn on the second frame, so delay item
 	// spawns until the third frame so they can ride trains
