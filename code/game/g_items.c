@@ -473,6 +473,9 @@ void RespawnItem( gentity_t *ent ) {
 	ent->r.contents = CONTENTS_TRIGGER;
 	ent->s.eFlags &= ~EF_NODRAW;
 	ent->r.svFlags &= ~SVF_NOCLIENT;
+	if ( ent->item && ent->item->giType == IT_TEAM ) {
+		ent->r.svFlags |= SVF_BROADCAST;
+	}
 	trap_LinkEntity( ent );
 
 	if ( ent->item->giType == IT_POWERUP ) {
@@ -707,6 +710,9 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	}
 
 	dropped->flags = FL_DROPPED_ITEM;
+	if ( item->giType == IT_TEAM ) {
+		dropped->r.svFlags |= SVF_BROADCAST;
+	}
 
 	trap_LinkEntity (dropped);
 
@@ -816,6 +822,9 @@ void FinishSpawningItem( gentity_t *ent ) {
 		return;
 	}
 
+	if ( ent->item && ent->item->giType == IT_TEAM ) {
+		ent->r.svFlags |= SVF_BROADCAST;
+	}
 	trap_LinkEntity( ent );
 }
 

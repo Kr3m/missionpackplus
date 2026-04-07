@@ -468,7 +468,7 @@ void CG_DrawFlagPOIs( void ) {
 		qhandle_t		shader;
 		float			py, hf, z, sx, sy;
 		float			iconHalf = 16.0f;
-		float			above    = 8.0f;
+		float			above    = 5.0f;
 
 		if ( !c->valid ) {
 			continue;
@@ -485,7 +485,9 @@ void CG_DrawFlagPOIs( void ) {
 					shader = cgs.media.flagDefendPOI;
 				}
 			} else {
-				shader = cgs.media.flagAttackPOI;
+				if ( !weHaveFlag ) {
+					shader = cgs.media.flagAttackPOI;
+				}
 			}
 		} else {  /* blue flag */
 			color4[0] = 0; color4[1] = 0.5f; color4[2] = 1; color4[3] = 1;
@@ -496,7 +498,9 @@ void CG_DrawFlagPOIs( void ) {
 					shader = cgs.media.flagDefendPOI;
 				}
 			} else {
-				shader = cgs.media.flagAttackPOI;
+				if ( !weHaveFlag ) {
+					shader = cgs.media.flagAttackPOI;
+				}
 			}
 		}
 
@@ -528,7 +532,8 @@ void CG_DrawFlagPOIs( void ) {
 		}
 
 		trap_R_SetColor( color4 );
-		CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
+		// CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
+		CG_DrawPic( sx - iconHalf, sy, iconHalf, iconHalf, shader );
 	}
 
 	trap_R_SetColor( NULL );
@@ -568,7 +573,7 @@ static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
 	/* Cache the anchor near the top of the flag model so the projected
 	   position tracks the flag tip rather than the base.            */
 	VectorCopy( cent->currentState.pos.trBase, s_flagPOI[idx].origin );
-	s_flagPOI[idx].origin[2] += 96;
+	s_flagPOI[idx].origin[2] += 70;
 	s_flagPOI[idx].valid = qtrue;
 }
 
