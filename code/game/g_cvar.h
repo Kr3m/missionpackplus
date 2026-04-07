@@ -182,4 +182,8 @@ G_CVAR( g_loadCustomEnts, "g_loadCustomEnts", "0", 0, 0, qfalse, qfalse)
 
 G_CVAR( g_rotation, "g_rotation", "0", CVAR_ARCHIVE, 0, qfalse, qfalse )
 
+// Attack & Defend (GT_CTFS)
+G_CVAR( atd_roundtime,  "atd_roundtime",  "120", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue, qfalse )
+G_CVAR( atd_scorelimit, "scorelimit",      "10",  CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue, qfalse )
+
 #undef G_CVAR

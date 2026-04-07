@@ -463,7 +463,7 @@ void CG_DrawFlagPOIs( void ) {
 		return;
 	}
 #ifdef MISSIONPACK
-	if ( cgs.gametype != GT_CTF && cgs.gametype != GT_1FCTF ) {
+	if ( cgs.gametype != GT_CTF && cgs.gametype != GT_1FCTF && cgs.gametype != GT_CTFS ) {
 #else
 	if ( cgs.gametype != GT_CTF ) {
 #endif
@@ -641,6 +641,71 @@ void CG_DrawFlagPOIs( void ) {
 	}
 #endif
 
+#ifdef MISSIONPACK
+	if ( cgs.gametype == GT_CTFS ) {
+		int				defTeam = ( cgs.atdAttackingTeam == TEAM_RED ) ? TEAM_BLUE : TEAM_RED;
+		int				atkFlagIdx = defTeam - 1;	/* 0=red, 1=blue */
+		int				defFlagIdx = ourTeam - 1;
+		vec4_t			color4;
+		vec3_t			trans;
+		qhandle_t		shader;
+		float			py, hf, z, sx, sy, perspHalf, iconHalf;
+		float			above = 1.0f;
+		flagPOICache_t	*c = NULL;
+
+		shader = 0;
+		if ( ourTeam == defTeam ) {
+			/* Defenders: show flagDefendPOI over their own flag */
+			c = &s_flagPOI[defFlagIdx];
+			if ( c->valid ) {
+				color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
+				color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
+				color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
+				color4[3] = 1.0f;
+				shader = cgs.media.flagDefendPOI;
+			} else {
+				c = NULL;
+			}
+		} else {
+			/* Attackers: show flagAttackPOI over defender's flag only when at base */
+			int flagStatus = ( defTeam == TEAM_RED ) ? cgs.redflag : cgs.blueflag;
+			c = &s_flagPOI[atkFlagIdx];
+			if ( c->valid && flagStatus == FLAG_ATBASE ) {
+				color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
+				color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
+				color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
+				color4[3] = 1.0f;
+				shader = cgs.media.flagAttackPOI;
+			} else {
+				c = NULL;
+			}
+		}
+
+		if ( shader && c ) {
+			VectorSubtract( c->origin, cg.refdef.vieworg, trans );
+			z = DotProduct( trans, cg.refdef.viewaxis[0] );
+			if ( z > 0.1f ) {
+				py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
+				hf = 240.0f / ( z * py );
+				sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
+				sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
+				if ( z > 500.0f ) {
+					iconHalf = 6.25f;
+				} else {
+					perspHalf = 12.0f * hf;
+					iconHalf  = ( perspHalf > 6.25f ) ? perspHalf : 6.25f;
+				}
+				sy = sy - above - iconHalf * 2.0f;
+				if ( !(sx < iconHalf || sx > 640.0f - iconHalf ||
+				       sy < 0 || sy + iconHalf * 2.0f > 480.0f) ) {
+					trap_R_SetColor( color4 );
+					CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
+				}
+			}
+		}
+	}
+#endif
+
 	trap_R_SetColor( NULL );
 }
 
@@ -661,7 +726,7 @@ static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
 		return;
 	}
 #ifdef MISSIONPACK
-	if ( cgs.gametype != GT_CTF && cgs.gametype != GT_1FCTF ) {
+	if ( cgs.gametype != GT_CTF && cgs.gametype != GT_1FCTF && cgs.gametype != GT_CTFS ) {
 #else
 	if ( cgs.gametype != GT_CTF ) {
 #endif

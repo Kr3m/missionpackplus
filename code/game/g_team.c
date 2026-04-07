@@ -22,11 +22,19 @@ gentity_t	*neutralObelisk;
 
 static void Team_SetFlagStatus( team_t team, flagStatus_t status );
 
+void Team_DirtyFlagStatus( void ) {
+	teamgame.redStatus  = -1;
+	teamgame.blueStatus = -1;
+}
+
 void Team_InitGame( void ) {
 	memset(&teamgame, 0, sizeof teamgame);
 
 	switch( g_gametype.integer ) {
 	case GT_CTF:
+#ifdef MISSIONPACK
+	case GT_CTFS:
+#endif
 		teamgame.redStatus = -1; // Invalid to force update
 		Team_SetFlagStatus( TEAM_RED, FLAG_ATBASE );
 		teamgame.blueStatus = -1; // Invalid to force update
@@ -206,12 +214,22 @@ static void Team_SetFlagStatus( team_t team, flagStatus_t status ) {
 	}
 
 	if ( modified ) {
-		char st[4];
+		char st[5];
 
 		if ( g_gametype.integer == GT_CTF ) {
 			st[0] = ctfFlagStatusRemap[teamgame.redStatus];
 			st[1] = ctfFlagStatusRemap[teamgame.blueStatus];
 			st[2] = '\0';
+#ifdef MISSIONPACK
+		} else if ( g_gametype.integer == GT_CTFS ) {
+			// format: rb a  where r/b = flag status, a = attacking team (1=RED,2=BLUE)
+			int atkTeam = ((level.atdEliminationSides + level.atdRoundNumber) % 2 == 0)
+			             ? TEAM_RED : TEAM_BLUE;
+			st[0] = ctfFlagStatusRemap[teamgame.redStatus];
+			st[1] = ctfFlagStatusRemap[teamgame.blueStatus];
+			st[2] = '0' + atkTeam;
+			st[3] = '\0';
+#endif
 		} else {	// GT_1FCTF
 			st[0] = oneFlagStatusRemap[teamgame.flagStatus];
 			st[1] = '\0';
@@ -552,7 +570,11 @@ static gentity_t *Team_ResetFlag( team_t team ) {
 
 
 void Team_ResetFlags( void ) {
-	if( g_gametype.integer == GT_CTF ) {
+	if( g_gametype.integer == GT_CTF
+#ifdef MISSIONPACK
+	    || g_gametype.integer == GT_CTFS
+#endif
+	    ) {
 		Team_ResetFlag( TEAM_RED );
 		Team_ResetFlag( TEAM_BLUE );
 	}
@@ -690,6 +712,14 @@ void Team_DroppedFlagThink(gentity_t *ent) {
 		team = TEAM_FREE;
 	}
 
+	// GT_CTFS (Attack & Defend): dropped flag never auto-returns on timer.
+	// It can only be re-taken by the attacking team or returned via OOB (Team_FreeEntity).
+#ifdef MISSIONPACK
+	if ( g_gametype.integer == GT_CTFS ) {
+		return; // entity is cleaned up by Team_ResetFlags at round start or by OOB
+	}
+#endif
+
 	Team_ReturnFlagSound( Team_ResetFlag( team ), team );
 	// Reset Flag will delete this entity
 }
@@ -773,8 +803,16 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	}
 #endif
 
-	// Increase the team's score
+	// Increase the team's score — GT_CTFS awards 3 pts for a cap and ends the round
+#ifdef MISSIONPACK
+	if ( g_gametype.integer == GT_CTFS ) {
+		AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, 3);
+	} else {
+#endif
 	AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, 1);
+#ifdef MISSIONPACK
+	}
+#endif
 	Team_ForceGesture(other->client->sess.sessionTeam);
 
 	other->client->pers.teamState.captures++;
@@ -788,6 +826,15 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	AddScore(other, ent->r.currentOrigin, CTF_CAPTURE_BONUS);
 
 	Team_CaptureFlagSound( ent, team );
+
+#ifdef MISSIONPACK
+	// GT_CTFS: cap ends the round immediately
+	if ( g_gametype.integer == GT_CTFS ) {
+		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " captured the flag! Attackers score!\n\"",
+			cl->pers.netname ) );
+		G_ATDEndRound();
+	}
+#endif
 
 	// Ok, let's do the player loop, hand out the bonuses
 	for (i = 0; i < level.maxclients; i++) {
@@ -866,6 +913,14 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 	}
 
 	AddScore(other, ent->r.currentOrigin, CTF_FLAG_BONUS);
+
+	// GT_CTFS (Attack & Defend): 1 point for picking up the defending team's flag
+	if ( g_gametype.integer == GT_CTFS ) {
+		AddTeamScore( ent->s.pos.trBase, other->client->sess.sessionTeam, 1 );
+		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " touched the flag! Attackers score 1 point!\\n\"",
+			cl->pers.netname ) );
+		CalculateRanks();
+	}
 #endif
 	cl->pers.teamState.flagsince = level.time;
 	Team_TakeFlagSound( ent, team );
@@ -917,6 +972,22 @@ int Pickup_Team( gentity_t *ent, gentity_t *other ) {
 		}
 		// In oneflag, captures are completed at enemy obelisks.
 		return 0;
+	}
+#endif
+	// GT_CTFS (Attack & Defend): only the attacking team may touch any flag.
+	// Defenders touching their own dropped flag (or the attacker's base flag) do nothing.
+#ifdef MISSIONPACK
+	if ( g_gametype.integer == GT_CTFS ) {
+		int atkTeam = ((level.atdEliminationSides + level.atdRoundNumber) % 2 == 0)
+		             ? TEAM_RED : TEAM_BLUE;
+		if ( cl->sess.sessionTeam != atkTeam ) {
+			return 0; // defenders can't pick up or return any flag
+		}
+		// attackers: touch own base flag to cap, or enemy flag to pick up
+		if ( team == cl->sess.sessionTeam ) {
+			return Team_TouchOurFlag( ent, other, team );
+		}
+		return Team_TouchEnemyFlag( ent, other, team );
 	}
 #endif
 	// GT_CTF

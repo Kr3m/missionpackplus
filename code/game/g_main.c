@@ -733,6 +733,19 @@ static void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// don't forget to reset times
 	trap_SetConfigstring( CS_INTERMISSION, "" );
 
+	// Attack & Defend (GT_CTFS) round initialisation
+#ifdef MISSIONPACK
+	if ( g_gametype.integer == GT_CTFS ) {
+		level.atdRoundNumber        = 1;
+		level.atdRoundNumberStarted = 0;
+		level.atdRoundStartTime     = level.time + g_warmup.integer * 1000;
+		level.atdRoundRespawned     = qfalse;
+		level.atdEliminationSides   = randomSeed & 1; // latch into the random seed
+		level.atdRoundRedPlayers    = 0;
+		level.atdRoundBluePlayers   = 0;
+	}
+#endif
+
 	if ( g_gametype.integer != GT_SINGLE_PLAYER ) {
 		// launch rotation system on first map load
 		if ( trap_Cvar_VariableIntegerValue( SV_ROTATION ) == 0 ) {
@@ -1655,6 +1668,21 @@ static void CheckExitRules( void ) {
 			return;
 		}
 	}
+
+#ifdef MISSIONPACK
+	if ( g_gametype.integer == GT_CTFS && atd_scorelimit.integer ) {
+		if ( level.teamScores[TEAM_RED] >= atd_scorelimit.integer ) {
+			G_BroadcastServerCommand( -1, "print \"Red hit the scorelimit.\n\"" );
+			LogExit( "Scorelimit hit." );
+			return;
+		}
+		if ( level.teamScores[TEAM_BLUE] >= atd_scorelimit.integer ) {
+			G_BroadcastServerCommand( -1, "print \"Blue hit the scorelimit.\n\"" );
+			LogExit( "Scorelimit hit." );
+			return;
+		}
+	}
+#endif
 }
 
 
@@ -2145,6 +2173,152 @@ void G_RunThink( gentity_t *ent ) {
 }
 
 
+#ifdef MISSIONPACK
+/*
+==============
+G_ATDTeamLivingCount
+
+Count players on a team with health > 0 (alive this round).
+==============
+*/
+static int G_ATDTeamLivingCount( team_t team ) {
+	int			i, count = 0;
+	gclient_t	*cl;
+
+	for ( i = 0; i < level.maxclients; i++ ) {
+		cl = &level.clients[i];
+		if ( cl->pers.connected != CON_CONNECTED ) {
+			continue;
+		}
+		if ( cl->sess.sessionTeam != team ) {
+			continue;
+		}
+		if ( cl->ps.stats[STAT_HEALTH] > 0 ) {
+			count++;
+		}
+	}
+	return count;
+}
+
+/*
+==============
+G_ATDEndRound
+
+Called when an ATD round concludes (cap, elimination, or time).
+Resets flags, advances the round counter, and begins the next warmup.
+==============
+*/
+void G_ATDEndRound( void ) {
+	Team_ResetFlags();
+	level.atdRoundNumber++;
+	level.atdRoundStartTime  = level.time + g_warmup.integer * 1000;
+	level.atdRoundRespawned  = qfalse;
+	level.atdRoundRedPlayers = 0;
+	level.atdRoundBluePlayers = 0;
+	/* Re-init flags so Team_SetFlagStatus fires with the new round's attacking team
+	   encoded in the CS_FLAGSTATUS configstring.                                    */
+	Team_DirtyFlagStatus();
+	Team_InitGame();
+	CalculateRanks();
+}
+
+/*
+==============
+G_CheckATDRound
+
+Per-frame check for round start/end conditions in GT_CTFS.
+Called from G_RunFrame whenever gametype is GT_CTFS.
+==============
+*/
+static void G_CheckATDRound( void ) {
+	int		i;
+	int		atkTeam, defTeam;
+	int		livesAtk, liesDef;
+	gentity_t	*ent;
+
+	if ( level.intermissiontime ) {
+		return;
+	}
+	if ( level.warmupTime != 0 ) {
+		return; // still in overall match warmup
+	}
+
+	atkTeam = ((level.atdEliminationSides + level.atdRoundNumber) % 2 == 0)
+	           ? TEAM_RED : TEAM_BLUE;
+	defTeam = OtherTeam( atkTeam );
+
+	/* ---- warmup phase between rounds ---- */
+	if ( level.atdRoundNumber != level.atdRoundNumberStarted ) {
+		/* Halfway through warmup, respawn everyone so they start at their spawns. */
+		if ( !level.atdRoundRespawned &&
+		     level.time >= level.atdRoundStartTime - ( g_warmup.integer * 500 ) ) {
+			level.atdRoundRespawned = qtrue;
+			for ( i = 0; i < level.maxclients; i++ ) {
+				ent = g_entities + i;
+				if ( !ent->inuse || !ent->client ) {
+					continue;
+				}
+				if ( ent->client->pers.connected != CON_CONNECTED ) {
+					continue;
+				}
+				if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+					continue;
+				}
+				respawn( ent );
+			}
+		}
+
+		/* When warmup expires, officially start the round. */
+		if ( level.time >= level.atdRoundStartTime ) {
+			level.atdRoundNumberStarted = level.atdRoundNumber;
+			level.atdRoundRedPlayers    = G_ATDTeamLivingCount( TEAM_RED );
+			level.atdRoundBluePlayers   = G_ATDTeamLivingCount( TEAM_BLUE );
+			G_BroadcastServerCommand( -1, va( "print \"Round %i — %s attacks, %s defends!\\n\"",
+				level.atdRoundNumber,
+				( atkTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7",
+				( defTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7" ) );
+		}
+		return;
+	}
+
+	/* ---- round is active — check end conditions ---- */
+
+	/* 1. Round time expired — no points awarded, round just resets. */
+	if ( atd_roundtime.integer > 0 &&
+	     level.time >= level.atdRoundStartTime + atd_roundtime.integer * 1000 ) {
+		G_BroadcastServerCommand( -1, "print \"Round time expired. No capture this round.\\n\"" );
+		G_ATDEndRound();
+		return;
+	}
+
+	/* 2. We need at least one player per team to have been present before
+	   triggering an elimination win (prevents false wins on empty teams). */
+	if ( level.atdRoundRedPlayers == 0 || level.atdRoundBluePlayers == 0 ) {
+		return;
+	}
+
+	livesAtk = G_ATDTeamLivingCount( atkTeam );
+	liesDef  = G_ATDTeamLivingCount( defTeam );
+
+	/* 3. Entire attacking team wiped — defenders earn 2 pts. */
+	if ( livesAtk == 0 ) {
+		G_BroadcastServerCommand( -1, "print \"Attacking team eliminated! Defenders score 2 points!\\n\"" );
+		AddTeamScore( level.intermission_origin, defTeam, 2 );
+		G_ATDEndRound();
+		return;
+	}
+
+	/* 4. Entire defending team wiped — attackers earn 2 pts. */
+	if ( liesDef == 0 ) {
+		G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Attackers score 2 points!\\n\"" );
+		AddTeamScore( level.intermission_origin, atkTeam, 2 );
+		G_ATDEndRound();
+		return;
+	}
+}
+#endif /* MISSIONPACK */
+
+
 /*
 ================
 G_RunFrame
@@ -2265,6 +2439,13 @@ static void G_RunFrame( int levelTime ) {
 
 	// see if it is time to end the level
 	CheckExitRules();
+
+#ifdef MISSIONPACK
+	// Attack & Defend round management
+	if ( g_gametype.integer == GT_CTFS ) {
+		G_CheckATDRound();
+	}
+#endif
 
 	// update to team status?
 	CheckTeamStatus();

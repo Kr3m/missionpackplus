@@ -1096,6 +1096,7 @@ typedef struct {
 	int				scores1, scores2;		// from configstrings
 	int				redflag, blueflag;		// flag status from configstrings
 	int				flagStatus;
+	int				atdAttackingTeam;		// GT_CTFS: TEAM_RED or TEAM_BLUE (from CS_FLAGSTATUS[2])
 
 	qboolean  newHud;
 

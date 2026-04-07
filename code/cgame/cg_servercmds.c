@@ -250,6 +250,12 @@ void CG_SetConfigValues( void ) {
 		s = CG_ConfigString( CS_FLAGSTATUS );
 		cgs.flagStatus = s[0] - '0';
 	}
+	else if( cgs.gametype == GT_CTFS ) {
+		s = CG_ConfigString( CS_FLAGSTATUS );
+		cgs.redflag          = s[0] - '0';
+		cgs.blueflag         = s[1] - '0';
+		cgs.atdAttackingTeam = s[2] - '0';
+	}
 #endif
 	CG_ParseWarmup();
 }
@@ -379,12 +385,18 @@ static void CG_ConfigStringModified( void ) {
 		else if( cgs.gametype == GT_1FCTF ) {
 			cgs.flagStatus = str[0] - '0';
 		}
+		else if( cgs.gametype == GT_CTFS ) {
+			// format is rba: r=redflag, b=blueflag, a=attacking team
+			cgs.redflag          = str[0] - '0';
+			cgs.blueflag         = str[1] - '0';
+			cgs.atdAttackingTeam = str[2] - '0';
+		}
 #endif
 	}
 	else if ( num == CS_SHADERSTATE ) {
 		CG_ShaderStateChanged();
 	}
-		
+
 }
 
 
@@ -1133,7 +1145,7 @@ static void CG_ServerCommand( void ) {
 
 			trap_R_RemapShader(shader1, shader2, shader3);
 		}
-		
+
 		return;
 	}
 

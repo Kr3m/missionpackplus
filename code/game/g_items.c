@@ -697,7 +697,7 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
 #ifdef MISSIONPACK
-	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF)			&& item->giType == IT_TEAM) { // Special case for CTF flags
+	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF || g_gametype.integer == GT_CTFS)			&& item->giType == IT_TEAM) { // Special case for CTF flags
 #else
 	if (g_gametype.integer == GT_CTF && item->giType == IT_TEAM) { // Special case for CTF flags
 #endif
@@ -844,7 +844,11 @@ void G_CheckTeamItems( void ) {
 	// Set up team stuff
 	Team_InitGame();
 
-	if( g_gametype.integer == GT_CTF ) {
+	if( g_gametype.integer == GT_CTF
+#ifdef MISSIONPACK
+	    || g_gametype.integer == GT_CTFS
+#endif
+	    ) {
 		gitem_t	*item;
 
 		// check for the two flags
