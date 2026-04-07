@@ -552,10 +552,10 @@ void CG_DrawFlagPOIs( void ) {
 			   iconHalf grows with perspective so it matches the flag3 model
 			   half-width (~10 world units) when you're on top of the flag.   */
 			if ( z > 500.0f ) {
-				iconHalf = 5.0f;
+				iconHalf = 6.25f;
 			} else {
 				perspHalf = 12.0f * hf;
-				iconHalf  = ( perspHalf > 5.0f ) ? perspHalf : 5.0f;
+				iconHalf  = ( perspHalf > 6.25f ) ? perspHalf : 6.25f;
 			}
 
 			/* Bottom of icon sits |above| pixels above the projected flag tip. */
@@ -623,10 +623,10 @@ void CG_DrawFlagPOIs( void ) {
 				sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
 
 				if ( z > 500.0f ) {
-					iconHalf = 5.0f;
+					iconHalf = 6.25f;
 				} else {
 					perspHalf = 12.0f * hf;
-					iconHalf  = ( perspHalf > 5.0f ) ? perspHalf : 5.0f;
+					iconHalf  = ( perspHalf > 6.25f ) ? perspHalf : 6.25f;
 				}
 
 				sy = sy - above - iconHalf * 2.0f;
