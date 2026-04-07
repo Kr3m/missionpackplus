@@ -223,7 +223,21 @@ static void CG_Item( centity_t *cent ) {
 	}
 
 	// if set to invisible, skip
-	if ( !es->modelindex || ( es->eFlags & EF_NODRAW ) || cent->delaySpawn > cg.time ) {
+	if ( !es->modelindex || cent->delaySpawn > cg.time ) {
+		return;
+	}
+
+	item = &bg_itemlist[ es->modelindex ];
+
+	// Cache flag POI before the EF_NODRAW check so that in GT_1FCTF the
+	// red/blue flag home positions (pos.trBase + 62) are recorded even
+	// when those entities are invisible logic targets.
+	if ( item->giType == IT_TEAM ) {
+		CG_DrawFlagPOI( cent, item );
+	}
+
+	// Rendering from here — skip invisible entities.
+	if ( es->eFlags & EF_NODRAW ) {
 		return;
 	}
 
@@ -233,13 +247,6 @@ static void CG_Item( centity_t *cent ) {
 		if ( !itemInfo->registered ) {
 			return;
 		}
-	}
-
-	item = &bg_itemlist[ es->modelindex ];
-
-	// Always record the flag POI regardless of rendering mode.
-	if ( item->giType == IT_TEAM ) {
-		CG_DrawFlagPOI( cent, item );
 	}
 
 	if ( cg_simpleItems.integer /*&& item->giType != IT_TEAM*/ ) {
@@ -430,10 +437,11 @@ typedef struct {
 	qboolean valid;   /* has been seen at least once this session   */
 } flagPOICache_t;
 
-static flagPOICache_t s_flagPOI[2]; /* [0] = red (PW_REDFLAG), [1] = blue */
+static flagPOICache_t s_flagPOI[5]; /* [0]=red flag, [1]=blue flag, [2]=neutral flag,
+                                       [3]=red obelisk (1FCTF), [4]=blue obelisk (1FCTF) */
 
 void CG_ClearFlagPOIs( void ) {
-	s_flagPOI[0].valid = s_flagPOI[1].valid = qfalse;
+	memset( s_flagPOI, 0, sizeof( s_flagPOI ) );
 }
 
 /*
@@ -454,7 +462,11 @@ void CG_DrawFlagPOIs( void ) {
 	if ( !cg_flagPOIs.integer ) {
 		return;
 	}
+#ifdef MISSIONPACK
+	if ( cgs.gametype != GT_CTF && cgs.gametype != GT_1FCTF ) {
+#else
 	if ( cgs.gametype != GT_CTF ) {
+#endif
 		return;
 	}
 	if ( !cg.snap ) {
@@ -464,88 +476,170 @@ void CG_DrawFlagPOIs( void ) {
 		return;
 	}
 
-	ourClientNum   = cg.snap->ps.clientNum;
-	ourTeam        = cgs.clientinfo[ourClientNum].team;
-	hasRedFlag     = cg.snap->ps.powerups[PW_REDFLAG]  != 0;
-	hasBlueFlag    = cg.snap->ps.powerups[PW_BLUEFLAG] != 0;
-	weHaveFlag     = hasRedFlag || hasBlueFlag;
-	redFlagAtBase  = ( cgs.redflag  == FLAG_ATBASE );
-	blueFlagAtBase = ( cgs.blueflag == FLAG_ATBASE );
+	ourClientNum = cg.snap->ps.clientNum;
+	ourTeam      = cgs.clientinfo[ourClientNum].team;
 
-	for ( idx = 0; idx < 2; idx++ ) {
-		flagPOICache_t	*c = &s_flagPOI[idx];
+	if ( cgs.gametype == GT_CTF ) {
+		hasRedFlag     = cg.snap->ps.powerups[PW_REDFLAG]  != 0;
+		hasBlueFlag    = cg.snap->ps.powerups[PW_BLUEFLAG] != 0;
+		weHaveFlag     = hasRedFlag || hasBlueFlag;
+		redFlagAtBase  = ( cgs.redflag  == FLAG_ATBASE );
+		blueFlagAtBase = ( cgs.blueflag == FLAG_ATBASE );
+
+		for ( idx = 0; idx < 2; idx++ ) {
+			flagPOICache_t	*c = &s_flagPOI[idx];
+			vec4_t			color4;
+			vec3_t			trans;
+			qhandle_t		shader;
+			float			py, hf, z, sx, sy;
+			float			perspHalf, iconHalf;
+			float			above = 1.0f;
+
+			if ( !c->valid ) {
+				continue;
+			}
+
+			/* Determine which icon to show for this flag. */
+			shader = 0;
+			if ( idx == 0 ) {  /* red flag */
+				color4[0] = 1; color4[1] = 0; color4[2] = 0; color4[3] = 1;
+				if ( ourTeam == TEAM_RED ) {
+					if ( weHaveFlag && redFlagAtBase ) {
+						shader = cgs.media.flagCapturePOI;
+					} else if ( redFlagAtBase || cgs.redflag == FLAG_DROPPED ) {
+						shader = cgs.media.flagDefendPOI;
+					}
+				} else {
+					if ( !weHaveFlag ) {
+						shader = cgs.media.flagAttackPOI;
+					}
+				}
+			} else {  /* blue flag */
+				color4[0] = 0; color4[1] = 0.5f; color4[2] = 1; color4[3] = 1;
+				if ( ourTeam == TEAM_BLUE ) {
+					if ( weHaveFlag && blueFlagAtBase ) {
+						shader = cgs.media.flagCapturePOI;
+					} else if ( blueFlagAtBase || cgs.blueflag == FLAG_DROPPED ) {
+						shader = cgs.media.flagDefendPOI;
+					}
+				} else {
+					if ( !weHaveFlag ) {
+						shader = cgs.media.flagAttackPOI;
+					}
+				}
+			}
+
+			if ( !shader ) {
+				continue;
+			}
+
+			/* Project the cached world position (top of flag model) to screen.
+			   Use fov_y-derived focal length for both axes so the icon stays
+			   correct on any aspect ratio.                                    */
+			VectorSubtract( c->origin, cg.refdef.vieworg, trans );
+			z = DotProduct( trans, cg.refdef.viewaxis[0] );
+			if ( z <= 0.1f ) {
+				continue;  /* flag is behind the camera */
+			}
+
+			py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
+			hf = 240.0f / ( z * py );
+
+			sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
+			sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
+
+			/* Fixed compass-marker size beyond 500 units; inside that distance
+			   iconHalf grows with perspective so it matches the flag3 model
+			   half-width (~10 world units) when you're on top of the flag.   */
+			if ( z > 500.0f ) {
+				iconHalf = 5.0f;
+			} else {
+				perspHalf = 12.0f * hf;
+				iconHalf  = ( perspHalf > 5.0f ) ? perspHalf : 5.0f;
+			}
+
+			/* Bottom of icon sits |above| pixels above the projected flag tip. */
+			sy = sy - above - iconHalf * 2.0f;
+
+			if ( sx < iconHalf || sx > 640.0f - iconHalf ||
+			     sy < 0 || sy + iconHalf * 2.0f > 480.0f ) {
+				continue;
+			}
+
+			trap_R_SetColor( color4 );
+			CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
+		}
+	}
+#ifdef MISSIONPACK
+	if ( cgs.gametype == GT_1FCTF ) {
+		flagPOICache_t	*c;
+		flagPOICache_t	*redBase, *blueBase;
 		vec4_t			color4;
 		vec3_t			trans;
 		qhandle_t		shader;
 		float			py, hf, z, sx, sy;
-		float			iconHalf = 16.0f;
-		float			above    = 5.0f;
+		float			perspHalf, iconHalf;
+		float			above = 1.0f;
 
-		if ( !c->valid ) {
-			continue;
-		}
+		/* For the capture-target positions, prefer the actual (EF_NODRAW) flag
+		   entity cache; fall back to obelisk positions (+24 already baked in). */
+		redBase  = s_flagPOI[0].valid ? &s_flagPOI[0] : &s_flagPOI[3];
+		blueBase = s_flagPOI[1].valid ? &s_flagPOI[1] : &s_flagPOI[4];
 
-		/* Determine which icon to show for this flag. */
 		shader = 0;
-		if ( idx == 0 ) {  /* red flag */
-			color4[0] = 1; color4[1] = 0; color4[2] = 0; color4[3] = 1;
-			if ( ourTeam == TEAM_RED ) {
-				if ( weHaveFlag && redFlagAtBase ) {
-					shader = cgs.media.flagCapturePOI;
-				} else if ( redFlagAtBase || cgs.redflag == FLAG_DROPPED ) {
-					shader = cgs.media.flagDefendPOI;
-				}
-			} else {
-				if ( !weHaveFlag ) {
-					shader = cgs.media.flagAttackPOI;
-				}
+		c      = NULL;
+
+		if ( cgs.flagStatus == FLAG_ATBASE || cgs.flagStatus == FLAG_DROPPED ) {
+			/* Neutral flag available at/near its base — show attack POI for both teams. */
+			if ( s_flagPOI[2].valid ) {
+				color4[0] = 1; color4[1] = 1; color4[2] = 1; color4[3] = 1;
+				shader = cgs.media.flagAttackPOI;
+				c = &s_flagPOI[2];
 			}
-		} else {  /* blue flag */
-			color4[0] = 0; color4[1] = 0.5f; color4[2] = 1; color4[3] = 1;
-			if ( ourTeam == TEAM_BLUE ) {
-				if ( weHaveFlag && blueFlagAtBase ) {
-					shader = cgs.media.flagCapturePOI;
-				} else if ( blueFlagAtBase || cgs.blueflag == FLAG_DROPPED ) {
-					shader = cgs.media.flagDefendPOI;
-				}
-			} else {
-				if ( !weHaveFlag ) {
-					shader = cgs.media.flagAttackPOI;
-				}
+		} else if ( ourTeam == TEAM_RED && cgs.flagStatus == FLAG_TAKEN_RED ) {
+			/* Red team carries the neutral flag; show capture POI at blue obelisk. */
+			if ( blueBase->valid ) {
+				color4[0] = 0; color4[1] = 0.5f; color4[2] = 1; color4[3] = 1;
+				shader = cgs.media.flagCapturePOI;
+				c = blueBase;
+			}
+		} else if ( ourTeam == TEAM_BLUE && cgs.flagStatus == FLAG_TAKEN_BLUE ) {
+			/* Blue team carries the neutral flag; show capture POI at red obelisk. */
+			if ( redBase->valid ) {
+				color4[0] = 1; color4[1] = 0; color4[2] = 0; color4[3] = 1;
+				shader = cgs.media.flagCapturePOI;
+				c = redBase;
 			}
 		}
 
-		if ( !shader ) {
-			continue;
+		if ( shader && c ) {
+			VectorSubtract( c->origin, cg.refdef.vieworg, trans );
+			z = DotProduct( trans, cg.refdef.viewaxis[0] );
+			if ( z > 0.1f ) {
+				py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
+				hf = 240.0f / ( z * py );
+
+				sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
+				sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
+
+				if ( z > 500.0f ) {
+					iconHalf = 5.0f;
+				} else {
+					perspHalf = 12.0f * hf;
+					iconHalf  = ( perspHalf > 5.0f ) ? perspHalf : 5.0f;
+				}
+
+				sy = sy - above - iconHalf * 2.0f;
+
+				if ( !(sx < iconHalf || sx > 640.0f - iconHalf ||
+				       sy < 0 || sy + iconHalf * 2.0f > 480.0f) ) {
+					trap_R_SetColor( color4 );
+					CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
+				}
+			}
 		}
-
-		/* Project the cached world position (top of flag model) to screen.
-		   Use fov_y-derived focal length for both axes so the icon stays
-		   correct on any aspect ratio.                                    */
-		VectorSubtract( c->origin, cg.refdef.vieworg, trans );
-		z = DotProduct( trans, cg.refdef.viewaxis[0] );
-		if ( z <= 0.1f ) {
-			continue;  /* flag is behind the camera */
-		}
-
-		py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
-		hf = 240.0f / ( z * py );
-
-		sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
-		sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
-
-		/* Position the icon above the projected flag-top. */
-		sy = sy - above - iconHalf * 2.0f;
-
-		if ( sx < iconHalf || sx > 640.0f - iconHalf ||
-		     sy < 0 || sy + iconHalf * 2.0f > 480.0f ) {
-			continue;
-		}
-
-		trap_R_SetColor( color4 );
-		// CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
-		CG_DrawPic( sx - iconHalf, sy, iconHalf, iconHalf, shader );
 	}
+#endif
 
 	trap_R_SetColor( NULL );
 }
@@ -557,7 +651,7 @@ CG_DrawFlagPOI
 Called during entity processing to cache the flag's world position.
 The actual drawing and shader selection is handled by CG_DrawFlagPOIs
 in CG_Draw2D, so the icon persists through walls and PVS gaps on every
-frame after the flag has been seen at least once since map load.
+frame.
 ===============
 */
 static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
@@ -566,7 +660,11 @@ static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
 	if ( !cg_flagPOIs.integer ) {
 		return;
 	}
+#ifdef MISSIONPACK
+	if ( cgs.gametype != GT_CTF && cgs.gametype != GT_1FCTF ) {
+#else
 	if ( cgs.gametype != GT_CTF ) {
+#endif
 		return;
 	}
 	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
@@ -577,6 +675,10 @@ static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
 		idx = 0;
 	} else if ( item->giTag == PW_BLUEFLAG ) {
 		idx = 1;
+#ifdef MISSIONPACK
+	} else if ( item->giTag == PW_NEUTRALFLAG ) {
+		idx = 2;
+#endif
 	} else {
 		return;
 	}
@@ -584,9 +686,44 @@ static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
 	/* Cache the anchor near the top of the flag model so the projected
 	   position tracks the flag tip rather than the base.            */
 	VectorCopy( cent->currentState.pos.trBase, s_flagPOI[idx].origin );
-	s_flagPOI[idx].origin[2] += 70;
+	s_flagPOI[idx].origin[2] += 62;
 	s_flagPOI[idx].valid = qtrue;
 }
+
+/*
+===============
+CG_CacheTeamObeliskPOI
+
+Called from CG_TeamBase during entity processing in GT_1FCTF to cache
+the red and blue obelisk/base world positions as fallback capture-target
+anchors when the red/blue flag entities are not sent to clients.
++24 is added to match the height at which the neutral flag sits above
+the obelisk base.
+===============
+*/
+#ifdef MISSIONPACK
+static void CG_CacheTeamObeliskPOI( centity_t *cent ) {
+	int	idx;
+
+	if ( !cg_flagPOIs.integer ) {
+		return;
+	}
+	if ( cgs.gametype != GT_1FCTF ) {
+		return;
+	}
+	if ( cent->currentState.modelindex == TEAM_RED ) {
+		idx = 3;
+	} else if ( cent->currentState.modelindex == TEAM_BLUE ) {
+		idx = 4;
+	} else {
+		return;
+	}
+
+	VectorCopy( cent->lerpOrigin, s_flagPOI[idx].origin );
+	s_flagPOI[idx].origin[2] += 24;
+	s_flagPOI[idx].valid = qtrue;
+}
+#endif
 
 //============================================================================
 
@@ -986,6 +1123,8 @@ static void CG_TeamBase( /*const*/ centity_t *cent ) {
 	vec3_t angles;
 	int t, h;
 	float c;
+
+	CG_CacheTeamObeliskPOI( cent );
 
 	if ( cgs.gametype == GT_CTF || ( cgs.gametype == GT_1FCTF && cent->currentState.modelindex == TEAM_FREE ) ) {
 #else
