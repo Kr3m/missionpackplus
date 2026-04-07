@@ -692,16 +692,16 @@ static void CG_ColorFromChar( char v, vec3_t color ) {
 }
 
 
-static void CG_SetColorInfo( const char *color, clientInfo_t *info ) 
+static void CG_SetColorInfo( const char *color, clientInfo_t *info )
 {
 	VectorSet ( info->headColor, 1.0f, 1.0f, 1.0f );
 	VectorSet ( info->bodyColor, 1.0f, 1.0f, 1.0f );
 	VectorSet ( info->legsColor, 1.0f, 1.0f, 1.0f );
-	
+
 	if ( !color[0] )
 		return;
 	CG_ColorFromChar( color[0], info->headColor );
-	
+
 	if ( !color[1] )
 		return;
 	CG_ColorFromChar( color[1], info->bodyColor );
@@ -890,8 +890,8 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
 		if ( !Q_stricmp( ci->modelName, match->modelName )
 			&& !Q_stricmp( ci->skinName, match->skinName )
 			&& !Q_stricmp( ci->headModelName, match->headModelName )
-			&& !Q_stricmp( ci->headSkinName, match->headSkinName ) 
-			//&& !Q_stricmp( ci->blueTeam, match->blueTeam ) 
+			&& !Q_stricmp( ci->headSkinName, match->headSkinName )
+			//&& !Q_stricmp( ci->blueTeam, match->blueTeam )
 			//&& !Q_stricmp( ci->redTeam, match->redTeam )
 			&& (cgs.gametype < GT_TEAM || ci->team == match->team) ) {
 			// this clientinfo is identical, so use it's handles
@@ -989,7 +989,7 @@ static void CG_SetSkinAndModel( clientInfo_t *newInfo,
 		int clientNum, int myClientNum,
 		team_t myTeam, qboolean setColor,
 		char *modelName, int modelNameSize,
-		char *skinName, int skinNameSize ) 
+		char *skinName, int skinNameSize )
 {
 	char modelStr[ MAX_QPATH * 2 ];
 	char newSkin[ MAX_QPATH * 2 ];
@@ -998,7 +998,7 @@ static void CG_SetSkinAndModel( clientInfo_t *newInfo,
 	qboolean	fb_model;
 	team_t		team;
 	const char	*colors;
-	
+
 	team = newInfo->team;
 	pm_model = ( Q_stricmp( cg_enemyModel.string, PM_SKIN ) == 0 ) ? qtrue : qfalse;
 	fb_model = ( Q_stricmp( cg_enemyModel.string, FB_SKIN ) == 0 ) ? qtrue : qfalse;
@@ -1311,12 +1311,12 @@ void CG_NewClientInfo( int clientNum ) {
 
 	// model
 	v = Info_ValueForKey( configstring, "model" );
-	CG_SetSkinAndModel( &newInfo, ci, v, allowNativeModel, clientNum, myClientNum, myTeam, qtrue, 
+	CG_SetSkinAndModel( &newInfo, ci, v, allowNativeModel, clientNum, myClientNum, myTeam, qtrue,
 		newInfo.modelName, sizeof( newInfo.modelName ),	newInfo.skinName, sizeof( newInfo.skinName ) );
 
 	// head model
 	v = Info_ValueForKey( configstring, "hmodel" );
-	CG_SetSkinAndModel( &newInfo, ci, v, allowNativeModel, clientNum, myClientNum, myTeam, qfalse, 
+	CG_SetSkinAndModel( &newInfo, ci, v, allowNativeModel, clientNum, myClientNum, myTeam, qfalse,
 		newInfo.headModelName, sizeof( newInfo.headModelName ),	newInfo.headSkinName, sizeof( newInfo.headSkinName ) );
 
 	// allow deferred load at some conditions
@@ -1591,7 +1591,7 @@ static void CG_SwingAngles( float destination, float swingTolerance, float clamp
 	if ( !*swinging ) {
 		return;
 	}
-	
+
 	// modify the speed depending on the delta
 	// so it doesn't seem so linear
 	swing = AngleSubtract( destination, *angle );
@@ -1686,8 +1686,8 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE 
-		|| ((cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_STAND 
+	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE
+		|| ((cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_STAND
 		&& (cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_STAND2)) {
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = qtrue;	// always center
@@ -1807,10 +1807,10 @@ static void CG_HasteTrail( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, origin );
 	origin[2] -= 16;
 
-	smoke = CG_SmokePuff( origin, vec3_origin, 
-				  8, 
+	smoke = CG_SmokePuff( origin, vec3_origin,
+				  8,
 				  1, 1, 1, 1,
-				  500, 
+				  500,
 				  cg.time,
 				  0,
 				  0,
@@ -2150,10 +2150,11 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
-		if (ci->newAnims) {
+		if ( cg_flagStyle.integer == 2 ) {
+			CG_TrailItem( cent, cgs.media.redFlagModel2 );
+		} else if (ci->newAnims) {
 			CG_PlayerFlag( cent, cgs.media.redFlagFlapSkin, torso );
-		}
-		else {
+		} else {
 			CG_TrailItem( cent, cgs.media.redFlagModel );
 		}
 		trap_R_AddLightToScene( cent->lerpOrigin, ( POWERUP_GLOW_RADIUS + (rand() & POWERUP_GLOW_RADIUS_MOD) ), 1.0f, 0.2f, 0.2f );
@@ -2161,10 +2162,11 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 
 	// blueflag
 	if ( powerups & ( 1 << PW_BLUEFLAG ) ) {
-		if (ci->newAnims){
+		if ( cg_flagStyle.integer == 2 ) {
+			CG_TrailItem( cent, cgs.media.blueFlagModel2 );
+		} else if (ci->newAnims){
 			CG_PlayerFlag( cent, cgs.media.blueFlagFlapSkin, torso );
-		}
-		else {
+		} else {
 			CG_TrailItem( cent, cgs.media.blueFlagModel );
 		}
 		trap_R_AddLightToScene( cent->lerpOrigin, ( POWERUP_GLOW_RADIUS + (rand() & POWERUP_GLOW_RADIUS_MOD) ), 0.2f, 0.2f, 1.0f );
@@ -2172,10 +2174,11 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 
 	// neutralflag
 	if ( powerups & ( 1 << PW_NEUTRALFLAG ) ) {
-		if (ci->newAnims) {
+		if ( cg_flagStyle.integer == 2 ) {
+			CG_TrailItem( cent, cgs.media.neutralFlagModel2 );
+		} else if (ci->newAnims) {
 			CG_PlayerFlag( cent, cgs.media.neutralFlagFlapSkin, torso );
-		}
-		else {
+		} else {
 			CG_TrailItem( cent, cgs.media.neutralFlagModel );
 		}
 		trap_R_AddLightToScene( cent->lerpOrigin, ( POWERUP_GLOW_RADIUS + (rand() & POWERUP_GLOW_RADIUS_MOD) ), 1.0f, 1.0f, 1.0f );
@@ -2271,7 +2274,7 @@ static void CG_PlayerSprites( centity_t *cent ) {
 	}
 
 	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
-	/* if ( !(cent->currentState.eFlags & EF_DEAD) && 
+	/* if ( !(cent->currentState.eFlags & EF_DEAD) &&
 		cg.snap->ps.persistant[PERS_TEAM] == team &&
 		cgs.gametype >= GT_TEAM) {
 		if (cg_drawFriend.integer) {
@@ -2343,11 +2346,11 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 	alpha = 1.0 - trace.fraction;
 
 	// bk0101022 - hack / FPE - bogus planes?
-	//assert( DotProduct( trace.plane.normal, trace.plane.normal ) != 0.0f ) 
+	//assert( DotProduct( trace.plane.normal, trace.plane.normal ) != 0.0f )
 
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
-	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal, 
+	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
 		cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, 24, qtrue );
 
 	return qtrue;
@@ -2513,7 +2516,7 @@ int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
 			verts[i].modulate[2] = ambientLight[2];
 			verts[i].modulate[3] = 255;
 			continue;
-		} 
+		}
 		j = ( ambientLight[0] + incoming * directedLight[0] );
 		if ( j > 255 ) {
 			j = 255;
@@ -2600,7 +2603,7 @@ void CG_Player( centity_t *cent ) {
 
 	// get the rotation information
 	CG_PlayerAngles( cent, legs.axis, torso.axis, head.axis );
-	
+
 	// get the animation state (after rotation, to allow feet shuffle)
 	CG_PlayerAnimation( cent, &legs.oldframe, &legs.frame, &legs.backlerp,
 		 &torso.oldframe, &torso.frame, &torso.backlerp );
@@ -2705,7 +2708,7 @@ void CG_Player( centity_t *cent ) {
 			angle = ((cg.time / 4) & 255) * (M_PI * 2) / 255;
 			dir[2] = 15 + sin(angle) * 8;
 			VectorAdd(torso.origin, dir, skull.origin);
-			
+
 			dir[2] = 0;
 			VectorCopy(dir, skull.axis[1]);
 			VectorNormalize(skull.axis[1]);
@@ -2783,7 +2786,7 @@ void CG_Player( centity_t *cent ) {
 			dir[1] = cos(angle) * 20;
 			dir[2] = 0;
 			VectorAdd(torso.origin, dir, skull.origin);
-			
+
 			VectorCopy(dir, skull.axis[1]);
 			VectorNormalize(skull.axis[1]);
 			VectorSet(skull.axis[2], 0, 0, 1);
@@ -2923,7 +2926,7 @@ void CG_Player( centity_t *cent ) {
 		head.shaderRGBA[2] = ci->headColor[2] * 255;
 	}
 	head.shaderRGBA[3] = 255;
-	
+
 	CG_AddRefEntityWithPowerups( &head, &cent->currentState, ci->team );
 
 #ifdef MISSIONPACK
@@ -2953,7 +2956,7 @@ A player just came into view or teleported, so reset all animation info
 */
 void CG_ResetPlayerEntity( centity_t *cent ) {
 	cent->errorTime = -99999;		// guarantee no error decay added
-	cent->extrapolated = qfalse;	
+	cent->extrapolated = qfalse;
 
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ], &cent->pe.legs, cent->currentState.legsAnim );
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ], &cent->pe.torso, cent->currentState.torsoAnim );

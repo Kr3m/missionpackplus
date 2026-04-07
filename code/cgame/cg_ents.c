@@ -296,6 +296,17 @@ static void CG_Item( centity_t *cent ) {
 
 	ent.hModel = cg_items[es->modelindex].models[0];
 
+	// flag style override — style 2 uses the flag3 alternate models
+	if ( item->giType == IT_TEAM && cg_flagStyle.integer == 2 ) {
+		if ( item->giTag == PW_REDFLAG ) {
+			ent.hModel = cgs.media.redFlagModel2;
+		} else if ( item->giTag == PW_BLUEFLAG ) {
+			ent.hModel = cgs.media.blueFlagModel2;
+		} else if ( item->giTag == PW_NEUTRALFLAG ) {
+			ent.hModel = cgs.media.neutralFlagModel2;
+		}
+	}
+
 	VectorCopy( cent->lerpOrigin, ent.origin);
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
 

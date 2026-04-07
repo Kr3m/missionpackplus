@@ -770,6 +770,9 @@ static void CG_RegisterGraphics( void ) {
 #endif
 		cgs.media.redFlagModel = trap_R_RegisterModel( "models/flags/r_flag.md3" );
 		cgs.media.blueFlagModel = trap_R_RegisterModel( "models/flags/b_flag.md3" );
+		cgs.media.redFlagModel2 = trap_R_RegisterModel( "models/flag3/r_flag3.md3" );
+		cgs.media.blueFlagModel2 = trap_R_RegisterModel( "models/flag3/b_flag3.md3" );
+		cgs.media.neutralFlagModel2 = trap_R_RegisterModel( "models/flag3/n_flag3.md3" );
 		cgs.media.redFlagShader[0] = trap_R_RegisterShaderNoMip( "icons/iconf_red1" );
 		cgs.media.redFlagShader[1] = trap_R_RegisterShaderNoMip( "icons/iconf_red2" );
 		cgs.media.redFlagShader[2] = trap_R_RegisterShaderNoMip( "icons/iconf_red3" );
