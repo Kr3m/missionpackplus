@@ -291,6 +291,64 @@ void	G_TouchTriggers( gentity_t *ent ) {
 
 /*
 =================
+G_ATDCycleTeammateFollow
+
+GT_CTFS: Forces a dead human player to follow the next living teammate.
+Called on death and when the attack button is pressed during dead-spec.
+Bots stay on their team (never enter TEAM_SPECTATOR) so they are valid
+follow targets; dead bots have health <= 0 and are skipped.
+=================
+*/
+#ifdef MISSIONPACK
+void G_ATDCycleTeammateFollow( gentity_t *ent ) {
+	int       i, start, clientnum;
+	team_t    myTeam;
+	gclient_t *cl;
+
+	myTeam = ent->client->atdDeadSpecTeam;
+	if ( myTeam == TEAM_FREE ) {
+		return; /* not in ATD dead-spec mode */
+	}
+
+	/* Start search after current follow target so repeated presses cycle. */
+	start = ent->client->sess.spectatorClient;
+	if ( start < 0 || start >= level.maxclients ) {
+		start = -1;
+	}
+
+	for ( i = 1; i <= level.maxclients; i++ ) {
+		clientnum = ( start + i ) % level.maxclients;
+		if ( clientnum == ent->s.number ) {
+			continue; /* skip self */
+		}
+		cl = &level.clients[clientnum];
+		if ( cl->pers.connected != CON_CONNECTED ) {
+			continue;
+		}
+		if ( cl->sess.sessionTeam != myTeam ) {
+			continue; /* wrong team */
+		}
+		/* Skip dead humans moved to TEAM_SPECTATOR by ATD death code. */
+		if ( cl->atdDeadSpecTeam != TEAM_FREE ) {
+			continue;
+		}
+		/* Skip dead bots — they stay on-team but have no health. */
+		if ( g_entities[clientnum].health <= 0 ) {
+			continue;
+		}
+		/* Found a valid follow target. */
+		ent->client->sess.spectatorState  = SPECTATOR_FOLLOW;
+		ent->client->sess.spectatorClient = clientnum;
+		return;
+	}
+
+	/* No living teammate found — stay in free-spectate. */
+	ent->client->sess.spectatorState = SPECTATOR_FREE;
+}
+#endif
+
+/*
+=================
 SpectatorThink
 =================
 */
@@ -329,7 +387,15 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 
 	// attack button cycles through spectators
 	if ( ( client->buttons & BUTTON_ATTACK ) && ! ( client->oldbuttons & BUTTON_ATTACK ) ) {
-		Cmd_FollowCycle_f( ent, 1 );
+#ifdef MISSIONPACK
+		if ( client->atdDeadSpecTeam != TEAM_FREE ) {
+			G_ATDCycleTeammateFollow( ent );
+		} else {
+#endif
+			Cmd_FollowCycle_f( ent, 1 );
+#ifdef MISSIONPACK
+		}
+#endif
 	}
 }
 

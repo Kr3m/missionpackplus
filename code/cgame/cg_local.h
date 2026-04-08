@@ -1099,6 +1099,11 @@ typedef struct {
 	int				redflag, blueflag;		// flag status from configstrings
 	int				flagStatus;
 	int				atdAttackingTeam;		// GT_CTFS: TEAM_RED or TEAM_BLUE (from CS_FLAGSTATUS[2])
+#ifdef MISSIONPACK
+	int				atdCompletedRounds;		// GT_CTFS: number of completed half-rounds
+	int				atdRoundScoresRed[MAX_ATD_ROUNDS];
+	int				atdRoundScoresBlue[MAX_ATD_ROUNDS];
+#endif
 
 	qboolean  newHud;
 
@@ -1457,6 +1462,9 @@ void CG_DrawInformation( void );
 //
 qboolean CG_DrawOldScoreboard( void );
 void CG_DrawOldTourneyScoreboard( void );
+#ifdef MISSIONPACK
+void CG_DrawATDRoundScores( float fade );
+#endif
 void CG_ScoreboardClick( void );
 
 //

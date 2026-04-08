@@ -176,6 +176,42 @@ void CG_ParseSysteminfo( void ) {
 }
 
 
+#ifdef MISSIONPACK
+/*
+==================
+CG_ParseATDRoundScores
+
+Parses the CS_ATD_ROUNDSCORES configstring ("r0 b0 r1 b1 ...") into
+cgs.atdRoundScoresRed/Blue and sets cgs.atdCompletedRounds.
+==================
+*/
+static void CG_ParseATDRoundScores( const char *str ) {
+	int   r = 0;
+	char  buf[MAX_ATD_ROUNDS * 14 + 2];
+	char *tok;
+
+	cgs.atdCompletedRounds = 0;
+	Com_Memset( cgs.atdRoundScoresRed,  0, sizeof( cgs.atdRoundScoresRed  ) );
+	Com_Memset( cgs.atdRoundScoresBlue, 0, sizeof( cgs.atdRoundScoresBlue ) );
+
+	if ( !str || !*str ) {
+		return;
+	}
+
+	Q_strncpyz( buf, str, sizeof( buf ) );
+	tok = strtok( buf, " " );
+	while ( tok && r < MAX_ATD_ROUNDS ) {
+		cgs.atdRoundScoresRed[r]  = atoi( tok );
+		tok = strtok( NULL, " " );
+		if ( !tok ) break;
+		cgs.atdRoundScoresBlue[r] = atoi( tok );
+		tok = strtok( NULL, " " );
+		r++;
+	}
+	cgs.atdCompletedRounds = r;
+}
+#endif
+
 /*
 ==================
 CG_ParseWarmup
@@ -265,6 +301,7 @@ void CG_SetConfigValues( void ) {
 		cgs.redflag          = s[0] - '0';
 		cgs.blueflag         = s[1] - '0';
 		cgs.atdAttackingTeam = s[2] - '0';
+		CG_ParseATDRoundScores( CG_ConfigString( CS_ATD_ROUNDSCORES ) );
 	}
 #endif
 	CG_ParseWarmup();
@@ -376,6 +413,10 @@ static void CG_ConfigStringModified( void ) {
 #endif
 	} else if ( num == CS_INTERMISSION ) {
 		cg.intermissionStarted = atoi( str );
+#ifdef MISSIONPACK
+	} else if ( num == CS_ATD_ROUNDSCORES ) {
+		CG_ParseATDRoundScores( str );
+#endif
 	} else if ( num >= CS_MODELS && num < CS_MODELS+MAX_MODELS ) {
 		cgs.gameModels[ num-CS_MODELS ] = trap_R_RegisterModel( str );
 	} else if ( num >= CS_SOUNDS && num < CS_SOUNDS+MAX_SOUNDS ) {
@@ -510,6 +551,9 @@ static void CG_MapRestart( void ) {
 	cg.rewardTime = 0;
 	cg.rewardStack = 0;
 	cg.intermissionStarted = qfalse;
+#ifdef MISSIONPACK
+	cgs.atdCompletedRounds = 0;	/* prevent stale scoreboard on map_restart */
+#endif
 	cg.levelShot = qfalse;
 
 	cgs.voteTime = 0;

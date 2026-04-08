@@ -718,6 +718,12 @@ static void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		level.atdEliminationSides   = 1; // BLUE always defends round 1, RED always attacks
 		level.atdRoundRedPlayers    = 0;
 		level.atdRoundBluePlayers   = 0;
+		level.atdRoundStartRed      = 0;
+		level.atdRoundStartBlue     = 0;
+		Com_Memset( level.atdRoundScoresRed,  0, sizeof( level.atdRoundScoresRed  ) );
+		Com_Memset( level.atdRoundScoresBlue, 0, sizeof( level.atdRoundScoresBlue ) );
+		/* Clear the round score configstring so clients start fresh. */
+		trap_SetConfigstring( CS_ATD_ROUNDSCORES, "" );
 		/* CS_WARMUP will be set after the initial match warmup ends (G_ATDEndRound). */
 	}
 #endif
@@ -2213,6 +2219,33 @@ static int G_ATDTeamLivingCount( team_t team ) {
 
 /*
 ==============
+G_ATDUpdateRoundScoreCS
+
+Builds the CS_ATD_ROUNDSCORES configstring from current per-half-round data
+and pushes it to all clients.  Must be called before atdRoundNumber is
+incremented so that atdRoundNumber equals the number of completed halves.
+==============
+*/
+static void G_ATDUpdateRoundScoreCS( void ) {
+	int  i, completedHalves, offset;
+	char buf[MAX_ATD_ROUNDS * 14 + 2];
+
+	completedHalves = level.atdRoundNumber; /* not yet incremented */
+	if ( completedHalves > MAX_ATD_ROUNDS ) completedHalves = MAX_ATD_ROUNDS;
+
+	offset  = 0;
+	buf[0]  = '\0';
+	for ( i = 0; i < completedHalves; i++ ) {
+		offset += Com_sprintf( buf + offset, (int)sizeof(buf) - offset,
+		                       i == 0 ? "%i %i" : " %i %i",
+		                       level.atdRoundScoresRed[i],
+		                       level.atdRoundScoresBlue[i] );
+	}
+	trap_SetConfigstring( CS_ATD_ROUNDSCORES, buf );
+}
+
+/*
+==============
 G_ATDEndRound
 
 Called when an ATD round concludes (cap, elimination, or time).
@@ -2220,7 +2253,18 @@ Resets flags, advances the round counter, and begins the next warmup.
 ==============
 */
 void G_ATDEndRound( void ) {
+	int halfIdx;
+
 	Team_ResetFlags();
+
+	/* Record this half-round's per-team score delta before advancing the counter. */
+	halfIdx = level.atdRoundNumber - 1; /* 0-based */
+	if ( halfIdx >= 0 && halfIdx < MAX_ATD_ROUNDS ) {
+		level.atdRoundScoresRed[halfIdx]  = level.teamScores[TEAM_RED]  - level.atdRoundStartRed;
+		level.atdRoundScoresBlue[halfIdx] = level.teamScores[TEAM_BLUE] - level.atdRoundStartBlue;
+	}
+	G_ATDUpdateRoundScoreCS();
+
 	level.atdRoundNumber++;
 
 	/* Scorelimit check at round boundary.
@@ -2337,10 +2381,12 @@ static void G_CheckATDRound( void ) {
 			level.atdRoundNumberStarted = level.atdRoundNumber;
 			level.atdRoundRedPlayers    = G_ATDTeamLivingCount( TEAM_RED );
 			level.atdRoundBluePlayers   = G_ATDTeamLivingCount( TEAM_BLUE );
+			level.atdRoundStartRed      = level.teamScores[TEAM_RED];
+			level.atdRoundStartBlue     = level.teamScores[TEAM_BLUE];
 			/* Clear the inter-round countdown and unfreeze players. */
 			trap_SetConfigstring( CS_WARMUP, "" );
 			G_BroadcastServerCommand( -1, va( "print \"Round %i — %s attacks, %s defends!\\n\"",
-				level.atdRoundNumber,
+				( level.atdRoundNumber + 1 ) / 2,
 				( atkTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7",
 				( defTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7" ) );
 		}

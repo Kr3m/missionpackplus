@@ -2566,6 +2566,14 @@ static void CG_DrawWarmup( void ) {
 #else
 	CG_DrawString( 320, 70, s, colorWhite, cw, cw * 1.5, 0, DS_CENTER | DS_SHADOW | DS_PROPORTIONAL );
 #endif
+
+#ifdef MISSIONPACK
+	if ( cgs.gametype == GT_CTFS &&
+	     cgs.atdCompletedRounds > 0 &&
+	     !cg.intermissionStarted ) {
+		CG_DrawATDRoundScores( 1.0f );
+	}
+#endif
 }
 
 
@@ -2769,6 +2777,9 @@ static void CG_WarmupEvents( void ) {
 				trap_S_StartLocalSound( cgs.media.countFightSound, CHAN_ANNOUNCER );
 				cg.warmupFightSound = cg.time + 750;
 			}
+#ifdef MISSIONPACK
+			if ( cgs.gametype != GT_CTFS )
+#endif
 			CG_CenterPrint( "FIGHT!", 120, GIANTCHAR_WIDTH*2 );
 			break;
 

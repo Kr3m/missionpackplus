@@ -452,6 +452,12 @@ typedef struct {
 	int			atdEliminationSides;	// random seed: (sides+round)%2==0 => RED attacks
 	int			atdRoundRedPlayers;		// red players alive at round start (for elim check)
 	int			atdRoundBluePlayers;	// blue players alive at round start
+#ifdef MISSIONPACK
+	int			atdRoundScoresRed[MAX_ATD_ROUNDS];	// per-half-round red scores
+	int			atdRoundScoresBlue[MAX_ATD_ROUNDS];	// per-half-round blue scores
+#endif
+	int			atdRoundStartRed;	// teamScores[RED] at the start of the current half
+	int			atdRoundStartBlue;	// teamScores[BLUE] at the start of the current half
 
 } level_locals_t;
 
@@ -693,6 +699,7 @@ void Team_DirtyFlagStatus( void );
 //
 void G_ATDEndRound( void );
 void G_ATDGlobalSound( const char *path );
+void G_ATDCycleTeammateFollow( gentity_t *ent );
 
 //
 // g_mem.c

@@ -702,6 +702,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		self->client->sess.sessionTeam    = TEAM_SPECTATOR;
 		self->client->sess.spectatorState = SPECTATOR_FREE;
 		self->client->atdDeadSpecTeam     = origTeam;
+		/* Force the player to follow a living teammate. */
+		G_ATDCycleTeammateFollow( self );
 	}
 #endif
 

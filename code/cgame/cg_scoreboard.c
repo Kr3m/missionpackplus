@@ -2,6 +2,9 @@
 //
 // cg_scoreboard -- draw the scoreboard on top of the game screen
 #include "cg_local.h"
+#ifdef MISSIONPACK
+#include "../ui/ui_shared.h"
+#endif
 
 
 #define	SCOREBOARD_X		(0)
@@ -47,7 +50,7 @@
 //
 //	0   32   80  112  144   240  320  400   <-- pixel position
 //  bot head bot head score ping time name
-//  
+//
 //  wins/losses are drawn on bot icon now
 
 static qboolean localClient; // true if local client has been displayed
@@ -69,7 +72,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		Com_Printf( "Bad score->client: %i\n", score->client );
 		return;
 	}
-	
+
 	ci = &cgs.clientinfo[score->client];
 	if ( !ci->infoValid )
 		return;
@@ -134,7 +137,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	VectorClear( headAngles );
 	headAngles[YAW] = 180;
 	if( largeFormat ) {
-		CG_DrawHead( headx, y - ( ICON_SIZE - BIGCHAR_HEIGHT ) / 2, ICON_SIZE, ICON_SIZE, 
+		CG_DrawHead( headx, y - ( ICON_SIZE - BIGCHAR_HEIGHT ) / 2, ICON_SIZE, ICON_SIZE,
 			score->client, headAngles );
 	}
 	else {
@@ -168,7 +171,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 
 		localClient = qtrue;
 
-		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR 
+		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR
 			|| cgs.gametype >= GT_TEAM ) {
 			rank = -1;
 		} else {
@@ -193,7 +196,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		}
 
 		hcolor[3] = fade * 0.7;
-		CG_FillRect( SB_SCORELINE_X + BIGCHAR_WIDTH + (SB_RATING_WIDTH / 2), y, 
+		CG_FillRect( SB_SCORELINE_X + BIGCHAR_WIDTH + (SB_RATING_WIDTH / 2), y,
 			640 - SB_SCORELINE_X - BIGCHAR_WIDTH - (SB_RATING_WIDTH/2),
 			BIGCHAR_HEIGHT+1, hcolor );
 	}
@@ -327,7 +330,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 		fadeColor = colorWhite;
 	} else {
 		fadeColor = CG_FadeColor( cg.scoreFadeTime, FADE_TIME );
-		
+
 		if ( !fadeColor ) {
 			// next time scoreboard comes up, don't print killer
 			cg.deferredPlayerLoading = 0;
@@ -502,7 +505,7 @@ void CG_DrawOldTourneyScoreboard( void ) {
 		CG_DrawString( 8, y, "Red Team", colorWhite, GIANT_WIDTH, GIANT_HEIGHT, 0, DS_SHADOW );
 		s = va( "%i", cg.teamScores[0] );
 		CG_DrawString( 632, y, s, colorWhite, GIANT_WIDTH, GIANT_HEIGHT, 0, DS_SHADOW | DS_RIGHT );
-		
+
 		y += 64;
 
 		CG_DrawString( 8, y, "Blue Team", colorWhite, GIANT_WIDTH, GIANT_HEIGHT, 0, DS_SHADOW );
@@ -529,3 +532,110 @@ void CG_DrawOldTourneyScoreboard( void ) {
 		}
 	}
 }
+
+#ifdef MISSIONPACK
+/*
+=================
+CG_DrawATDRoundScores
+
+Draws the round-score panel during inter-round warmup.
+Geometry mirrors the menudef layout (640x120 panel at the top of screen):
+
+  rect 0   0  640 120  -- panel
+  rect 2   2  636 116  -- border
+  rect 114 2    2 116  -- left divider (after label column)
+  rect 2  40  636   2  -- header divider
+  "Round"  / round numbers  at y=10 h=20  scale 0.30
+  Red label / red scores    at y=55 h=20  scale 0.35 / 0.30
+  Blue label / blue scores  at y=85 h=20  scale 0.35 / 0.30
+
+  10 score columns, pitch 53px, first column left-edge at x=140, cell width 40.
+  Numbers are centered within their 40px cell.
+  Shows "-" for unplayed rounds; shifts window left once more than 10 rounds.
+=================
+*/
+void CG_DrawATDRoundScores( float fade ) {
+	/*
+	 * Layout: 640x120 panel centred vertically on the 480px screen.
+	 * Label column: x=2..114 (112px).  Score area: x=116..638 (522px).
+	 * 10 columns, each 52px wide (522/10 = 52.2 → 52).
+	 * COL0_LEFT=116, PITCH=52, centering uses the full 52px slot.
+	 */
+	static const float	SCALE_NUM  = 0.28f;	/* round numbers + score values */
+	static const float	SCALE_LBL  = 0.33f;	/* team name labels */
+	static const float	COL_PITCH  = 52.0f;
+	static const float	COL0_LEFT  = 116.0f;
+	static const float	LABEL_X    = 10.0f;
+	static const float	PANEL_H    = 120.0f;
+	static const float	PANEL_Y    = ( 480.0f - 120.0f ) * 0.5f;
+	static const int	DISP_COLS  = 10;
+
+	int		completedHalves, completedFull, windowStart;
+	int		i, half0, half1;
+	float	textH, cx, baseY;
+	vec4_t	cBg, cBorder, cWhite, cRed, cBlu;
+	const char	*s;
+
+	completedHalves = cgs.atdCompletedRounds;
+	if ( completedHalves <= 0 ) {
+		return;
+	}
+
+	completedFull = ( completedHalves + 1 ) / 2;
+	windowStart   = completedFull > DISP_COLS ? completedFull - DISP_COLS : 0;
+
+	textH = (float)CG_Text_Height( "R", SCALE_NUM, 0 );
+
+	/* colors */
+	cBg[0]     = 0.0f;  cBg[1]     = 0.0f;  cBg[2]     = 0.0f;  cBg[3]     = 0.7f * fade;
+	cBorder[0] = 1.0f;  cBorder[1] = 1.0f;  cBorder[2] = 1.0f;  cBorder[3] = fade;
+	cWhite[0]  = 1.0f;  cWhite[1]  = 1.0f;  cWhite[2]  = 1.0f;  cWhite[3]  = fade;
+	cRed[0]    = 1.0f;  cRed[1]    = 0.3f;  cRed[2]    = 0.3f;  cRed[3]    = fade;
+	cBlu[0]    = 0.4f;  cBlu[1]    = 0.6f;  cBlu[2]    = 1.0f;  cBlu[3]    = fade;
+
+	/* --- panel background + border --- */
+	CG_FillRect( 0,   PANEL_Y,            640,  PANEL_H,       cBg );
+	CG_DrawRect( 2,   PANEL_Y + 2,        636,  PANEL_H - 4,   1.0f, cBorder );
+	/* vertical divider after label column */
+	CG_FillRect( 114, PANEL_Y + 2,        2,    PANEL_H - 4,   cBorder );
+	/* horizontal divider below header */
+	CG_FillRect( 2,   PANEL_Y + 40,       636,  2,             cBorder );
+
+	/* --- header row (y=10, h=20) --- */
+	baseY = PANEL_Y + 10.0f + ( 20.0f + textH ) * 0.5f;
+	CG_Text_Paint( LABEL_X, baseY, SCALE_NUM, cWhite, "Round", 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	for ( i = 0; i < DISP_COLS; i++ ) {
+		s  = va( "%i", windowStart + i + 1 );
+		cx = COL0_LEFT + (float)i * COL_PITCH
+		     + ( COL_PITCH - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
+		CG_Text_Paint( cx, baseY, SCALE_NUM, cWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	}
+
+	/* --- red row (y=55, h=20) --- */
+	baseY = PANEL_Y + 55.0f + ( 20.0f + textH ) * 0.5f;
+	s = cgs.redTeam[0] ? cgs.redTeam : DEFAULT_REDTEAM_NAME;
+	CG_Text_Paint( LABEL_X, baseY, SCALE_LBL, cRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	for ( i = 0; i < DISP_COLS; i++ ) {
+		half0 = ( windowStart + i ) * 2;
+		s  = ( ( windowStart + i ) < completedFull && half0 < completedHalves )
+		     ? va( "%i", cgs.atdRoundScoresRed[half0] ) : "-";
+		cx = COL0_LEFT + (float)i * COL_PITCH
+		     + ( COL_PITCH - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
+		CG_Text_Paint( cx, baseY, SCALE_NUM, cRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	}
+
+	/* --- blue row (y=85, h=20) --- */
+	baseY = PANEL_Y + 85.0f + ( 20.0f + textH ) * 0.5f;
+	s = cgs.blueTeam[0] ? cgs.blueTeam : DEFAULT_BLUETEAM_NAME;
+	CG_Text_Paint( LABEL_X, baseY, SCALE_LBL, cBlu, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	for ( i = 0; i < DISP_COLS; i++ ) {
+		half0 = ( windowStart + i ) * 2;
+		half1 = half0 + 1;
+		s  = ( ( windowStart + i ) < completedFull && half1 < completedHalves )
+		     ? va( "%i", cgs.atdRoundScoresBlue[half1] ) : "-";
+		cx = COL0_LEFT + (float)i * COL_PITCH
+		     + ( COL_PITCH - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
+		CG_Text_Paint( cx, baseY, SCALE_NUM, cBlu, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	}
+}
+#endif /* MISSIONPACK */

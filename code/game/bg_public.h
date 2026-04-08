@@ -69,6 +69,11 @@
 
 #define	CS_ITEMS				27		// string of 0's and 1's that tell which items are present
 
+#ifdef MISSIONPACK
+#define CS_ATD_ROUNDSCORES		29		// GT_CTFS: space-delimited red/blue score pairs per completed half-round
+#define MAX_ATD_ROUNDS			20		// max tracked half-rounds (10 display rounds)
+#endif
+
 #define	CS_MODELS				32
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)
 #define	CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
