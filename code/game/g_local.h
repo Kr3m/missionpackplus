@@ -700,7 +700,10 @@ void Team_DirtyFlagStatus( void );
 //
 void G_ATDEndRound( void );
 void G_ATDGlobalSound( const char *path );
+void G_ATDClientSound( int clientNum, const char *path );
 void G_ATDCycleTeammateFollow( gentity_t *ent );
+int  G_LastAliveOnTeam( team_t team );
+void G_CheckLastTeamStanding( gentity_t *self );
 
 //
 // g_mem.c

@@ -339,6 +339,10 @@ void G_ATDCycleTeammateFollow( gentity_t *ent ) {
 		/* Found a valid follow target. */
 		ent->client->sess.spectatorState  = SPECTATOR_FOLLOW;
 		ent->client->sess.spectatorClient = clientnum;
+		/* If this is the last surviving teammate, cue the announcer. */
+		if ( G_LastAliveOnTeam( myTeam ) == clientnum ) {
+			G_ATDClientSound( ent->s.number, "sound/vo_evil/last_standing.wav" );
+		}
 		return;
 	}
 

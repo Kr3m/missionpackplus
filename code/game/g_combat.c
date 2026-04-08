@@ -435,6 +435,112 @@ void G_GenericDeathCleanup( gentity_t *self ) {
 #endif
 }
 
+#ifdef MISSIONPACK
+/*
+==================
+G_LastAliveOnTeam
+
+Returns the client number of the sole surviving player on the given team,
+or -1 if there are zero or more than one alive players on that team.
+
+A player is alive when:
+  - still assigned to the team (not moved to TEAM_SPECTATOR by ATD death code)
+  - atdDeadSpecTeam == TEAM_FREE (not a dead human in dead-spectate)
+  - health > 0 (catches dead bots that stay on-team)
+==================
+*/
+int G_LastAliveOnTeam( team_t team ) {
+	int        i;
+	int        aliveCount = 0;
+	int        lastAlive  = -1;
+	gclient_t *cl;
+
+	for ( i = 0; i < level.maxclients; i++ ) {
+		cl = &level.clients[i];
+		if ( cl->pers.connected != CON_CONNECTED ) {
+			continue;
+		}
+		if ( cl->sess.sessionTeam != team ) {
+			continue;
+		}
+		if ( cl->atdDeadSpecTeam != TEAM_FREE ) {
+			continue; /* dead human in ATD dead-spec */
+		}
+		if ( g_entities[i].health <= 0 ) {
+			continue; /* dead bot */
+		}
+		aliveCount++;
+		lastAlive = i;
+	}
+
+	return ( aliveCount == 1 ) ? lastAlive : -1;
+}
+
+/*
+==================
+G_CheckLastTeamStanding
+
+Called after a player dies in GT_CTFS.  If exactly one teammate remains
+alive, plays sound/vo_evil/last_standing.wav to that player and to every
+spectator currently following them.
+==================
+*/
+void G_CheckLastTeamStanding( gentity_t *self ) {
+	int        i;
+	int        lastAlive;
+	team_t     myTeam;
+	gclient_t *cl;
+
+	if ( g_gametype.integer != GT_CTFS ) {
+		return;
+	}
+	if ( level.warmupTime != 0 ) {
+		return;
+	}
+	if ( level.atdRoundNumber != level.atdRoundNumberStarted ) {
+		return;
+	}
+
+	/* Recover the dying player's original team.
+	   Human players have already been moved to TEAM_SPECTATOR, so use
+	   atdDeadSpecTeam.  Bots stay on their team (health already <= 0). */
+	if ( self->client->atdDeadSpecTeam != TEAM_FREE ) {
+		myTeam = self->client->atdDeadSpecTeam;
+	} else {
+		myTeam = self->client->sess.sessionTeam;
+		if ( myTeam == TEAM_SPECTATOR || myTeam == TEAM_FREE ) {
+			return;
+		}
+	}
+
+	lastAlive = G_LastAliveOnTeam( myTeam );
+	if ( lastAlive < 0 ) {
+		return;
+	}
+
+	/* Notify the last standing player. */
+	G_ATDClientSound( lastAlive, "sound/vo_evil/last_standing.wav" );
+
+	/* Notify every spectator already following the last standing player. */
+	for ( i = 0; i < level.maxclients; i++ ) {
+		if ( i == lastAlive ) {
+			continue; /* already notified above */
+		}
+		cl = &level.clients[i];
+		if ( cl->pers.connected != CON_CONNECTED ) {
+			continue;
+		}
+		if ( cl->sess.spectatorState != SPECTATOR_FOLLOW ) {
+			continue;
+		}
+		if ( cl->sess.spectatorClient != lastAlive ) {
+			continue;
+		}
+		G_ATDClientSound( i, "sound/vo_evil/last_standing.wav" );
+	}
+}
+#endif
+
 /*
 ==================
 player_die
@@ -705,6 +811,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		/* Force the player to follow a living teammate. */
 		G_ATDCycleTeammateFollow( self );
 	}
+	G_CheckLastTeamStanding( self );
 #endif
 
 	trap_LinkEntity (self);

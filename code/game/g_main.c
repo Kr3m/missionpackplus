@@ -1585,6 +1585,14 @@ void G_ATDGlobalSound( const char *path ) {
 	te->s.eventParm = G_SoundIndex( path );
 	te->r.svFlags |= SVF_BROADCAST;
 }
+
+/* Send a global non-attenuated sound to a single client. */
+void G_ATDClientSound( int clientNum, const char *path ) {
+	gentity_t *te = G_TempEntity( g_entities[clientNum].r.currentOrigin, EV_GLOBAL_SOUND );
+	te->s.eventParm = G_SoundIndex( path );
+	te->r.svFlags |= SVF_SINGLECLIENT;
+	te->r.singleClient = clientNum;
+}
 #endif
 
 /*
