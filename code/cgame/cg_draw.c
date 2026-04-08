@@ -2791,6 +2791,10 @@ static void CG_WarmupEvents( void ) {
 			trap_S_StartLocalSound( cgs.media.count2Sound, CHAN_ANNOUNCER );
 			break;
 
+		case 5:
+			trap_S_StartLocalSound( cgs.media.countRoundBeginsInSound, CHAN_ANNOUNCER );
+			break;
+
 		case 3:
 			trap_S_StartLocalSound( cgs.media.count3Sound, CHAN_ANNOUNCER );
 			break;

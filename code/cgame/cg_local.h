@@ -1022,6 +1022,7 @@ typedef struct {
 	sfxHandle_t scoutSound;
 	sfxHandle_t	atdAttackSound;		/* GT_CTFS: "attack the flag" cue */
 	sfxHandle_t	atdDefendSound;		/* GT_CTFS: "defend the flag" cue */
+	sfxHandle_t	countRoundBeginsInSound;
 #endif
 	qhandle_t cursor;
 

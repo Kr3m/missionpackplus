@@ -415,13 +415,23 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.oneFragSound = trap_S_RegisterSound( "sound/feedback/1_frag.wav", qtrue );
 	cgs.media.twoFragSound = trap_S_RegisterSound( "sound/feedback/2_frags.wav", qtrue );
 	cgs.media.threeFragSound = trap_S_RegisterSound( "sound/feedback/3_frags.wav", qtrue );
-	cgs.media.count3Sound = trap_S_RegisterSound( "sound/feedback/three.wav", qtrue );
-	cgs.media.count2Sound = trap_S_RegisterSound( "sound/feedback/two.wav", qtrue );
-	cgs.media.count1Sound = trap_S_RegisterSound( "sound/feedback/one.wav", qtrue );
+#ifdef MISSIONPACK
+	if ( cgs.gametype == GT_CTFS ) {
+		cgs.media.count3Sound = trap_S_RegisterSound( "sound/vo_evil/three.wav", qtrue );
+		cgs.media.count2Sound = trap_S_RegisterSound( "sound/vo_evil/two.wav", qtrue );
+		cgs.media.count1Sound = trap_S_RegisterSound( "sound/vo_evil/one.wav", qtrue );
+	} else
+#endif
+	{
+		cgs.media.count3Sound = trap_S_RegisterSound( "sound/feedback/three.wav", qtrue );
+		cgs.media.count2Sound = trap_S_RegisterSound( "sound/feedback/two.wav", qtrue );
+		cgs.media.count1Sound = trap_S_RegisterSound( "sound/feedback/one.wav", qtrue );
+	}
 	cgs.media.countFightSound = trap_S_RegisterSound( "sound/feedback/fight.wav", qtrue );
 	cgs.media.countPrepareSound = trap_S_RegisterSound( "sound/feedback/prepare.wav", qtrue );
 #ifdef MISSIONPACK
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound( "sound/feedback/prepare_team.wav", qtrue );
+	cgs.media.countRoundBeginsInSound = trap_S_RegisterSound( "sound/vo_evil/round_begins_in.wav", qtrue );
 	if ( cgs.gametype == GT_CTFS || cg_buildScript.integer ) {
 		cgs.media.atdAttackSound = trap_S_RegisterSound( "sound/vo_evil/attack_the_flag.wav", qtrue );
 		cgs.media.atdDefendSound = trap_S_RegisterSound( "sound/vo_evil/defend_the_flag.wav", qtrue );
