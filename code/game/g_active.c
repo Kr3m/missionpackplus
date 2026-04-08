@@ -824,6 +824,8 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.pm_type = PM_NORMAL;
 	}
 
+/* ATD inter-round freeze handled via pm.cmd zeroing before Pmove — see below. */
+
 	client->ps.gravity = g_gravity.value;
 
 	// set speed
@@ -909,6 +911,7 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.pmove_fixed = pmove_fixed.integer;
 	pm.pmove_msec = pmove_msec.integer;
 	pm.grapplePull = g_grapplePull.integer;
+	pm.fastWeaponSwitch = g_fastWeaponSwitch.integer;
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 
@@ -924,6 +927,17 @@ void ClientThink_real( gentity_t *ent ) {
 				}
 				ent->client->ps.pm_type = PM_SPINTERMISSION;
 			}
+		}
+		/* ATD inter-round freeze: block movement and firing but allow weapon switching.
+		   Done here in pm.cmd so Pmove still processes weapon-change bookkeeping. */
+		if ( g_gametype.integer == GT_CTFS &&
+		     level.warmupTime == 0 &&
+		     level.atdRoundNumber != level.atdRoundNumberStarted &&
+		     client->ps.pm_type == PM_NORMAL ) {
+			pm.cmd.forwardmove = 0;
+			pm.cmd.rightmove   = 0;
+			pm.cmd.upmove      = 0;
+			pm.cmd.buttons    &= ~(BUTTON_ATTACK | BUTTON_USE_HOLDABLE);
 		}
 		Pmove (&pm);
 #else
@@ -983,9 +997,7 @@ void ClientThink_real( gentity_t *ent ) {
 	// check for respawning
 	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 #ifdef MISSIONPACK
-		// GT_CTFS: no mid-round respawn; wait for G_CheckATDRound to begin the next round
-		if ( g_gametype.integer == GT_CTFS &&
-		     level.atdRoundNumber == level.atdRoundNumberStarted ) {
+		if ( g_gametype.integer == GT_CTFS ) {
 			return;
 		}
 #endif
@@ -1047,6 +1059,10 @@ void G_RunClient( gentity_t *ent ) {
 
 /*
 ==================
+SpectatorClientEndFrame
+==================
+*/
+/*
 SpectatorClientEndFrame
 
 ==================

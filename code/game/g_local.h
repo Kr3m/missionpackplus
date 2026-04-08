@@ -316,6 +316,7 @@ struct gclient_s {
 	int			portalID;
 	int			ammoTimes[WP_NUM_WEAPONS];
 	int			invulnerabilityTime;
+	team_t		atdDeadSpecTeam;	/* GT_CTFS: original team when dead-spectating; TEAM_FREE when inactive */
 #endif
 
 	char		*areabits;
@@ -691,6 +692,7 @@ void Team_DirtyFlagStatus( void );
 // g_main.c (ATD helpers, called from g_team.c)
 //
 void G_ATDEndRound( void );
+void G_ATDGlobalSound( const char *path );
 
 //
 // g_mem.c

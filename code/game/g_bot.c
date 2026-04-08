@@ -162,7 +162,7 @@ static void G_LoadArenas( void ) {
 		G_LoadArenasFromFile(filename);
 	}
 	trap_Print( va( "%i arenas parsed\n", g_numArenas ) );
-	
+
 	for( n = 0; n < g_numArenas; n++ ) {
 		Info_SetValueForKey( g_arenaInfos[n], "num", va( "%i", n ) );
 	}
@@ -337,8 +337,23 @@ static int G_CountHumanPlayers( team_t team ) {
 		if ( g_entities[i].r.svFlags & SVF_BOT ) {
 			continue;
 		}
-		if ( team >= 0 && cl->sess.sessionTeam != team ) {
-			continue;
+		if ( team >= 0 ) {
+#ifdef MISSIONPACK
+			/* GT_CTFS dead-spectators have sessionTeam == TEAM_SPECTATOR but
+			   their real team is stored in atdDeadSpecTeam.  Count them under
+			   their original team so G_CheckMinimumPlayers doesn't spawn bots
+			   to replace them. */
+			team_t effectiveTeam = ( cl->atdDeadSpecTeam != TEAM_FREE )
+			                       ? cl->atdDeadSpecTeam
+			                       : cl->sess.sessionTeam;
+			if ( effectiveTeam != team ) {
+				continue;
+			}
+#else
+			if ( cl->sess.sessionTeam != team ) {
+				continue;
+			}
+#endif
 		}
 		num++;
 	}

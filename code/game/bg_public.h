@@ -175,6 +175,7 @@ typedef struct {
 	int			pmove_msec;
 
 	int			grapplePull;
+	int			fastWeaponSwitch;
 
 	// callbacks to test the world
 	// these will be different functions during game and cgame

@@ -707,6 +707,21 @@ static void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// general initialization
 	G_FindTeams();
 
+	// Attack & Defend (GT_CTFS) round initialisation — must precede G_CheckTeamItems()
+	// so Team_InitGame encodes the correct attacking team into CS_FLAGSTATUS.
+#ifdef MISSIONPACK
+	if ( g_gametype.integer == GT_CTFS ) {
+		level.atdRoundNumber        = 1;
+		level.atdRoundNumberStarted = 0;
+		level.atdRoundStartTime     = level.time + g_warmup.integer * 1000;
+		level.atdRoundRespawned     = qfalse;
+		level.atdEliminationSides   = 1; // BLUE always defends round 1, RED always attacks
+		level.atdRoundRedPlayers    = 0;
+		level.atdRoundBluePlayers   = 0;
+		/* CS_WARMUP will be set after the initial match warmup ends (G_ATDEndRound). */
+	}
+#endif
+
 	// make sure we have flags for CTF, etc
 	if( g_gametype.integer >= GT_TEAM ) {
 		G_CheckTeamItems();
@@ -732,19 +747,6 @@ static void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	// don't forget to reset times
 	trap_SetConfigstring( CS_INTERMISSION, "" );
-
-	// Attack & Defend (GT_CTFS) round initialisation
-#ifdef MISSIONPACK
-	if ( g_gametype.integer == GT_CTFS ) {
-		level.atdRoundNumber        = 1;
-		level.atdRoundNumberStarted = 0;
-		level.atdRoundStartTime     = level.time + g_warmup.integer * 1000;
-		level.atdRoundRespawned     = qfalse;
-		level.atdEliminationSides   = randomSeed & 1; // latch into the random seed
-		level.atdRoundRedPlayers    = 0;
-		level.atdRoundBluePlayers   = 0;
-	}
-#endif
 
 	if ( g_gametype.integer != GT_SINGLE_PLAYER ) {
 		// launch rotation system on first map load
@@ -1569,6 +1571,15 @@ static qboolean ScoreIsTied( void ) {
 }
 
 
+#ifdef MISSIONPACK
+/* Broadcast a global non-attenuated sound to all clients (GT_CTFS round/match announces). */
+void G_ATDGlobalSound( const char *path ) {
+	gentity_t *te = G_TempEntity( level.intermission_origin, EV_GLOBAL_SOUND );
+	te->s.eventParm = G_SoundIndex( path );
+	te->r.svFlags |= SVF_BROADCAST;
+}
+#endif
+
 /*
 =================
 CheckExitRules
@@ -1654,7 +1665,11 @@ static void CheckExitRules( void ) {
 		}
 	}
 
+#ifdef MISSIONPACK
+	if ( g_gametype.integer >= GT_CTF && g_gametype.integer != GT_CTFS && g_capturelimit.integer ) {
+#else
 	if ( g_gametype.integer >= GT_CTF && g_capturelimit.integer ) {
+#endif
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
 			G_BroadcastServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
@@ -1669,20 +1684,6 @@ static void CheckExitRules( void ) {
 		}
 	}
 
-#ifdef MISSIONPACK
-	if ( g_gametype.integer == GT_CTFS && atd_scorelimit.integer ) {
-		if ( level.teamScores[TEAM_RED] >= atd_scorelimit.integer ) {
-			G_BroadcastServerCommand( -1, "print \"Red hit the scorelimit.\n\"" );
-			LogExit( "Scorelimit hit." );
-			return;
-		}
-		if ( level.teamScores[TEAM_BLUE] >= atd_scorelimit.integer ) {
-			G_BroadcastServerCommand( -1, "print \"Blue hit the scorelimit.\n\"" );
-			LogExit( "Scorelimit hit." );
-			return;
-		}
-	}
-#endif
 }
 
 
@@ -1809,6 +1810,16 @@ static void G_WarmupEnd( void )
 			G_FreeEntity( ent );
 		}
 	}
+#ifdef MISSIONPACK
+	/* GT_CTFS: after the initial match warmup, enter the first round's inter-round
+	   timer rather than jumping straight into play.  Overwrite the CS_WARMUP that
+	   G_WarmupEnd just cleared so the ATD countdown is visible to clients. */
+	if ( g_gametype.integer == GT_CTFS ) {
+		level.atdRoundStartTime = level.time + atd_rounddelay.integer * 1000;
+		level.atdRoundRespawned = qfalse;
+		trap_SetConfigstring( CS_WARMUP, va( "%i", level.atdRoundStartTime ) );
+	}
+#endif
 }
 
 
@@ -2211,10 +2222,47 @@ Resets flags, advances the round counter, and begins the next warmup.
 void G_ATDEndRound( void ) {
 	Team_ResetFlags();
 	level.atdRoundNumber++;
-	level.atdRoundStartTime  = level.time + g_warmup.integer * 1000;
+
+	/* Scorelimit check at round boundary.
+	   Games only end when both teams have had equal offensive turns, i.e. when
+	   an even number of rounds have been completed (each team attacks once per
+	   two-round pair).  If a team hits the scorelimit on an odd-numbered round
+	   (the other team still needs their matching attack turn), broadcast a
+	   warning and let one more round play out. */
+	if ( atd_scorelimit.integer ) {
+		int roundsPlayed  = level.atdRoundNumber - 1;
+		qboolean balanced = ( roundsPlayed % 2 == 0 );
+		int red           = level.teamScores[TEAM_RED];
+		int blue          = level.teamScores[TEAM_BLUE];
+
+		if ( balanced && ( red >= atd_scorelimit.integer || blue >= atd_scorelimit.integer ) ) {
+			if ( red > blue ) {
+				G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\\n\"" );
+				G_ATDGlobalSound( "sound/vo/red_wins.wav" );
+				LogExit( "Scorelimit hit." );
+				return;
+			} else if ( blue > red ) {
+				G_BroadcastServerCommand( -1, "print \"^4Blue^7 wins!\\n\"" );
+				G_ATDGlobalSound( "sound/vo/blue_wins.wav" );
+				LogExit( "Scorelimit hit." );
+				return;
+			}
+			/* Tied at or above scorelimit — continue to next round pair. */
+		} else if ( !balanced && ( red >= atd_scorelimit.integer || blue >= atd_scorelimit.integer ) ) {
+			team_t lead = ( red >= blue ) ? TEAM_RED : TEAM_BLUE;
+			G_BroadcastServerCommand( -1, va(
+				"print \"%s has reached the scorelimit — %s gets a final round!\\n\"",
+				( lead == TEAM_RED ) ? "^1Red^7" : "^4Blue^7",
+				( lead == TEAM_RED ) ? "^4Blue^7" : "^1Red^7" ) );
+		}
+	}
+
+	level.atdRoundStartTime  = level.time + atd_rounddelay.integer * 1000;
 	level.atdRoundRespawned  = qfalse;
 	level.atdRoundRedPlayers = 0;
 	level.atdRoundBluePlayers = 0;
+	/* Show a countdown to all clients during the inter-round freeze. */
+	trap_SetConfigstring( CS_WARMUP, va( "%i", level.atdRoundStartTime ) );
 	/* Re-init flags so Team_SetFlagStatus fires with the new round's attacking team
 	   encoded in the CS_FLAGSTATUS configstring.                                    */
 	Team_DirtyFlagStatus();
@@ -2239,6 +2287,13 @@ static void G_CheckATDRound( void ) {
 	if ( level.intermissiontime ) {
 		return;
 	}
+	/* Also guard once LogExit has been called (intermission queued but not yet
+	   started).  Without this, the 2-second delay window lets G_CheckATDRound
+	   "start" a phantom next-round and then immediately trigger a spurious
+	   wins_round sound if any players happen to be dead at that moment. */
+	if ( level.intermissionQueued ) {
+		return;
+	}
 	if ( level.warmupTime != 0 ) {
 		return; // still in overall match warmup
 	}
@@ -2251,7 +2306,7 @@ static void G_CheckATDRound( void ) {
 	if ( level.atdRoundNumber != level.atdRoundNumberStarted ) {
 		/* Halfway through warmup, respawn everyone so they start at their spawns. */
 		if ( !level.atdRoundRespawned &&
-		     level.time >= level.atdRoundStartTime - ( g_warmup.integer * 500 ) ) {
+		     level.time >= level.atdRoundStartTime - ( atd_rounddelay.integer * 500 ) ) {
 			level.atdRoundRespawned = qtrue;
 			for ( i = 0; i < level.maxclients; i++ ) {
 				ent = g_entities + i;
@@ -2260,6 +2315,15 @@ static void G_CheckATDRound( void ) {
 				}
 				if ( ent->client->pers.connected != CON_CONNECTED ) {
 					continue;
+				}
+				/* Restore ATD dead-spectators to their original team before
+				   respawning.  spectatorState is reset here too so the engine
+				   no longer treats them as spectators when ClientSpawn runs. */
+				if ( ent->client->atdDeadSpecTeam != TEAM_FREE ) {
+					ent->client->sess.sessionTeam    = ent->client->atdDeadSpecTeam;
+					ent->client->sess.spectatorState = SPECTATOR_NOT;
+					ent->client->atdDeadSpecTeam     = TEAM_FREE;
+					ent->client->sess.spectatorClient = -1;
 				}
 				if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 					continue;
@@ -2273,6 +2337,8 @@ static void G_CheckATDRound( void ) {
 			level.atdRoundNumberStarted = level.atdRoundNumber;
 			level.atdRoundRedPlayers    = G_ATDTeamLivingCount( TEAM_RED );
 			level.atdRoundBluePlayers   = G_ATDTeamLivingCount( TEAM_BLUE );
+			/* Clear the inter-round countdown and unfreeze players. */
+			trap_SetConfigstring( CS_WARMUP, "" );
 			G_BroadcastServerCommand( -1, va( "print \"Round %i — %s attacks, %s defends!\\n\"",
 				level.atdRoundNumber,
 				( atkTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7",
@@ -2300,11 +2366,13 @@ static void G_CheckATDRound( void ) {
 	livesAtk = G_ATDTeamLivingCount( atkTeam );
 	liesDef  = G_ATDTeamLivingCount( defTeam );
 
-	/* 3. Entire attacking team wiped — defenders earn 2 pts. */
+	/* 3. Entire attacking team wiped — round ends, no score (only offense can score). */
 	if ( livesAtk == 0 ) {
-		G_BroadcastServerCommand( -1, "print \"Attacking team eliminated! Defenders score 2 points!\\n\"" );
-		AddTeamScore( level.intermission_origin, defTeam, 2 );
+		G_BroadcastServerCommand( -1, "print \"Attacking team eliminated! Round over.\\n\"" );
 		G_ATDEndRound();
+		if ( !level.intermissionQueued ) {
+			G_ATDGlobalSound( defTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
+		}
 		return;
 	}
 
@@ -2313,6 +2381,9 @@ static void G_CheckATDRound( void ) {
 		G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Attackers score 2 points!\\n\"" );
 		AddTeamScore( level.intermission_origin, atkTeam, 2 );
 		G_ATDEndRound();
+		if ( !level.intermissionQueued ) {
+			G_ATDGlobalSound( atkTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
+		}
 		return;
 	}
 }

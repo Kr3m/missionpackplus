@@ -130,9 +130,9 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
 	float	backoff;
 	float	change;
 	int		i;
-	
+
 	backoff = DotProduct (in, normal);
-	
+
 	if ( backoff < 0 ) {
 		backoff *= overbounce;
 	} else {
@@ -158,9 +158,9 @@ static void PM_Friction( void ) {
 	float	*vel;
 	float	speed, newspeed, control;
 	float	drop;
-	
+
 	vel = pm->ps->velocity;
-	
+
 	VectorCopy( vel, vec );
 	if ( pml.walking ) {
 		vec[2] = 0;	// ignore slope movement
@@ -238,9 +238,9 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
 	if (accelspeed > addspeed) {
 		accelspeed = addspeed;
 	}
-	
+
 	for (i=0 ; i<3 ; i++) {
-		pm->ps->velocity[i] += accelspeed*wishdir[i];	
+		pm->ps->velocity[i] += accelspeed*wishdir[i];
 	}
 #else
 	// proper way (avoids strafe jump maxspeed bug), but feels bad
@@ -332,7 +332,7 @@ static void PM_SetMovementDir( void ) {
 			pm->ps->movementDir = 1;
 		} else if ( pm->ps->movementDir == 6 ) {
 			pm->ps->movementDir = 7;
-		} 
+		}
 	}
 }
 
@@ -626,7 +626,7 @@ static void PM_AirMove( void ) {
 	// though we don't have a groundentity
 	// slide along the steep plane
 	if ( pml.groundPlane ) {
-		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
+		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 			pm->ps->velocity, OVERCLIP );
 	}
 
@@ -772,7 +772,7 @@ static void PM_WalkMove( void ) {
 		// don't reset the z velocity for slopes
 //		pm->ps->velocity[2] = 0;
 	}
- 
+
 	if ( pm_respawntimer ) { // no more overbounce at respawn
 		// slide along the ground plane
 		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
@@ -871,7 +871,7 @@ static void PM_NoclipMove( void ) {
 
 	fmove = pm->cmd.forwardmove;
 	smove = pm->cmd.rightmove;
-	
+
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
 	wishvel[2] += pm->cmd.upmove;
@@ -1140,7 +1140,7 @@ static void PM_GroundTrace( void ) {
 		pml.walking = qfalse;
 		return;
 	}
-	
+
 	// slopes that are too steep will not be considered onground
 	if ( trace.plane.normal[2] < MIN_WALK_NORMAL ) {
 		if ( pm->debugLevel ) {
@@ -1169,7 +1169,7 @@ static void PM_GroundTrace( void ) {
 		if ( pm->debugLevel ) {
 			Com_Printf("%i:Land\n", c_pmove);
 		}
-		
+
 		PM_CrashLand();
 
 		// don't do landing time if we were just going down a slope
@@ -1208,7 +1208,7 @@ static void PM_SetWaterLevel( void ) {
 
 	point[0] = pm->ps->origin[0];
 	point[1] = pm->ps->origin[1];
-	point[2] = pm->ps->origin[2] + MINS_Z + 1;	
+	point[2] = pm->ps->origin[2] + MINS_Z + 1;
 	cont = pm->pointcontents( point, pm->ps->clientNum );
 
 	if ( cont & MASK_WATER ) {
@@ -1321,7 +1321,7 @@ static void PM_Footsteps( void ) {
 	// calculate speed and cycle to be used for
 	// all cyclic walking effects
 	//
-	//xyspeedQ = pm->ps->velocity[0] * pm->ps->velocity[0] 
+	//xyspeedQ = pm->ps->velocity[0] * pm->ps->velocity[0]
 	//	+ pm->ps->velocity[1] * pm->ps->velocity[1];
 
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
@@ -1338,7 +1338,7 @@ static void PM_Footsteps( void ) {
 
 	// if not trying to move
 	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) {
-		xyspeedQ = pm->ps->velocity[0] * pm->ps->velocity[0] 
+		xyspeedQ = pm->ps->velocity[0] * pm->ps->velocity[0]
 			+ pm->ps->velocity[1] * pm->ps->velocity[1];
 		if ( xyspeedQ < 5.0*5.0 ) { // not using sqrt() there
 			pm->ps->bobCycle = 0;	// start at beginning of cycle again
@@ -1350,7 +1350,7 @@ static void PM_Footsteps( void ) {
 		}
 		return;
 	}
-	
+
 
 	footstep = qfalse;
 
@@ -1469,7 +1469,7 @@ static void PM_BeginWeaponChange( int weapon ) {
 	if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
 		return;
 	}
-	
+
 	if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
 		pm->ps->eFlags &= ~EF_FIRING;
 		return;
@@ -1477,7 +1477,8 @@ static void PM_BeginWeaponChange( int weapon ) {
 
 	PM_AddEvent( EV_CHANGE_WEAPON );
 	pm->ps->weaponstate = WEAPON_DROPPING;
-	pm->ps->weaponTime += 200;
+	// pm->ps->weaponTime += 200;
+	pm->ps->weaponTime += pm->fastWeaponSwitch > 0 ? 34 : 200;
 	PM_StartTorsoAnim( TORSO_DROP );
 }
 
@@ -1502,7 +1503,8 @@ static void PM_FinishWeaponChange( void ) {
 	pm->ps->weapon = weapon;
 	pm->ps->weaponstate = WEAPON_RAISING;
 	pm->ps->eFlags &= ~EF_FIRING;
-	pm->ps->weaponTime += 250;
+	// pm->ps->weaponTime += 250;
+	pm->ps->weaponTime += pm->fastWeaponSwitch > 0 ? 34 : 200;
 	PM_StartTorsoAnim( TORSO_RAISE );
 }
 
@@ -1628,7 +1630,8 @@ static void PM_Weapon( void ) {
 	// check for out of ammo
 	if ( ! pm->ps->ammo[ pm->ps->weapon ] ) {
 		PM_AddEvent( EV_NOAMMO );
-		pm->ps->weaponTime += 500;
+		// pm->ps->weaponTime += 500;
+		pm->ps->weaponTime += pm->fastWeaponSwitch > 0 ? 100 : 500;
 		return;
 	}
 
@@ -1868,7 +1871,7 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 	// clear the respawned flag if attack and use are cleared
-	if ( pm->ps->stats[STAT_HEALTH] > 0 && 
+	if ( pm->ps->stats[STAT_HEALTH] > 0 &&
 		!( pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE) ) ) {
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 	}

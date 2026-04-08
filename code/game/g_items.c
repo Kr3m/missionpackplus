@@ -1033,6 +1033,13 @@ void G_SpawnItem( gentity_t *ent, gitem_t *item ) {
 		ent->tag = TAG_DONTSPAWN;
 		return;
 	}
+
+	// GT_CTFS (Attack & Defend): only the two CTF flags should exist on the map.
+	// Remove all weapons, pickups, powerups, holdables, ammo, and health.
+	if ( g_gametype.integer == GT_CTFS && item->giType != IT_TEAM ) {
+		ent->tag = TAG_DONTSPAWN;
+		return;
+	}
 #endif
 
 	ent->item = item;

@@ -150,7 +150,12 @@ void AddTeamScore( vec3_t origin, team_t team, int score ) {
 		eventParm = ( team == TEAM_RED ) ? GTS_REDTEAM_SCORED : GTS_BLUETEAM_SCORED;
 	}
 
+	/* GT_CTFS has no score-change audio announcements (no "red leads" etc.) */
+#ifdef MISSIONPACK
+	if ( eventParm != -1 && g_gametype.integer != GT_CTFS ) {
+#else
 	if ( eventParm != -1 ) {
+#endif
 		te = G_TempEntity(origin, EV_GLOBAL_TEAM_SOUND );
 		te->r.svFlags |= SVF_BROADCAST;
 		te->s.eventParm = eventParm;
@@ -830,9 +835,18 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 #ifdef MISSIONPACK
 	// GT_CTFS: cap ends the round immediately
 	if ( g_gametype.integer == GT_CTFS ) {
+		team_t	atkTeam = other->client->sess.sessionTeam;
 		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " captured the flag! Attackers score!\n\"",
 			cl->pers.netname ) );
 		G_ATDEndRound();
+		/* Only play round-win sound when the game didn't just end.
+		   G_ATDEndRound -> LogExit sets level.intermissionQueued; if set,
+		   G_ATDEndRound already played the game-over sound. */
+		if ( !level.intermissionQueued ) {
+			G_ATDGlobalSound( atkTeam == TEAM_RED
+				? "sound/vo/red_wins_round.wav"
+				: "sound/vo/blue_wins_round.wav" );
+		}
 	}
 #endif
 
@@ -914,8 +928,9 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 
 	AddScore(other, ent->r.currentOrigin, CTF_FLAG_BONUS);
 
-	// GT_CTFS (Attack & Defend): 1 point for picking up the defending team's flag
-	if ( g_gametype.integer == GT_CTFS ) {
+	// GT_CTFS (Attack & Defend): 1 point for the initial flag pickup from base only.
+	// Re-picking a dropped flag does not score again.
+	if ( g_gametype.integer == GT_CTFS && !( ent->flags & FL_DROPPED_ITEM ) ) {
 		AddTeamScore( ent->s.pos.trBase, other->client->sess.sessionTeam, 1 );
 		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " touched the flag! Attackers score 1 point!\\n\"",
 			cl->pers.netname ) );
@@ -1104,6 +1119,14 @@ __rescan:
 		if ( checkTelefrag && SpotWouldTelefrag( spot ) )
 			continue;
 		if ( checkState ) {
+#ifdef MISSIONPACK
+			// GT_CTFS only uses base CTF spawn points (team_CTF_redplayer /
+			// team_CTF_blueplayer, count == 0); never the mid-map respawn points.
+			if ( g_gametype.integer == GT_CTFS ) {
+				if ( spot->count != 0 )
+					continue;
+			} else
+#endif
 			if ( teamstate == TEAM_BEGIN ) {
 				if ( spot->count != 0 )
 					continue;

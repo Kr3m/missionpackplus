@@ -422,6 +422,10 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.countPrepareSound = trap_S_RegisterSound( "sound/feedback/prepare.wav", qtrue );
 #ifdef MISSIONPACK
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound( "sound/feedback/prepare_team.wav", qtrue );
+	if ( cgs.gametype == GT_CTFS || cg_buildScript.integer ) {
+		cgs.media.atdAttackSound = trap_S_RegisterSound( "sound/vo_evil/attack_the_flag.wav", qtrue );
+		cgs.media.atdDefendSound = trap_S_RegisterSound( "sound/vo_evil/defend_the_flag.wav", qtrue );
+	}
 #endif
 
 	if ( cgs.gametype >= GT_TEAM || cg_buildScript.integer ) {

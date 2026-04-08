@@ -2508,6 +2508,8 @@ static void CG_DrawWarmup( void ) {
 			s = "Overload";
 		} else if ( cgs.gametype == GT_HARVESTER ) {
 			s = "Harvester";
+		} else if ( cgs.gametype == GT_CTFS ) {
+			s = "Attack & Defend";
 #endif
 		} else {
 			s = "";

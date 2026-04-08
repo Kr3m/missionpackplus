@@ -50,9 +50,9 @@ void CG_LoadingString( const char *s ) {
 	Q_strncpyz( cg.infoScreenText, DecodedString( (char *)s ), sizeof( cg.infoScreenText ) );
 
 	for ( i=0; i < sizeof( cg.infoScreenText ); i++ ) {
-		if ( !cg.infoScreenText[i] ) 
+		if ( !cg.infoScreenText[i] )
 			break;
-		// convert to normal unless UI font will support extended characters 
+		// convert to normal unless UI font will support extended characters
 		cg.infoScreenText[i]&=127;
 	}
 	trap_UpdateScreen();
@@ -67,7 +67,7 @@ void CG_LoadingItem( int itemNum ) {
 	gitem_t		*item;
 
 	item = &bg_itemlist[itemNum];
-	
+
 	if ( item->icon && loadingItemIconCount < MAX_LOADING_ITEM_ICONS ) {
 		loadingItemIcons[loadingItemIconCount] = trap_R_RegisterShaderNoMip( item->icon );
 		loadingItemIconCount++;
@@ -100,7 +100,7 @@ void CG_LoadingClient( int clientNum ) {
 		}
 
 		Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skin );
-		
+
 		loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip( iconName );
 		if ( !loadingPlayerIcons[loadingPlayerIconCount] ) {
 			Com_sprintf( iconName, MAX_QPATH, "models/players/characters/%s/icon_%s.tga", model, skin );
@@ -180,7 +180,7 @@ void CG_DrawInformation( void ) {
 
 	// don't print server lines if playing a local game
 	//trap_Cvar_VariableStringBuffer( "sv_running", buf, sizeof( buf ) );
-	//if ( !atoi( buf ) ) 
+	//if ( !atoi( buf ) )
 	{
 		// server hostname
 		Q_strncpyz( buf, Info_ValueForKey( info, "sv_hostname" ), sizeof( buf ) );
@@ -268,6 +268,9 @@ void CG_DrawInformation( void ) {
 	case GT_HARVESTER:
 		s = "Harvester";
 		break;
+	case GT_CTFS:
+		s = "Attack & Defend";
+		break;
 #endif
 	default:
 		BG_sprintf( buf, "Gametype #%i", cgs.gametype );
@@ -277,7 +280,7 @@ void CG_DrawInformation( void ) {
 	UI_DrawProportionalString( 320, y, s,
 		UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
 	y += PROP_HEIGHT;
-		
+
 	value = atoi( Info_ValueForKey( info, "timelimit" ) );
 	if ( value ) {
 		UI_DrawProportionalString( 320, y, va( "timelimit %i", value ),

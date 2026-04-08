@@ -29,7 +29,7 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 
 	// estimate prefix length to avoid oversize of final string
 	prefix = BG_sprintf( entry, "scores %i %i %i", level.teamScores[TEAM_RED], level.teamScores[TEAM_BLUE], numSorted );
-	
+
 	for ( i = 0 ; i < numSorted ; i++ ) {
 
 		cl = &level.clients[level.sortedClients[i]];
@@ -55,12 +55,12 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 			(level.time - cl->pers.enterTime)/60000,
 			scoreFlags,
 			g_entities[level.sortedClients[i]].s.powerups,
-			accuracy, 
+			accuracy,
 			cl->ps.persistant[PERS_IMPRESSIVE_COUNT],
 			cl->ps.persistant[PERS_EXCELLENT_COUNT],
-			cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT], 
-			cl->ps.persistant[PERS_DEFEND_COUNT], 
-			cl->ps.persistant[PERS_ASSIST_COUNT], 
+			cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT],
+			cl->ps.persistant[PERS_DEFEND_COUNT],
+			cl->ps.persistant[PERS_ASSIST_COUNT],
 			perfect,
 			cl->ps.persistant[PERS_CAPTURES]);
 
@@ -249,7 +249,7 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if (give_all || Q_stricmp(name, "weapons") == 0)
 	{
-		ent->client->ps.stats[STAT_WEAPONS] = (1 << WP_NUM_WEAPONS) - 1 - 
+		ent->client->ps.stats[STAT_WEAPONS] = (1 << WP_NUM_WEAPONS) - 1 -
 			( 1 << WP_GRAPPLING_HOOK ) - ( 1 << WP_NONE );
 		if (!give_all)
 			return;
@@ -469,7 +469,7 @@ void Cmd_LevelShot_f( gentity_t *ent ) {
 
 	// doesn't work in single player
 	if ( g_gametype.integer == GT_SINGLE_PLAYER ) {
-		trap_SendServerCommand( ent-g_entities, 
+		trap_SendServerCommand( ent-g_entities,
 			"print \"Must be in g_gametype 0 for levelshot\n\"" );
 		return;
 	}
@@ -612,7 +612,7 @@ qboolean SetTeam( gentity_t *ent, const char *s ) {
 		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
 			team = TEAM_RED;
 		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
-			team = TEAM_BLUE; 
+			team = TEAM_BLUE;
 		} else {
 			team = -1;
 		}
@@ -667,7 +667,7 @@ qboolean SetTeam( gentity_t *ent, const char *s ) {
 	if ( (g_gametype.integer == GT_TOURNAMENT)
 		&& level.numNonSpectatorClients >= 2 ) {
 		team = TEAM_SPECTATOR;
-	} else if ( g_maxGameClients.integer > 0 && 
+	} else if ( g_maxGameClients.integer > 0 &&
 		level.numNonSpectatorClients >= g_maxGameClients.integer ) {
 		team = TEAM_SPECTATOR;
 	}
@@ -709,7 +709,7 @@ qboolean SetTeam( gentity_t *ent, const char *s ) {
 	client->pers.teamState.state = TEAM_BEGIN;
 
 	if ( oldTeam != TEAM_SPECTATOR ) {
-		
+
 		// revert any casted votes
 		if ( oldTeam != team )
 			G_RevertVote( ent->client );
@@ -776,8 +776,8 @@ void StopFollowing( gentity_t *ent, qboolean release ) {
 
 	client = ent->client;
 
-	client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;	
-	client->sess.sessionTeam = TEAM_SPECTATOR;	
+	client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;
+	client->sess.sessionTeam = TEAM_SPECTATOR;
 	if ( release ) {
 		client->ps.stats[STAT_HEALTH] = ent->health = 1;
 		memset( client->ps.powerups, 0, sizeof ( client->ps.powerups ) );
@@ -973,7 +973,7 @@ static void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, cons
 		return;
 	}
 
-	trap_SendServerCommand( other-g_entities, va( "%s \"%s%c%c%s\" %i", mode == SAY_TEAM ? "tchat" : "chat", 
+	trap_SendServerCommand( other-g_entities, va( "%s \"%s%c%c%s\" %i", mode == SAY_TEAM ? "tchat" : "chat",
 		name, Q_COLOR_ESCAPE, color, message, ent - g_entities ) );
 }
 
@@ -1002,10 +1002,10 @@ static void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chat
 	case SAY_TEAM:
 		G_LogPrintf( "sayteam: %s: %s\n", ent->client->pers.netname, chatText );
 		if (Team_GetLocationMsg(ent, location, sizeof(location)))
-			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC") (%s)"EC": ", 
+			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC") (%s)"EC": ",
 				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
 		else
-			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC")"EC": ", 
+			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC")"EC": ",
 				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_CYAN;
 		break;
@@ -1365,7 +1365,7 @@ ValidVoteCommand
 Input string can be modified by overwriting gametype number instead of text value, for example
 ==================
 */
-static qboolean ValidVoteCommand( int clientNum, char *command ) 
+static qboolean ValidVoteCommand( int clientNum, char *command )
 {
 	char buf[ MAX_CVAR_VALUE_STRING ];
 	char *base;
@@ -1379,7 +1379,7 @@ static qboolean ValidVoteCommand( int clientNum, char *command )
 	}
 
 	base = command;
-	
+
 	s = buf; // extract command name
 	while ( *command != '\0' && *command != ' ' ) {
 		*s = *command; s++; command++;
@@ -1411,7 +1411,7 @@ static qboolean ValidVoteCommand( int clientNum, char *command )
 		else if ( !Q_stricmp( command, "duel" ) ) i = GT_TOURNAMENT;
 		else if ( !Q_stricmp( command, "tdm" ) ) i = GT_TEAM;
 		else if ( !Q_stricmp( command, "ctf" ) ) i = GT_CTF;
-		else 
+		else
 		{
 			i = atoi( command );
 			if( i == GT_SINGLE_PLAYER || i < GT_FFA || i >= GT_MAX_GAME_TYPE ) {
@@ -1431,7 +1431,7 @@ static qboolean ValidVoteCommand( int clientNum, char *command )
 		if ( !G_MapExist( command ) ) {
 			trap_SendServerCommand( clientNum, va( "print \"No such map on server: %s.\n\"", command ) );
 			return qfalse;
-		} 
+		}
 		return qtrue;
 	}
 
@@ -1489,7 +1489,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	// split by ';' seperators
 	n = Com_Split( arg, argn, ARRAY_LEN( argn ), ';' );
-	if ( n == 0 || *argn[0] == '\0' ) 
+	if ( n == 0 || *argn[0] == '\0' )
 		return; // empty callvote command?
 
 	// validate all split commands
@@ -1528,9 +1528,9 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	ent->client->pers.voteCount++;
 
 	trap_SetConfigstring( CS_VOTE_TIME, va("%i", level.voteTime ) );
-	trap_SetConfigstring( CS_VOTE_STRING, level.voteDisplayString );	
+	trap_SetConfigstring( CS_VOTE_STRING, level.voteDisplayString );
 	trap_SetConfigstring( CS_VOTE_YES, va("%i", level.voteYes ) );
-	trap_SetConfigstring( CS_VOTE_NO, va("%i", level.voteNo ) );	
+	trap_SetConfigstring( CS_VOTE_NO, va("%i", level.voteNo ) );
 }
 
 
@@ -1570,7 +1570,7 @@ static void Cmd_Vote_f( gentity_t *ent ) {
 	} else {
 		level.voteNo++;
 		ent->client->pers.voted = -1;
-		trap_SetConfigstring( CS_VOTE_NO, va( "%i", level.voteNo ) );	
+		trap_SetConfigstring( CS_VOTE_NO, va( "%i", level.voteNo ) );
 	}
 
 	// a majority will be determined in CheckVote, which will also account
@@ -1609,7 +1609,7 @@ void G_RevertVote( gclient_t *client ) {
 			client->ps.eFlags &= ~EF_TEAMVOTED;
 			trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamVoteNo[cs_offset] ) );
 		}
-	} 
+	}
 }
 
 
@@ -1793,7 +1793,7 @@ static void Cmd_TeamVote_f( gentity_t *ent ) {
 		trap_SetConfigstring( CS_TEAMVOTE_YES + cs_offset, va("%i", level.teamVoteYes[cs_offset] ) );
 	} else {
 		level.teamVoteNo[cs_offset]++;
-		trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamVoteNo[cs_offset] ) );	
+		trap_SetConfigstring( CS_TEAMVOTE_NO + cs_offset, va("%i", level.teamVoteNo[cs_offset] ) );
 	}
 
 	// a majority will be determined in TeamCheckVote, which will also account

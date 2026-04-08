@@ -207,7 +207,17 @@ static void CG_ParseWarmup( void ) {
 	}
 
 	if ( warmup == 0 && cg.warmup ) {
-
+#ifdef MISSIONPACK
+		/* GT_CTFS round start: play team-specific audio cue */
+		if ( cgs.gametype == GT_CTFS && cg.snap &&
+		     cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR ) {
+			if ( cg.snap->ps.persistant[PERS_TEAM] == cgs.atdAttackingTeam ) {
+				trap_S_StartLocalSound( cgs.media.atdAttackSound, CHAN_ANNOUNCER );
+			} else {
+				trap_S_StartLocalSound( cgs.media.atdDefendSound, CHAN_ANNOUNCER );
+			}
+		}
+#endif
 	} else if ( warmup > 0 && cg.warmup <= 0 ) {
 #ifdef MISSIONPACK
 		if (cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER) {

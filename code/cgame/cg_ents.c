@@ -655,9 +655,11 @@ void CG_DrawFlagPOIs( void ) {
 
 		shader = 0;
 		if ( ourTeam == defTeam ) {
-			/* Defenders: show flagDefendPOI over their own flag */
+			/* Defenders: show flagDefendPOI over their own flag, but only while
+			   the flag is still at base — hide it once the attacker picks it up. */
+			int defFlagStatus = ( defTeam == TEAM_RED ) ? cgs.redflag : cgs.blueflag;
 			c = &s_flagPOI[defFlagIdx];
-			if ( c->valid ) {
+			if ( c->valid && defFlagStatus == FLAG_ATBASE ) {
 				color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
 				color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
 				color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
@@ -667,18 +669,35 @@ void CG_DrawFlagPOIs( void ) {
 				c = NULL;
 			}
 		} else {
-			/* Attackers: show flagAttackPOI over defender's flag only when at base */
+			/* Attackers: POI depends on whether the flag is held, at base, or dropped */
+			int atkTeamIdx = cgs.atdAttackingTeam - 1; /* attacker's own base idx */
 			int flagStatus = ( defTeam == TEAM_RED ) ? cgs.redflag : cgs.blueflag;
-			c = &s_flagPOI[atkFlagIdx];
-			if ( c->valid && flagStatus == FLAG_ATBASE ) {
-				color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
-				color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
-				color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
-				color4[3] = 1.0f;
-				shader = cgs.media.flagAttackPOI;
-			} else {
-				c = NULL;
+			if ( flagStatus == FLAG_ATBASE ) {
+				/* Flag at base — show attack marker over defender's flag */
+				c = &s_flagPOI[atkFlagIdx];
+				if ( c->valid ) {
+					color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
+					color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
+					color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
+					color4[3] = 1.0f;
+					shader = cgs.media.flagAttackPOI;
+				} else {
+					c = NULL;
+				}
+			} else if ( flagStatus == FLAG_TAKEN ) {
+				/* Flag carried — show capture marker over attacker's own base */
+				c = &s_flagPOI[atkTeamIdx];
+				if ( c->valid ) {
+					color4[0] = ( cgs.atdAttackingTeam == TEAM_RED ) ? 1.0f : 0.0f;
+					color4[1] = ( cgs.atdAttackingTeam == TEAM_RED ) ? 0.0f : 0.5f;
+					color4[2] = ( cgs.atdAttackingTeam == TEAM_RED ) ? 0.0f : 1.0f;
+					color4[3] = 1.0f;
+					shader = cgs.media.flagCapturePOI;
+				} else {
+					c = NULL;
+				}
 			}
+			/* FLAG_DROPPED — no POI, c stays NULL */
 		}
 
 		if ( shader && c ) {
@@ -1191,7 +1210,7 @@ static void CG_TeamBase( /*const*/ centity_t *cent ) {
 
 	CG_CacheTeamObeliskPOI( cent );
 
-	if ( cgs.gametype == GT_CTF || ( cgs.gametype == GT_1FCTF && cent->currentState.modelindex == TEAM_FREE ) ) {
+	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_CTFS || ( cgs.gametype == GT_1FCTF && cent->currentState.modelindex == TEAM_FREE ) ) {
 #else
 	if ( cgs.gametype == GT_CTF) {
 #endif
