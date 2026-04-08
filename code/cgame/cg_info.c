@@ -198,6 +198,14 @@ void CG_DrawInformation( void ) {
 			ptr = Q_stradd( ptr, "Unlagged" );
 		}
 
+		s = Info_ValueForKey( info, "g_delagMissiles" );
+		if ( s[0] == '1' ) {
+			if ( buf[0] ) {
+				ptr = Q_stradd( ptr, ", " );
+			}
+			ptr = Q_stradd( ptr, "Projectile Delag" );
+		}
+
 		// pure server
 		s = Info_ValueForKey( sysInfo, "sv_pure" );
 		if ( s[0] == '1' ) {

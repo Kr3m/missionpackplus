@@ -2830,7 +2830,11 @@ static void CG_WarmupEvents( void ) {
 			break;
 
 		case 5:
+		#ifdef MISSIONPACK
 			trap_S_StartLocalSound( cgs.media.countRoundBeginsInSound, CHAN_ANNOUNCER );
+		#else
+			trap_S_StartLocalSound( cgs.media.countPrepareSound, CHAN_ANNOUNCER );
+		#endif
 			break;
 
 		case 3:

@@ -4,6 +4,121 @@
 
 #define	MISSILE_PRESTEP_TIME	50
 
+static void G_SetMissileLaunchTime( gentity_t *self, gentity_t *bolt ) {
+	int launchTime;
+	int maxLatency;
+
+	if ( !self->client || !g_delagMissiles.integer || self->client->delagPref < 2 ) {
+		bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;
+		bolt->launchTime = bolt->s.pos.trTime;
+		bolt->needsDelag = qfalse;
+		bolt->missileRan = 0;
+		return;
+	}
+
+	launchTime = self->client->attackTime - g_delagMissileBaseNudge.integer;
+	maxLatency = g_delagMissileMaxLatency.integer;
+	if ( maxLatency < 0 ) {
+		maxLatency = 0;
+	} else if ( maxLatency > 2000 ) {
+		maxLatency = 2000;
+	}
+
+	if ( launchTime < level.time - maxLatency ) {
+		if ( g_delagMissileDebug.integer ) {
+			Com_Printf( "Limited projectile delag ping (c %i): launch %i -> %i\n",
+				self->client->ps.clientNum, launchTime, level.time - maxLatency );
+		}
+		launchTime = level.time - maxLatency;
+	} else if ( launchTime > level.time ) {
+		if ( g_delagMissileDebug.integer ) {
+			Com_Printf( "Clamped future projectile (c %i): launch %i -> %i\n",
+				self->client->ps.clientNum, launchTime, level.time );
+		}
+		launchTime = level.time;
+	}
+
+	bolt->s.pos.trTime = launchTime;
+	bolt->launchTime = launchTime;
+	bolt->needsDelag = qtrue;
+	bolt->missileRan = 0;
+}
+
+static void G_MissileRunDelag( gentity_t *ent, int stepmsec ) {
+	int savedPrevTime;
+	int savedTime;
+	int t;
+	int minTime;
+
+	if ( !g_delagMissiles.integer || g_delagMissileNudgeOnly.integer ) {
+		return;
+	}
+
+	if ( stepmsec <= 0 || sv_fps.integer <= 0 ) {
+		return;
+	}
+
+	if ( !ent->inuse || ent->freeAfterEvent || ent->s.eType != ET_MISSILE || !ent->needsDelag ) {
+		return;
+	}
+
+	// avoid recursive entry while replaying historical frames
+	ent->needsDelag = qfalse;
+
+	savedPrevTime = level.previousTime;
+	savedTime = level.time;
+
+	minTime = level.previousTime - ( DELAG_MAX_BACKTRACK / stepmsec ) * stepmsec;
+	for ( t = minTime; t < savedPrevTime; t += stepmsec ) {
+		if ( !ent->inuse || ent->freeAfterEvent || ent->s.eType != ET_MISSILE ) {
+			break;
+		}
+
+		if ( t < ent->launchTime ) {
+			continue;
+		}
+
+		G_TimeShiftAllClients( t, ent->parent );
+		level.previousTime = t;
+		level.time = t + stepmsec;
+
+		G_RunMissile( ent );
+
+		level.previousTime = savedPrevTime;
+		level.time = savedTime;
+		G_UnTimeShiftAllClients( ent->parent );
+	}
+}
+
+static void G_ImmediateLaunchMissile( gentity_t *ent ) {
+	int stepmsec;
+
+	if ( !g_delagMissiles.integer || g_delagMissileImmediateRun.integer <= 0 ) {
+		return;
+	}
+
+	if ( ent->missileRan == 1 ) {
+		return;
+	}
+
+	stepmsec = level.time - level.previousTime;
+	if ( stepmsec <= 0 ) {
+		stepmsec = level.msec;
+	}
+	if ( stepmsec <= 0 ) {
+		stepmsec = FRAMETIME;
+	}
+
+	G_MissileRunDelag( ent, stepmsec );
+
+	if ( !ent->inuse || ent->freeAfterEvent || ent->s.eType != ET_MISSILE ) {
+		return;
+	}
+
+	G_RunMissile( ent );
+	ent->missileRan = 1;
+}
+
 /*
 ================
 G_BounceMissile
@@ -299,7 +414,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 				velocity[2] = 1;	// stepped on a grenade
 			}
 			G_Damage (other, ent, &g_entities[ent->r.ownerNum], velocity,
-				ent->s.origin, ent->damage, 
+				ent->s.origin, ent->damage,
 				0, ent->methodOfDeath);
 		}
 	}
@@ -409,7 +524,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 
 	// splash damage (doesn't apply to person directly hit)
 	if ( ent->splashDamage ) {
-		if( G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, 
+		if( G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius,
 			other, ent->splashMethodOfDeath ) ) {
 			if( !hitClient ) {
 				g_entities[ent->r.ownerNum].client->accuracy_hits++;
@@ -430,6 +545,17 @@ void G_RunMissile( gentity_t *ent ) {
 	vec3_t		origin;
 	trace_t		tr;
 	int			passent;
+
+	if ( ent->needsDelag ) {
+		int stepmsec = level.time - level.previousTime;
+		if ( stepmsec <= 0 ) {
+			stepmsec = level.msec;
+		}
+		G_MissileRunDelag( ent, stepmsec );
+		if ( !ent->inuse || ent->freeAfterEvent || ent->s.eType != ET_MISSILE ) {
+			return;
+		}
+	}
 
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
@@ -528,16 +654,17 @@ gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.otherEntityNum = self->s.number;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
+	G_SetMissileLaunchTime( self, bolt );
 	VectorCopy( start, bolt->s.pos.trBase );
 	SnapVector( bolt->s.pos.trBase );			// save net bandwidth
 	VectorScale( dir, 2000, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
 
 	VectorCopy (start, bolt->r.currentOrigin);
+	G_ImmediateLaunchMissile( bolt );
 
 	return bolt;
-}	
+}
 
 //=============================================================================
 
@@ -579,12 +706,13 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.otherEntityNum = self->s.number;
 
 	bolt->s.pos.trType = TR_GRAVITY;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
+	G_SetMissileLaunchTime( self, bolt );
 	VectorCopy( start, bolt->s.pos.trBase );
 	VectorScale( dir, 700, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
 
 	VectorCopy (start, bolt->r.currentOrigin);
+	G_ImmediateLaunchMissile( bolt );
 
 	return bolt;
 }
@@ -628,12 +756,13 @@ gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.otherEntityNum = self->s.number;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
+	G_SetMissileLaunchTime( self, bolt );
 	VectorCopy( start, bolt->s.pos.trBase );
 	SnapVector( bolt->s.pos.trBase );			// save net bandwidth
 	VectorScale( dir, 2000, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
 	VectorCopy (start, bolt->r.currentOrigin);
+	G_ImmediateLaunchMissile( bolt );
 
 	return bolt;
 }
@@ -677,12 +806,13 @@ gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.otherEntityNum = self->s.number;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
+	G_SetMissileLaunchTime( self, bolt );
 	VectorCopy( start, bolt->s.pos.trBase );
 	SnapVector( bolt->s.pos.trBase );			// save net bandwidth
 	VectorScale( dir, g_velocityRL.integer, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
 	VectorCopy (start, bolt->r.currentOrigin);
+	G_ImmediateLaunchMissile( bolt );
 
 	return bolt;
 }
@@ -774,7 +904,7 @@ gentity_t *fire_nail( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	bolt->s.otherEntityNum = self->s.number;
 
 	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time;
+	G_SetMissileLaunchTime( self, bolt );
 	VectorCopy( start, bolt->s.pos.trBase );
 
 	r = random() * M_PI * 2.0f;
@@ -791,9 +921,10 @@ gentity_t *fire_nail( gentity_t *self, vec3_t start, vec3_t forward, vec3_t righ
 	SnapVector( bolt->s.pos.trDelta );
 
 	VectorCopy( start, bolt->r.currentOrigin );
+	G_ImmediateLaunchMissile( bolt );
 
 	return bolt;
-}	
+}
 
 
 /*
@@ -840,12 +971,13 @@ gentity_t *fire_prox( gentity_t *self, vec3_t start, vec3_t dir ) {
 	bolt->s.generic1 = self->client->sess.sessionTeam;
 
 	bolt->s.pos.trType = TR_GRAVITY;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
+	G_SetMissileLaunchTime( self, bolt );
 	VectorCopy( start, bolt->s.pos.trBase );
 	VectorScale( dir, 700, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
 
 	VectorCopy (start, bolt->r.currentOrigin);
+	G_ImmediateLaunchMissile( bolt );
 
 	return bolt;
 }

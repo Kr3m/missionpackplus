@@ -139,6 +139,9 @@ void CG_ParseServerinfo( void ) {
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.atdRoundTimelimit = atoi( Info_ValueForKey( info, "roundtimelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+	cgs.delagHitscan = atoi( Info_ValueForKey( info, "g_delagHitscan" ) );
+	cgs.delagMissileMaxLatency = atoi( Info_ValueForKey( info, "g_delagMissileMaxLatency" ) );
+	cgs.predictedMissileNudge = atoi( Info_ValueForKey( info, "g_delagMissileBaseNudge" ) );
 	cgs.g_grappleDelayTime = atoi(Info_ValueForKey(info, "g_grappleDelayTime"));
 	cgs.g_grapplePull = atoi(Info_ValueForKey(info, "g_grapplePull"));
 	cgs.g_sgPelletSpread = atoi(Info_ValueForKey(info, "g_sgPelletSpread"));

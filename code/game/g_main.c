@@ -631,6 +631,7 @@ static void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	srand( randomSeed );
 
 	G_RegisterCvars();
+	G_PrintDelagMaxTimeshift();
 
 	G_ProcessIPBans();
 

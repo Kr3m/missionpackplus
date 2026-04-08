@@ -1080,6 +1080,9 @@ typedef struct {
 	int				timelimit;
 	int				atdRoundTimelimit;	// GT_CTFS: round time limit in seconds (from "roundtimelimit" serverinfo)
 	int				maxclients;
+	int			delagHitscan;
+	int			delagMissileMaxLatency;
+	int			predictedMissileNudge;
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];
 	char			blueTeam[MAX_QPATH];

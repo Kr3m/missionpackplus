@@ -22,6 +22,8 @@
 #define	INTERMISSION_DELAY_TIME	1000
 #define	SP_INTERMISSION_DELAY_TIME	5000
 
+#define DELAG_MAX_BACKTRACK (g_delagMissileMaxLatency.integer + 2 * (1000 / sv_fps.integer))
+
 // gentity->flags
 #define	FL_GODMODE				0x00000010
 #define	FL_NOTARGET				0x00000020
@@ -153,6 +155,11 @@ struct gentity_s {
 	// timing variables
 	float		wait;
 	float		random;
+
+	// projectile delag
+	int			launchTime;
+	qboolean	needsDelag;
+	int			missileRan;
 
 	gitem_t		*item;			// for bonus items
 
@@ -326,6 +333,9 @@ struct gclient_s {
 	clientHistory_t	history[ NUM_CLIENT_HISTORY ];
 	clientHistory_t	saved;
 
+	int			attackTime;
+	int			timeshiftTime;
+	int			delagPref;		// client's cg_delag bitmask: 0=off, 1=hitscan, 2=hitscan+projectile
 	int			historyHead;
 	int			frameOffset;
 	int			lastUpdateFrame;
@@ -740,6 +750,7 @@ void G_UnTimeShiftAllClients( gentity_t *skip );
 void G_DoTimeShiftFor( gentity_t *ent );
 void G_UndoTimeShiftFor( gentity_t *ent );
 void G_UnTimeShiftClient( gentity_t *client );
+void G_PrintDelagMaxTimeshift( void );
 void G_PredictPlayerMove( gentity_t *ent, float frametime );
 
 //

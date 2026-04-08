@@ -108,7 +108,7 @@ static gentity_t *SelectRandomFurthestSpawnPoint( const gentity_t *ent, vec3_t a
 	checkTelefrag = qtrue;
 
 	if ( ent )
-		isBot = ((ent->r.svFlags & SVF_BOT) == SVF_BOT); 
+		isBot = ((ent->r.svFlags & SVF_BOT) == SVF_BOT);
 	else
 		isBot = qfalse;
 
@@ -129,7 +129,7 @@ __search:
 		if ( checkTelefrag && SpotWouldTelefrag( spot ) )
 			continue;
 
-		if ( checkType ) 
+		if ( checkType )
 		{
 			if ( (spot->flags & FL_NO_BOTS) && isBot )
 				continue;
@@ -292,7 +292,7 @@ void BodySink( gentity_t *ent ) {
 		// the body ques are never actually freed, they are just unlinked
 		trap_UnlinkEntity( ent );
 		ent->physicsObject = qfalse;
-		return;	
+		return;
 	}
 	ent->nextthink = level.time + FRAMETIME;
 	ent->s.pos.trBase[2] -= 1;
@@ -624,6 +624,14 @@ qboolean ClientUserinfoChanged( int clientNum ) {
 		client->pers.predictItemPickup = qtrue;
 	}
 
+	// read client delag preference (bitmask: 0=off, 1=hitscan, 2=hitscan+projectile)
+	{
+		int pref = atoi( Info_ValueForKey( userinfo, "cg_delag" ) );
+		if ( pref < 0 ) pref = 0;
+		if ( pref > 2 ) pref = 2;
+		client->delagPref = pref;
+	}
+
 	// set name
 	Q_strncpyz( oldname, client->pers.netname, sizeof( oldname ) );
 	s = Info_ValueForKey( userinfo, "name" );
@@ -704,7 +712,7 @@ qboolean ClientUserinfoChanged( int clientNum ) {
 			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	} else {
 		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d",
-			client->pers.netname, client->sess.sessionTeam, model, headModel, c1, c2, 
+			client->pers.netname, client->sess.sessionTeam, model, headModel, c1, c2,
 			client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader );
 	}
 
@@ -928,7 +936,7 @@ void ClientBegin( int clientNum ) {
 			G_BroadcastServerCommand( -1, va("print \"%s" S_COLOR_WHITE " entered the game\n\"", client->pers.netname) );
 		}
 	}
-	
+
 	client->pers.inGame = qtrue;
 
 	G_LogPrintf( "ClientBegin: %i\n", clientNum );
@@ -1142,7 +1150,7 @@ void ClientSpawn(gentity_t *ent) {
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags = 0;
-	
+
 	VectorCopy (playerMins, ent->r.mins);
 	VectorCopy (playerMaxs, ent->r.maxs);
 
@@ -1158,13 +1166,13 @@ void ClientSpawn(gentity_t *ent) {
 				client->ps.ammo[WP_MACHINEGUN] = g_startAmmoMG.integer;
 			} else {
 				client->ps.ammo[WP_MACHINEGUN] = 50;
-			}			
+			}
 		} else {
 			if ( g_startAmmoMG.integer ) {
 				client->ps.ammo[WP_MACHINEGUN] = g_startAmmoMG.integer;
 			} else {
 				client->ps.ammo[WP_MACHINEGUN] = 100;
-			}			
+			}
 		}
 	}
 
@@ -1200,7 +1208,7 @@ void ClientSpawn(gentity_t *ent) {
 	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
 	SetClientViewAngle( ent, spawn_angles );
 
-	// entity should be unlinked before calling G_KillBox()	
+	// entity should be unlinked before calling G_KillBox()
 	if (!isSpectator)
 		G_KillBox(ent);
 	G_SpawnWeapon(client);
@@ -1303,7 +1311,7 @@ void ClientDisconnect( int clientNum ) {
 	}
 
 	// send effect if they were completely connected
-	if ( ent->client->pers.connected == CON_CONNECTED 
+	if ( ent->client->pers.connected == CON_CONNECTED
 		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;

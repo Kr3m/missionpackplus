@@ -833,6 +833,7 @@ void ClientThink_real( gentity_t *ent ) {
 	// unlagged
 	client->frameOffset = trap_Milliseconds() - level.frameStartTime;
 	client->lastCmdTime = ucmd->serverTime;
+	client->attackTime = ucmd->serverTime;
 	client->lastUpdateFrame = level.framenum;
 
 	msec = ucmd->serverTime - client->ps.commandTime;

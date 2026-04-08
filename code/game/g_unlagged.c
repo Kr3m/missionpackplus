@@ -126,6 +126,8 @@ void G_TimeShiftClient( gentity_t *ent, int time, qboolean debug, gentity_t *deb
 
 			// this will recalculate absmin and absmax
 			trap_LinkEntity( ent );
+
+			ent->client->timeshiftTime = client->history[j].leveltime;
 		} else {
 			// we wrapped, so grab the earliest
 			VectorCopy( client->history[k].currentOrigin, ent->r.currentOrigin );
@@ -134,6 +136,8 @@ void G_TimeShiftClient( gentity_t *ent, int time, qboolean debug, gentity_t *deb
 
 			// this will recalculate absmin and absmax
 			trap_LinkEntity( ent );
+
+			ent->client->timeshiftTime = client->history[k].leveltime;
 		}
 	}
 }
@@ -153,7 +157,7 @@ void G_TimeShiftAllClients( int ltime, gentity_t *skip ) {
 
 	// for every client
 	ent = &g_entities[0];
-	for ( i = 0; i < level.maxclients; i++, ent++ ) 
+	for ( i = 0; i < level.maxclients; i++, ent++ )
 	{
 		if ( ent == skip )
 			continue;
@@ -161,7 +165,7 @@ void G_TimeShiftAllClients( int ltime, gentity_t *skip ) {
 		if ( !ent->r.linked )
 			continue;
 
-		if ( ent->client && ent->inuse && ent->client->sess.sessionTeam < TEAM_SPECTATOR ) 
+		if ( ent->client && ent->inuse && ent->client->sess.sessionTeam < TEAM_SPECTATOR )
 			G_TimeShiftClient( ent, ltime, qfalse, skip );
 	}
 }
@@ -174,7 +178,7 @@ G_DoTimeShiftFor
 Decide what time to shift everyone back to, and do it
 ================
 */
-void G_DoTimeShiftFor( gentity_t *ent ) {	
+void G_DoTimeShiftFor( gentity_t *ent ) {
 	int time;
 
 	// don't time shift for mistakes or bots
@@ -182,10 +186,13 @@ void G_DoTimeShiftFor( gentity_t *ent ) {
 		return;
 	}
 
-	// if it's enabled server-side and the client wants it or wants it for this weapon
-	if ( g_unlagged.integer ) {
+	// if it's enabled server-side, client wants it, and the client opts in for hitscan
+	if ( g_unlagged.integer && g_delagHitscan.integer && ent->client->delagPref >= 1 ) {
 		// full lag compensation
-		time = ent->client->lastCmdTime;
+		time = ent->client->attackTime;
+		if ( time <= 0 ) {
+			time = ent->client->lastCmdTime;
+		}
 	} else {
 		// server frame lag compensation
 		time = level.previousTime + ent->client->frameOffset;
@@ -214,6 +221,8 @@ void G_UnTimeShiftClient( gentity_t *ent ) {
 		// this will recalculate absmin and absmax
 		trap_LinkEntity( ent );
 	}
+
+	ent->client->timeshiftTime = 0;
 }
 
 
@@ -225,24 +234,24 @@ Move ALL the clients back to where they were before the time shift,
 except for "skip"
 =======================
 */
-void G_UnTimeShiftAllClients( gentity_t *skip ) 
+void G_UnTimeShiftAllClients( gentity_t *skip )
 {
 	int		i;
 	gentity_t	*ent;
 	qboolean	linked;
 
 	ent = &g_entities[0];
-	for ( i = 0; i < level.maxclients; i++, ent++ ) 
+	for ( i = 0; i < level.maxclients; i++, ent++ )
 	{
 		if ( ent == skip )
 			continue;
 
 		linked = ent->r.linked;
 
-		if ( ent->client && ent->inuse && ent->client->sess.sessionTeam < TEAM_SPECTATOR ) 
+		if ( ent->client && ent->inuse && ent->client->sess.sessionTeam < TEAM_SPECTATOR )
 		{
 			G_UnTimeShiftClient( ent );
-			if ( !linked ) 
+			if ( !linked )
 			{
 				trap_UnlinkEntity( ent );
 			}
@@ -266,6 +275,25 @@ void G_UndoTimeShiftFor( gentity_t *ent ) {
 	}
 
 	G_UnTimeShiftAllClients( ent );
+}
+
+void G_PrintDelagMaxTimeshift( void ) {
+	int maxShift;
+
+	if ( sv_fps.integer <= 0 ) {
+		return;
+	}
+
+	if ( !g_delagMissiles.integer ) {
+		return;
+	}
+
+	maxShift = NUM_CLIENT_HISTORY * 1000 / sv_fps.integer;
+	Com_Printf( "Delag: max timeshift is %ims\n", maxShift );
+	if ( maxShift < DELAG_MAX_BACKTRACK ) {
+		Com_Printf( S_COLOR_YELLOW "WARNING: max timeshift %i is not large enough for g_delagMissileMaxLatency %i at sv_fps %i\n",
+			maxShift, g_delagMissileMaxLatency.integer, sv_fps.integer );
+	}
 }
 
 
