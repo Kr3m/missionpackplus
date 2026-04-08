@@ -433,8 +433,9 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound( "sound/feedback/prepare_team.wav", qtrue );
 	cgs.media.countRoundBeginsInSound = trap_S_RegisterSound( "sound/vo_evil/round_begins_in.wav", qtrue );
 	if ( cgs.gametype == GT_CTFS || cg_buildScript.integer ) {
-		cgs.media.atdAttackSound = trap_S_RegisterSound( "sound/vo_evil/attack_the_flag.wav", qtrue );
-		cgs.media.atdDefendSound = trap_S_RegisterSound( "sound/vo_evil/defend_the_flag.wav", qtrue );
+		cgs.media.atdAttackSound         = trap_S_RegisterSound( "sound/vo_evil/attack_the_flag.wav", qtrue );
+		cgs.media.atdDefendSound         = trap_S_RegisterSound( "sound/vo_evil/defend_the_flag.wav", qtrue );
+		cgs.media.atd30SecWarningSound   = trap_S_RegisterSound( "sound/vo_evil/30_second_warning.wav", qtrue );
 	}
 #endif
 

@@ -2602,6 +2602,40 @@ void CG_DrawTimedMenus( void ) {
 CG_Draw2D
 =================
 */
+#ifdef MISSIONPACK
+/*
+=================
+CG_DrawATDRoundCountdown
+
+Draws a red countdown (30..1) at the top-centre of the screen during
+the final 30 seconds of a GT_CTFS round.  Hidden at all other times.
+=================
+*/
+static void CG_DrawATDRoundCountdown( void ) {
+	int		   deadline, msecRemaining, secRemaining, w;
+	const char *s;
+	vec4_t	   colorRed = { 1.0f, 0.15f, 0.15f, 1.0f };
+
+	if ( cgs.gametype != GT_CTFS )
+		return;
+	if ( !cgs.atdRoundStartTime || !cgs.atdRoundTimelimit )
+		return;
+	if ( cg.intermissionStarted )
+		return;
+
+	deadline	  = cgs.atdRoundStartTime + cgs.atdRoundTimelimit * 1000;
+	msecRemaining = deadline - cg.time;
+
+	if ( msecRemaining <= 0 || msecRemaining > 30000 )
+		return;
+
+	secRemaining = ( msecRemaining + 999 ) / 1000;
+	s = va( "%i", secRemaining );
+	w = CG_Text_Width( s, 0.5f, 0 );
+	CG_Text_Paint( 320 - w / 2, 20, 0.5f, colorRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE );
+}
+#endif
+
 static void CG_Draw2D( stereoFrame_t stereoFrame )
 {
 #ifdef MISSIONPACK
@@ -2690,6 +2724,10 @@ static void CG_Draw2D( stereoFrame_t stereoFrame )
 	if ( !CG_DrawFollow() ) {
 		CG_DrawWarmup();
 	}
+
+#ifdef MISSIONPACK
+	CG_DrawATDRoundCountdown();
+#endif
 
 	// don't draw center string if scoreboard is up
 	cg.scoreBoardShowing = CG_DrawScoreboard();

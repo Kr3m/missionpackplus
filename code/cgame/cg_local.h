@@ -1022,6 +1022,7 @@ typedef struct {
 	sfxHandle_t scoutSound;
 	sfxHandle_t	atdAttackSound;		/* GT_CTFS: "attack the flag" cue */
 	sfxHandle_t	atdDefendSound;		/* GT_CTFS: "defend the flag" cue */
+	sfxHandle_t	atd30SecWarningSound;	/* GT_CTFS: 30-second round warning */
 	sfxHandle_t	countRoundBeginsInSound;
 #endif
 	qhandle_t cursor;
@@ -1077,6 +1078,7 @@ typedef struct {
 	int				fraglimit;
 	int				capturelimit;
 	int				timelimit;
+	int				atdRoundTimelimit;	// GT_CTFS: round time limit in seconds (from "roundtimelimit" serverinfo)
 	int				maxclients;
 	char			mapname[MAX_QPATH];
 	char			redTeam[MAX_QPATH];
@@ -1104,6 +1106,7 @@ typedef struct {
 	int				atdCompletedRounds;		// GT_CTFS: number of completed half-rounds
 	int				atdRoundScoresRed[MAX_ATD_ROUNDS];
 	int				atdRoundScoresBlue[MAX_ATD_ROUNDS];
+	int				atdRoundStartTime;		// GT_CTFS: server time (ms) when the current round went live
 #endif
 
 	qboolean  newHud;

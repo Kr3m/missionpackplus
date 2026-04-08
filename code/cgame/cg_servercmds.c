@@ -137,6 +137,7 @@ void CG_ParseServerinfo( void ) {
 	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
+	cgs.atdRoundTimelimit = atoi( Info_ValueForKey( info, "roundtimelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.g_grappleDelayTime = atoi(Info_ValueForKey(info, "g_grappleDelayTime"));
 	cgs.g_grapplePull = atoi(Info_ValueForKey(info, "g_grapplePull"));
@@ -256,7 +257,9 @@ static void CG_ParseWarmup( void ) {
 #endif
 	} else if ( warmup > 0 && cg.warmup <= 0 ) {
 #ifdef MISSIONPACK
-		if (cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER) {
+		if ( cgs.gametype == GT_CTFS ) {
+			/* CTFS uses its own round-start audio and should stay silent during inter-round warmup. */
+		} else if (cgs.gametype >= GT_CTF && cgs.gametype <= GT_HARVESTER) {
 			trap_S_StartLocalSound( cgs.media.countPrepareTeamSound, CHAN_ANNOUNCER );
 		} else
 #endif
@@ -302,6 +305,7 @@ void CG_SetConfigValues( void ) {
 		cgs.blueflag         = s[1] - '0';
 		cgs.atdAttackingTeam = s[2] - '0';
 		CG_ParseATDRoundScores( CG_ConfigString( CS_ATD_ROUNDSCORES ) );
+		cgs.atdRoundStartTime = atoi( CG_ConfigString( CS_ATD_ROUNDSTART ) );
 	}
 #endif
 	CG_ParseWarmup();
@@ -416,6 +420,8 @@ static void CG_ConfigStringModified( void ) {
 #ifdef MISSIONPACK
 	} else if ( num == CS_ATD_ROUNDSCORES ) {
 		CG_ParseATDRoundScores( str );
+	} else if ( num == CS_ATD_ROUNDSTART ) {
+		cgs.atdRoundStartTime = atoi( str );
 #endif
 	} else if ( num >= CS_MODELS && num < CS_MODELS+MAX_MODELS ) {
 		cgs.gameModels[ num-CS_MODELS ] = trap_R_RegisterModel( str );

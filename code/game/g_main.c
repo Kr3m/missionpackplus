@@ -724,6 +724,7 @@ static void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		Com_Memset( level.atdRoundScoresBlue, 0, sizeof( level.atdRoundScoresBlue ) );
 		/* Clear the round score configstring so clients start fresh. */
 		trap_SetConfigstring( CS_ATD_ROUNDSCORES, "" );
+		trap_SetConfigstring( CS_ATD_ROUNDSTART, "0" );
 		/* CS_WARMUP will be set after the initial match warmup ends (G_ATDEndRound). */
 	}
 #endif
@@ -2301,10 +2302,13 @@ void G_ATDEndRound( void ) {
 		}
 	}
 
-	level.atdRoundStartTime  = level.time + atd_rounddelay.integer * 1000;
-	level.atdRoundRespawned  = qfalse;
-	level.atdRoundRedPlayers = 0;
+	level.atdRoundStartTime   = level.time + atd_rounddelay.integer * 1000;
+	level.atdRoundRespawned   = qfalse;
+	level.atdRoundRedPlayers  = 0;
 	level.atdRoundBluePlayers = 0;
+	level.atdRound30SecWarned = qfalse;
+	/* Clear the active-round timer on clients — round is now in warmup phase. */
+	trap_SetConfigstring( CS_ATD_ROUNDSTART, "0" );
 	/* Show a countdown to all clients during the inter-round freeze. */
 	trap_SetConfigstring( CS_WARMUP, va( "%i", level.atdRoundStartTime ) );
 	/* Re-init flags so Team_SetFlagStatus fires with the new round's attacking team
@@ -2379,10 +2383,13 @@ static void G_CheckATDRound( void ) {
 		/* When warmup expires, officially start the round. */
 		if ( level.time >= level.atdRoundStartTime ) {
 			level.atdRoundNumberStarted = level.atdRoundNumber;
+			level.atdRound30SecWarned   = qfalse;
 			level.atdRoundRedPlayers    = G_ATDTeamLivingCount( TEAM_RED );
 			level.atdRoundBluePlayers   = G_ATDTeamLivingCount( TEAM_BLUE );
 			level.atdRoundStartRed      = level.teamScores[TEAM_RED];
 			level.atdRoundStartBlue     = level.teamScores[TEAM_BLUE];
+			/* Publish the exact round-start time so clients can render the countdown. */
+			trap_SetConfigstring( CS_ATD_ROUNDSTART, va( "%i", level.atdRoundStartTime ) );
 			/* Clear the inter-round countdown and unfreeze players. */
 			trap_SetConfigstring( CS_WARMUP, "" );
 			G_BroadcastServerCommand( -1, va( "print \"Round %i — %s attacks, %s defends!\\n\"",
@@ -2395,10 +2402,20 @@ static void G_CheckATDRound( void ) {
 
 	/* ---- round is active — check end conditions ---- */
 
-	/* 1. Round time expired — no points awarded, round just resets. */
-	if ( atd_roundtime.integer > 0 &&
-	     level.time >= level.atdRoundStartTime + atd_roundtime.integer * 1000 ) {
+	/* 1. 30-second warning — fire a dedicated broadcast event. */
+	if ( g_roundtimelimit.integer > 30 && !level.atdRound30SecWarned &&
+	     level.time >= level.atdRoundStartTime + ( g_roundtimelimit.integer - 30 ) * 1000 ) {
+		gentity_t *te;
+		level.atdRound30SecWarned = qtrue;
+		te = G_TempEntity( level.intermission_origin, EV_ATD_30SEC_WARNING );
+		te->r.svFlags |= SVF_BROADCAST;
+	}
+
+	/* 2. Round time expired — no points awarded, round draws. */
+	if ( g_roundtimelimit.integer > 0 &&
+	     level.time >= level.atdRoundStartTime + g_roundtimelimit.integer * 1000 ) {
 		G_BroadcastServerCommand( -1, "print \"Round time expired. No capture this round.\\n\"" );
+		G_ATDGlobalSound( "sound/vo_evil/round_draw.wav" );
 		G_ATDEndRound();
 		return;
 	}

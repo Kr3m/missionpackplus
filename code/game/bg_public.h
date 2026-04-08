@@ -71,6 +71,7 @@
 
 #ifdef MISSIONPACK
 #define CS_ATD_ROUNDSCORES		29		// GT_CTFS: space-delimited red/blue score pairs per completed half-round
+#define CS_ATD_ROUNDSTART		30		// GT_CTFS: server time (ms) when the current round went live; "0" if not active
 #define MAX_ATD_ROUNDS			20		// max tracked half-rounds (10 display rounds)
 #endif
 
@@ -454,6 +455,11 @@ typedef enum {
 	EV_TAUNT_GETFLAG,
 	EV_TAUNT_GUARDBASE,
 	EV_TAUNT_PATROL,
+
+#ifdef MISSIONPACK
+	EV_ATD_30SEC_WARNING,	// GT_CTFS: 30 seconds remaining in the round
+#endif
+
 	EV_MAX
 
 } entity_event_t;
