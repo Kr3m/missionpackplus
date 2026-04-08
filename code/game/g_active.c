@@ -890,8 +890,6 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.pm_type = PM_NORMAL;
 	}
 
-/* ATD inter-round freeze handled via pm.cmd zeroing before Pmove — see below. */
-
 	client->ps.gravity = g_gravity.value;
 
 	// set speed
@@ -994,18 +992,51 @@ void ClientThink_real( gentity_t *ent ) {
 				ent->client->ps.pm_type = PM_SPINTERMISSION;
 			}
 		}
-		/* ATD inter-round freeze: block movement and firing but allow weapon switching.
-		   Done here in pm.cmd so Pmove still processes weapon-change bookkeeping. */
+		/* ATD inter-round freeze (GT_CTFS only): set PM_FREEZE so the snapshot sent to
+		   clients also carries PM_FREEZE, freezing client-side prediction too (no
+		   nudging, jumping, or jump sounds).  pm_type is reset to PM_NORMAL
+		   unconditionally at the top of ClientThink_real every frame, so there is no
+		   bleed-through into normal Pmove when the round begins.
+		   We manually honour weapon switching and +button2 item use here. */
 		if ( g_gametype.integer == GT_CTFS &&
 		     level.warmupTime == 0 &&
 		     level.atdRoundNumber != level.atdRoundNumberStarted &&
 		     client->ps.pm_type == PM_NORMAL ) {
-			pm.cmd.forwardmove = 0;
-			pm.cmd.rightmove   = 0;
-			pm.cmd.upmove      = 0;
-			pm.cmd.buttons    &= ~(BUTTON_ATTACK | BUTTON_USE_HOLDABLE);
+			client->ps.pm_type = PM_FREEZE;
+			Pmove( &pm );	/* returns immediately — no movement, no events */
+
+			/* Weapon switching: fire EV_CHANGE_WEAPON for the switch sound, then
+			   directly snapshot the new weapon.  Set WEAPON_READY / weaponTime=0 so
+			   no stale WEAPON_DROPPING state is visible to Pmove when the round
+			   starts. */
+			if ( pm.cmd.weapon > WP_NONE && pm.cmd.weapon < WP_NUM_WEAPONS &&
+			     pm.cmd.weapon != client->ps.weapon &&
+			     ( client->ps.stats[STAT_WEAPONS] & ( 1 << pm.cmd.weapon ) ) ) {
+				BG_AddPredictableEventToPlayerstate( EV_CHANGE_WEAPON, 0, &client->ps, -1 );
+				client->ps.weapon      = pm.cmd.weapon;
+				client->ps.weaponstate = WEAPON_READY;
+				client->ps.weaponTime  = 0;
+			}
+
+			/* Item use (+button2 / BUTTON_USE_HOLDABLE): mirrors PM_Weapon logic.
+			   PMF_USE_ITEM_HELD debounces so the item fires once per button press. */
+			if ( pm.cmd.buttons & BUTTON_USE_HOLDABLE ) {
+				if ( !( client->ps.pm_flags & PMF_USE_ITEM_HELD ) ) {
+					if ( !( bg_itemlist[client->ps.stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT
+					        && client->ps.stats[STAT_HEALTH] >= (client->ps.stats[STAT_MAX_HEALTH] + 25) ) ) {
+						client->ps.pm_flags |= PMF_USE_ITEM_HELD;
+						BG_AddPredictableEventToPlayerstate(
+						    EV_USE_ITEM0 + bg_itemlist[client->ps.stats[STAT_HOLDABLE_ITEM]].giTag,
+						    0, &client->ps, -1 );
+						client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
+					}
+				}
+			} else {
+				client->ps.pm_flags &= ~PMF_USE_ITEM_HELD;
+			}
+		} else {
+			Pmove( &pm );
 		}
-		Pmove (&pm);
 #else
 		Pmove (&pm);
 #endif
