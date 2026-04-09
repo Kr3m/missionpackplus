@@ -735,8 +735,20 @@ void CG_DrawFlagPOIs( void ) {
 				} else {
 					c = NULL;
 				}
+			} else if ( flagStatus == FLAG_DROPPED ) {
+				/* Flag dropped in the field — keep the attack marker attached to the
+				   dropped flag entity so attackers can recover it. */
+				c = &s_flagPOI[atkFlagIdx];
+				if ( c->count > 0 ) {
+					color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
+					color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
+					color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
+					color4[3] = 1.0f;
+					shader = cgs.media.flagAttackPOI;
+				} else {
+					c = NULL;
+				}
 			}
-			/* FLAG_DROPPED — no POI, c stays NULL */
 		}
 
 		if ( shader && c ) {
