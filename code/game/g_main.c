@@ -2291,12 +2291,12 @@ void G_ATDEndRound( void ) {
 
 		if ( balanced && ( red >= atd_scorelimit.integer || blue >= atd_scorelimit.integer ) ) {
 			if ( red > blue ) {
-				G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\\n\"" );
+				G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\n\"" );
 				G_ATDGlobalSound( "sound/vo/red_wins.wav" );
 				LogExit( "Scorelimit hit." );
 				return;
 			} else if ( blue > red ) {
-				G_BroadcastServerCommand( -1, "print \"^4Blue^7 wins!\\n\"" );
+				G_BroadcastServerCommand( -1, "print \"^4Blue^7 wins!\n\"" );
 				G_ATDGlobalSound( "sound/vo/blue_wins.wav" );
 				LogExit( "Scorelimit hit." );
 				return;
@@ -2305,7 +2305,7 @@ void G_ATDEndRound( void ) {
 		} else if ( !balanced && ( red >= atd_scorelimit.integer || blue >= atd_scorelimit.integer ) ) {
 			team_t lead = ( red >= blue ) ? TEAM_RED : TEAM_BLUE;
 			G_BroadcastServerCommand( -1, va(
-				"print \"%s has reached the scorelimit — %s gets a final round!\\n\"",
+				"print \"%s has reached the scorelimit — %s gets a final round!\n\"",
 				( lead == TEAM_RED ) ? "^1Red^7" : "^4Blue^7",
 				( lead == TEAM_RED ) ? "^4Blue^7" : "^1Red^7" ) );
 		}
@@ -2401,7 +2401,7 @@ static void G_CheckATDRound( void ) {
 			trap_SetConfigstring( CS_ATD_ROUNDSTART, va( "%i", level.atdRoundStartTime ) );
 			/* Clear the inter-round countdown and unfreeze players. */
 			trap_SetConfigstring( CS_WARMUP, "" );
-			G_BroadcastServerCommand( -1, va( "print \"Round %i — %s attacks, %s defends!\\n\"",
+			G_BroadcastServerCommand( -1, va( "print \"Round %i — %s attacks, %s defends!\n\"",
 				( level.atdRoundNumber + 1 ) / 2,
 				( atkTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7",
 				( defTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7" ) );
@@ -2423,7 +2423,7 @@ static void G_CheckATDRound( void ) {
 	/* 2. Round time expired — no points awarded, round draws. */
 	if ( g_roundtimelimit.integer > 0 &&
 	     level.time >= level.atdRoundStartTime + g_roundtimelimit.integer * 1000 ) {
-		G_BroadcastServerCommand( -1, "print \"Round time expired. No capture this round.\\n\"" );
+		G_BroadcastServerCommand( -1, "print \"Round time expired. No capture this round.\n\"" );
 		G_ATDGlobalSound( "sound/vo_evil/round_draw.wav" );
 		G_ATDEndRound();
 		return;
@@ -2440,7 +2440,7 @@ static void G_CheckATDRound( void ) {
 
 	/* 3. Entire attacking team wiped — round ends, no score (only offense can score). */
 	if ( livesAtk == 0 ) {
-		G_BroadcastServerCommand( -1, "print \"Attacking team eliminated! Round over.\\n\"" );
+		G_BroadcastServerCommand( -1, "print \"Attacking team eliminated! Round over.\n\"" );
 		G_ATDEndRound();
 		if ( !level.intermissionQueued ) {
 			G_ATDGlobalSound( defTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
@@ -2450,7 +2450,7 @@ static void G_CheckATDRound( void ) {
 
 	/* 4. Entire defending team wiped — attackers earn 2 pts. */
 	if ( liesDef == 0 ) {
-		G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Attackers score 2 points!\\n\"" );
+		G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Attackers score 2 points!\n\"" );
 		AddTeamScore( level.intermission_origin, atkTeam, 2 );
 		G_ATDEndRound();
 		if ( !level.intermissionQueued ) {

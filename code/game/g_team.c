@@ -932,7 +932,7 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 	// Re-picking a dropped flag does not score again.
 	if ( g_gametype.integer == GT_CTFS && !( ent->flags & FL_DROPPED_ITEM ) ) {
 		AddTeamScore( ent->s.pos.trBase, other->client->sess.sessionTeam, 1 );
-		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " touched the flag! Attackers score 1 point!\\n\"",
+		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " touched the flag! Attackers score 1 point!\n\"",
 			cl->pers.netname ) );
 		CalculateRanks();
 	}
