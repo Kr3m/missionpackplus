@@ -530,6 +530,16 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	if (other->health < 1)
 		return;		// dead people can't pickup
 
+#ifdef MISSIONPACK
+	if ( g_gametype.integer == GT_CTFS && ent->item && ent->item->giType == IT_TEAM ) {
+		int atkTeam = ((level.atdEliminationSides + level.atdRoundNumber) % 2 == 0)
+		             ? TEAM_RED : TEAM_BLUE;
+		if ( other->client->sess.sessionTeam != atkTeam ) {
+			return;
+		}
+	}
+#endif
+
 	// the same pickup rules are used for client side and server side
 	if ( !BG_CanItemBeGrabbed( g_gametype.integer, &ent->s, &other->client->ps ) ) {
 		return;

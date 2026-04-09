@@ -124,7 +124,7 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 CG_Trace
 ================
 */
-void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, 
+void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 					 int skipNumber, int mask ) {
 	trace_t	t;
 
@@ -231,10 +231,10 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 	for ( i = 0 ; i < 3 ; i++ ) {
 		out->origin[i] = prev->ps.origin[i] + f * (next->ps.origin[i] - prev->ps.origin[i] );
 		if ( !grabAngles ) {
-			out->viewangles[i] = LerpAngle( 
+			out->viewangles[i] = LerpAngle(
 				prev->ps.viewangles[i], next->ps.viewangles[i], f );
 		}
-		out->velocity[i] = prev->ps.velocity[i] + 
+		out->velocity[i] = prev->ps.velocity[i] +
 			f * (next->ps.velocity[i] - prev->ps.velocity[i] );
 	}
 
@@ -254,7 +254,7 @@ CG_StoreEvents
 Save events that may be dropped during prediction
 ===================
 */
-void CG_StoreEvent( entity_event_t evt, int eventParm, int entityNum ) 
+void CG_StoreEvent( entity_event_t evt, int eventParm, int entityNum )
 {
 	if ( eventStack >= MAX_PREDICTED_EVENTS )
 		return;
@@ -298,7 +298,7 @@ void CG_PlayDroppedEvents( playerState_t *ps, playerState_t *ops ) {
 	for ( i = 0; i < eventStack - MAX_PS_EVENTS ; i++ ) {
 		cent->currentState.event = events[ i ];
 		cent->currentState.eventParm = eventParms[ i ];
-		if ( cg_showmiss.integer ) 
+		if ( cg_showmiss.integer )
 		{
 			CG_Printf( "Playing dropped event: %s %i", eventnames[ events[ i ] ], eventParms[ i ] );
 		}
@@ -335,10 +335,10 @@ static void CG_AddAmmo( int weapon, int count )
 }
 
 
-static void CG_AddWeapon( int weapon, int quantity, qboolean dropped ) 
+static void CG_AddWeapon( int weapon, int quantity, qboolean dropped )
 {
 	//int	ammo;
-	
+
 	//ammo = quantity;
 
 	// dropped items and teamplay weapons always have full ammo
@@ -370,14 +370,14 @@ static int CG_CheckArmor( int damage ) {
 
 	if ( !save )
 		return 0;
-	
+
 	cg.predictedPlayerState.stats[STAT_ARMOR] -= save;
 
 	return save;
 }
 
 
- void CG_AddFallDamage( int damage ) 
+ void CG_AddFallDamage( int damage )
 {
 	int take, asave;
 
@@ -397,7 +397,7 @@ static int CG_CheckArmor( int damage ) {
 	cg.predictedPlayerState.stats[STAT_HEALTH] -= take;
 
 #if 0
-	CG_Printf( "take: %i asave:%i health:%i armor:%i\n", take, asave, 
+	CG_Printf( "take: %i asave:%i health:%i armor:%i\n", take, asave,
 		cg.predictedPlayerState.stats[STAT_HEALTH], cg.predictedPlayerState.stats[STAT_ARMOR] );
 #endif
 
@@ -406,7 +406,7 @@ static int CG_CheckArmor( int damage ) {
 	//cg.predictedPlayerState.damageEvent++;
 	cg.predictedPlayerState.damageCount = take + asave;
 }
- 
+
 
 static void CG_PickupPrediction( centity_t *cent, const gitem_t *item ) {
 
@@ -454,7 +454,7 @@ static void CG_PickupPrediction( centity_t *cent, const gitem_t *item ) {
 			}
 		}
 		cg.predictedPlayerState.powerups[ item->giTag ] += cent->currentState.time2 * 1000;
-	}	
+	}
 
 	// holdable prediction
 	if ( item->giType == IT_HOLDABLE && ( item->giTag == HI_TELEPORTER || item->giTag == HI_MEDKIT ) ) {
@@ -484,7 +484,7 @@ static void CG_TouchItem( centity_t *cent ) {
 	}
 
 	// never pick an item up twice in a prediction
-	if ( cent->delaySpawn > cg.time ) { 
+	if ( cent->delaySpawn > cg.time ) {
 		return;
 	}
 
@@ -494,7 +494,14 @@ static void CG_TouchItem( centity_t *cent ) {
 
 	item = &bg_itemlist[ cent->currentState.modelindex ];
 
-	// Special case for flags.  
+#ifdef MISSIONPACK
+	if ( cgs.gametype == GT_CTFS && item->giType == IT_TEAM &&
+		 cg.predictedPlayerState.persistant[PERS_TEAM] != cgs.atdAttackingTeam ) {
+		return;
+	}
+#endif
+
+	// Special case for flags.
 	// We don't predict touching our own flag
 #ifdef MISSIONPACK
 	if( cgs.gametype == GT_1FCTF ) {
@@ -584,7 +591,7 @@ static void CG_TouchTriggerPrediction( void ) {
 			continue;
 		}
 
-		trap_CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin, 
+		trap_CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin,
 			cg_pmove.mins, cg_pmove.maxs, cmodel, -1 );
 
 		if ( !trace.startsolid ) {
@@ -660,13 +667,13 @@ static void CG_CheckTimers( void ) {
 static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps, qboolean *forceMove ) {
 	vec3_t delta;
 	int i, n, v0, v1;
- 
+
 	if ( pps->pm_time != ps->pm_time ||
 		 pps->pm_type != ps->pm_type ||
 		 pps->pm_flags != ps->pm_flags ) {
 		return 1;
 	}
- 
+
 	VectorSubtract( pps->origin, ps->origin, delta );
 	if ( VectorLengthSquared( delta ) > 0.01f * 0.01f ) {
 		if( cg_showmiss.integer > 2 ) {
@@ -688,12 +695,12 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps, qboole
 		pps->speed != ps->speed ||
 		pps->delta_angles[ 0 ] != ps->delta_angles[ 0 ] ||
 		pps->delta_angles[ 1 ] != ps->delta_angles[ 1 ] ||
-		pps->delta_angles[ 2 ] != ps->delta_angles[ 2 ] || 
+		pps->delta_angles[ 2 ] != ps->delta_angles[ 2 ] ||
 		pps->groundEntityNum != ps->groundEntityNum ) {
 		if ( cg_showmiss.integer > 1 )
-			CG_Printf( "%i %i %i %i => %i %i %i %i", 
+			CG_Printf( "%i %i %i %i => %i %i %i %i",
 				pps->weaponTime, pps->gravity, pps->speed, pps->groundEntityNum,
-				ps->weaponTime, ps->gravity, ps->speed, ps->groundEntityNum ); 
+				ps->weaponTime, ps->gravity, ps->speed, ps->groundEntityNum );
 
 		return 4;
 	}
@@ -776,7 +783,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps, qboole
 		pps->damagePitch != ps->damagePitch ||
 		pps->damageCount != ps->damageCount ) {
 		if ( cg_showmiss.integer > 1 )
-			CG_Printf( "dmg %i %i %i %i >= %i %i %i %i\n", 
+			CG_Printf( "dmg %i %i %i %i >= %i %i %i %i\n",
 				pps->damageEvent, pps->damageYaw, pps->damagePitch, pps->damageCount,
 				ps->damageEvent, ps->damageYaw, ps->damagePitch, ps->damageCount );
 		return 14;
@@ -952,7 +959,7 @@ void CG_PredictPlayerState( void ) {
 
 	// get the most recent information we have, even if
 	// the server time is beyond our current cg.time,
-	// because predicted player positions are going to 
+	// because predicted player positions are going to
 	// be ahead of everything else anyway
 	if ( cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport ) {
 		cg.predictedPlayerState = cg.nextSnap->ps;
@@ -967,7 +974,7 @@ void CG_PredictPlayerState( void ) {
 
 	// clean event stack
 	eventStack = 0;
-	
+
 	// run cmds
 	moved = qfalse;
 
@@ -1025,15 +1032,15 @@ void CG_PredictPlayerState( void ) {
 						CG_Printf( "errorcode %d at %d\n", errorcode, cg.time );
 					break;
 				}
-  
+
 				// this one is almost exact, so we'll copy it in as the starting point
 				*cg_pmove.ps = cg.savedPmoveStates[ i ];
 				// advance the head
 				cg.stateHead = ( i + 1 ) % NUM_SAVED_STATES;
-  
+
 				// set the next command to predict
 				predictCmd = cg.lastPredictedCommand + 1;
-  
+
 				// a saved state matched, so flag it
 				error = qfalse;
 				break;
@@ -1099,7 +1106,7 @@ void CG_PredictPlayerState( void ) {
 				cg.allowPickupPrediction = cg.time + PICKUP_PREDICTION_DELAY;
 			} else {
 				vec3_t adjusted, new_angles;
-				CG_AdjustPositionForMover( cg.predictedPlayerState.origin, 
+				CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
 					cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted, cg.predictedPlayerState.viewangles, new_angles);
 
 				if ( cg_showmiss.integer ) {
@@ -1145,7 +1152,7 @@ void CG_PredictPlayerState( void ) {
 #if 0
 		if ( !cg_optimizePrediction.integer ) {
 			Pmove (&cg_pmove);
-		} else 
+		} else
 #endif
 		if ( /*cg_optimizePrediction.integer && */ ( cmdNum >= predictCmd || ( stateIndex + 1 ) % NUM_SAVED_STATES == cg.stateHead ) ) {
 
@@ -1159,7 +1166,7 @@ void CG_PredictPlayerState( void ) {
 
 			// record the last predicted command
 			cg.lastPredictedCommand = cmdNum;
- 
+
 			// if we haven't run out of space in the saved states queue
 			if( ( stateIndex + 1 ) % NUM_SAVED_STATES != cg.stateHead ) {
 				// save the state for the false case ( of cmdNum >= predictCmd )
@@ -1190,8 +1197,8 @@ void CG_PredictPlayerState( void ) {
 	}
 
 	// adjust for the movement of the groundentity
-	CG_AdjustPositionForMover( cg.predictedPlayerState.origin, cg.predictedPlayerState.groundEntityNum, 
-		cg.physicsTime, cg.time, cg.predictedPlayerState.origin, 
+	CG_AdjustPositionForMover( cg.predictedPlayerState.origin, cg.predictedPlayerState.groundEntityNum,
+		cg.physicsTime, cg.time, cg.predictedPlayerState.origin,
 		cg.predictedPlayerState.viewangles, cg.predictedPlayerState.viewangles );
 
 	if ( cg_showmiss.integer ) {
