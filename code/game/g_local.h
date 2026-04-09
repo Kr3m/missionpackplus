@@ -463,8 +463,8 @@ typedef struct {
 	int			atdRoundRedPlayers;		// red players alive at round start (for elim check)
 	int			atdRoundBluePlayers;	// blue players alive at round start
 #ifdef MISSIONPACK
-	int			atdRoundScoresRed[MAX_ATD_ROUNDS];	// per-half-round red scores
-	int			atdRoundScoresBlue[MAX_ATD_ROUNDS];	// per-half-round blue scores
+	int			atdRoundScoresRed[MAX_ATD_ROUNDS_STORED];	// per-half-round red scores
+	int			atdRoundScoresBlue[MAX_ATD_ROUNDS_STORED];	// per-half-round blue scores
 #endif
 	int			atdRoundStartRed;	// teamScores[RED] at the start of the current half
 	int			atdRoundStartBlue;	// teamScores[BLUE] at the start of the current half

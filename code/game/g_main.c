@@ -963,15 +963,28 @@ SortRanks
 */
 static int QDECL SortRanks( const void *a, const void *b ) {
 	gclient_t	*ca, *cb;
+	team_t		caTeam, cbTeam;
 
 	ca = &level.clients[*(int *)a];
 	cb = &level.clients[*(int *)b];
 
-	// sort special clients last
-	if ( ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0 ) {
+#ifdef MISSIONPACK
+	/* In GT_CTFS, dead humans round-spectate with their real team stored in
+	   atdDeadSpecTeam. Keep them ranked with their team by score. */
+	caTeam = ( ca->atdDeadSpecTeam != TEAM_FREE ) ? ca->atdDeadSpecTeam : ca->sess.sessionTeam;
+	cbTeam = ( cb->atdDeadSpecTeam != TEAM_FREE ) ? cb->atdDeadSpecTeam : cb->sess.sessionTeam;
+#else
+	caTeam = ca->sess.sessionTeam;
+	cbTeam = cb->sess.sessionTeam;
+#endif
+
+	// sort special spectator clients last
+	if ( ca->sess.spectatorState == SPECTATOR_SCOREBOARD
+		|| ( caTeam == TEAM_SPECTATOR && ca->sess.spectatorClient < 0 ) ) {
 		return 1;
 	}
-	if ( cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0  ) {
+	if ( cb->sess.spectatorState == SPECTATOR_SCOREBOARD
+		|| ( cbTeam == TEAM_SPECTATOR && cb->sess.spectatorClient < 0 ) ) {
 		return -1;
 	}
 
@@ -984,7 +997,7 @@ static int QDECL SortRanks( const void *a, const void *b ) {
 	}
 
 	// then spectators
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR && cb->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( caTeam == TEAM_SPECTATOR && cbTeam == TEAM_SPECTATOR ) {
 		if ( ca->sess.spectatorTime > cb->sess.spectatorTime ) {
 			return -1;
 		}
@@ -993,10 +1006,10 @@ static int QDECL SortRanks( const void *a, const void *b ) {
 		}
 		return 0;
 	}
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( caTeam == TEAM_SPECTATOR ) {
 		return 1;
 	}
-	if ( cb->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( cbTeam == TEAM_SPECTATOR ) {
 		return -1;
 	}
 
@@ -2237,19 +2250,27 @@ incremented so that atdRoundNumber equals the number of completed halves.
 ==============
 */
 static void G_ATDUpdateRoundScoreCS( void ) {
-	int  i, completedHalves, offset;
-	char buf[MAX_ATD_ROUNDS * 14 + 2];
+	int  i, completedHalves, windowFirst, totalInWindow, offset;
+	/* Each pair: up to "-2147483648 -2147483648" = 22 chars + separators.
+	   Plus a leading offset integer (up to 10 chars) + space.
+	   Buffer: 1 offset token + MAX_ATD_ROUNDS_WINDOW pairs, each <=23 chars. */
+	char buf[12 + MAX_ATD_ROUNDS_WINDOW * 24];
 
 	completedHalves = level.atdRoundNumber; /* not yet incremented */
-	if ( completedHalves > MAX_ATD_ROUNDS ) completedHalves = MAX_ATD_ROUNDS;
+	if ( completedHalves > MAX_ATD_ROUNDS_STORED ) completedHalves = MAX_ATD_ROUNDS_STORED;
 
-	offset  = 0;
-	buf[0]  = '\0';
-	for ( i = 0; i < completedHalves; i++ ) {
+	/* Transmit only the most recent MAX_ATD_ROUNDS_WINDOW half-rounds.
+	   Prefix the CS with the absolute index of the first transmitted half. */
+	windowFirst    = completedHalves > MAX_ATD_ROUNDS_WINDOW
+	                 ? completedHalves - MAX_ATD_ROUNDS_WINDOW : 0;
+	totalInWindow  = completedHalves - windowFirst;
+
+	offset  = Com_sprintf( buf, (int)sizeof(buf), "%i", windowFirst );
+	for ( i = 0; i < totalInWindow; i++ ) {
 		offset += Com_sprintf( buf + offset, (int)sizeof(buf) - offset,
-		                       i == 0 ? "%i %i" : " %i %i",
-		                       level.atdRoundScoresRed[i],
-		                       level.atdRoundScoresBlue[i] );
+		                       " %i %i",
+		                       level.atdRoundScoresRed[windowFirst + i],
+		                       level.atdRoundScoresBlue[windowFirst + i] );
 	}
 	trap_SetConfigstring( CS_ATD_ROUNDSCORES, buf );
 }
@@ -2303,7 +2324,7 @@ void G_ATDEndRound( void ) {
 
 	/* Record this half-round's per-team score delta before advancing the counter. */
 	halfIdx = level.atdRoundNumber - 1; /* 0-based */
-	if ( halfIdx >= 0 && halfIdx < MAX_ATD_ROUNDS ) {
+	if ( halfIdx >= 0 && halfIdx < MAX_ATD_ROUNDS_STORED ) {
 		level.atdRoundScoresRed[halfIdx]  = level.teamScores[TEAM_RED]  - level.atdRoundStartRed;
 		level.atdRoundScoresBlue[halfIdx] = level.teamScores[TEAM_BLUE] - level.atdRoundStartBlue;
 	}
@@ -2432,7 +2453,7 @@ static void G_CheckATDRound( void ) {
 					ent->client->sess.sessionTeam    = ent->client->atdDeadSpecTeam;
 					ent->client->sess.spectatorState = SPECTATOR_NOT;
 					ent->client->atdDeadSpecTeam     = TEAM_FREE;
-					ent->client->sess.spectatorClient = -1;
+					ent->client->sess.spectatorClient = i;
 				}
 				if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 					continue;

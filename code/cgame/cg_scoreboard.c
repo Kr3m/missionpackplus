@@ -63,9 +63,13 @@ CG_DrawScoreboard
 */
 static void CG_DrawClientScore( int y, score_t *score, float *color, float fade, qboolean largeFormat ) {
 	char	string[ 64 ];
+	char	scoreString[16];
+	char	pingString[16];
+	char	timeString[16];
 	vec3_t	headAngles;
 	clientInfo_t	*ci;
 	int iconx, headx;
+	int x;
 	vec4_t c;
 
 	if ( score->client < 0 || score->client >= cgs.maxclients ) {
@@ -161,7 +165,9 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	} else if ( ci->team == TEAM_SPECTATOR ) {
 		BG_sprintf( string, " SPECT %3i %4i", score->ping, score->time );
 	} else {
-		BG_sprintf( string, "%5i %4i %4i", score->score, score->ping, score->time );
+		BG_sprintf( scoreString, "%i", score->score );
+		BG_sprintf( pingString, "%i", score->ping );
+		BG_sprintf( timeString, "%i", score->time );
 	}
 
 	// highlight your position
@@ -202,8 +208,21 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	}
 
 	VectorSet( c, 1, 1, 1 ); c[3] = fade;
-	// score
-	CG_DrawString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2), y, string, c, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, DS_SHADOW );
+	if ( score->ping == -1 || ci->team == TEAM_SPECTATOR ) {
+		CG_DrawString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2), y, string, c, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, DS_SHADOW );
+	} else {
+		// score (right-aligned to score column)
+		x = SB_SCORE_X - (int)strlen( scoreString ) * BIGCHAR_WIDTH;
+		CG_DrawString( x, y, scoreString, c, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, DS_SHADOW );
+
+		// ping (right-aligned to ping column)
+		x = SB_PING_X - (int)strlen( pingString ) * BIGCHAR_WIDTH;
+		CG_DrawString( x, y, pingString, c, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, DS_SHADOW );
+
+		// time (right-aligned to time column)
+		x = SB_TIME_X - (int)strlen( timeString ) * BIGCHAR_WIDTH;
+		CG_DrawString( x, y, timeString, c, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, DS_SHADOW );
+	}
 	// name
 	CG_DrawString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2) + BIGCHAR_WIDTH*16, y, ci->name, c, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, DS_SHADOW | DS_PROPORTIONAL );
 
@@ -617,8 +636,13 @@ void CG_DrawATDRoundScores( float fade ) {
 	CG_Text_Paint( LABEL_X, baseY, SCALE_LBL, cRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 	for ( i = 0; i < DISP_COLS; i++ ) {
 		half0 = ( windowStart + i ) * 2;
-		s  = ( ( windowStart + i ) < completedFull && half0 < completedHalves )
-		     ? va( "%i", cgs.atdRoundScoresRed[half0] ) : "-";
+		half1 = half0 + 1;
+		{
+			int localIdx0 = half0 - cgs.atdRoundOffset;
+			s  = ( ( windowStart + i ) < completedFull && half0 < completedHalves
+			       && localIdx0 >= 0 && localIdx0 < MAX_ATD_ROUNDS_WINDOW )
+			     ? va( "%i", cgs.atdRoundScoresRed[localIdx0] ) : "-";
+		}
 		cx = COL0_LEFT + (float)i * COL_PITCH
 		     + ( COL_PITCH - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
 		CG_Text_Paint( cx, baseY, SCALE_NUM, cRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
@@ -631,8 +655,12 @@ void CG_DrawATDRoundScores( float fade ) {
 	for ( i = 0; i < DISP_COLS; i++ ) {
 		half0 = ( windowStart + i ) * 2;
 		half1 = half0 + 1;
-		s  = ( ( windowStart + i ) < completedFull && half1 < completedHalves )
-		     ? va( "%i", cgs.atdRoundScoresBlue[half1] ) : "-";
+		{
+			int localIdx1 = half1 - cgs.atdRoundOffset;
+			s  = ( ( windowStart + i ) < completedFull && half1 < completedHalves
+			       && localIdx1 >= 0 && localIdx1 < MAX_ATD_ROUNDS_WINDOW )
+			     ? va( "%i", cgs.atdRoundScoresBlue[localIdx1] ) : "-";
+		}
 		cx = COL0_LEFT + (float)i * COL_PITCH
 		     + ( COL_PITCH - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
 		CG_Text_Paint( cx, baseY, SCALE_NUM, cBlu, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );

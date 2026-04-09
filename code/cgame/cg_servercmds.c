@@ -191,10 +191,11 @@ cgs.atdRoundScoresRed/Blue and sets cgs.atdCompletedRounds.
 */
 static void CG_ParseATDRoundScores( const char *str ) {
 	int   r = 0;
-	char  buf[MAX_ATD_ROUNDS * 14 + 2];
+	char  buf[12 + MAX_ATD_ROUNDS_WINDOW * 24];
 	char *tok;
 
 	cgs.atdCompletedRounds = 0;
+	cgs.atdRoundOffset     = 0;
 	Com_Memset( cgs.atdRoundScoresRed,  0, sizeof( cgs.atdRoundScoresRed  ) );
 	Com_Memset( cgs.atdRoundScoresBlue, 0, sizeof( cgs.atdRoundScoresBlue ) );
 
@@ -203,8 +204,12 @@ static void CG_ParseATDRoundScores( const char *str ) {
 	}
 
 	Q_strncpyz( buf, str, sizeof( buf ) );
+	/* First token is the absolute index of the first pair in this window. */
 	tok = strtok( buf, " " );
-	while ( tok && r < MAX_ATD_ROUNDS ) {
+	if ( !tok ) return;
+	cgs.atdRoundOffset = atoi( tok );
+	tok = strtok( NULL, " " );
+	while ( tok && r < MAX_ATD_ROUNDS_WINDOW ) {
 		cgs.atdRoundScoresRed[r]  = atoi( tok );
 		tok = strtok( NULL, " " );
 		if ( !tok ) break;
@@ -212,7 +217,8 @@ static void CG_ParseATDRoundScores( const char *str ) {
 		tok = strtok( NULL, " " );
 		r++;
 	}
-	cgs.atdCompletedRounds = r;
+	/* atdCompletedRounds = absolute count of completed halves */
+	cgs.atdCompletedRounds = cgs.atdRoundOffset + r;
 }
 #endif
 
@@ -566,6 +572,7 @@ static void CG_MapRestart( void ) {
 	cg.autoActionNextRecordAttemptTime = 0;
 #ifdef MISSIONPACK
 	cgs.atdCompletedRounds = 0;	/* prevent stale scoreboard on map_restart */
+	cgs.atdRoundOffset     = 0;
 #endif
 	cg.levelShot = qfalse;
 

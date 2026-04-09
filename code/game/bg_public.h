@@ -72,7 +72,9 @@
 #ifdef MISSIONPACK
 #define CS_ATD_ROUNDSCORES		29		// GT_CTFS: space-delimited red/blue score pairs per completed half-round
 #define CS_ATD_ROUNDSTART		30		// GT_CTFS: server time (ms) when the current round went live; "0" if not active
-#define MAX_ATD_ROUNDS			20		// max tracked half-rounds (10 display rounds)
+#define MAX_ATD_ROUNDS_STORED	500		// max half-rounds stored server-side (250 display rounds)
+#define MAX_ATD_ROUNDS_WINDOW	22		// half-rounds transmitted in CS sliding window (11 display rounds)
+#define MAX_ATD_ROUNDS			MAX_ATD_ROUNDS_STORED	// backward-compat alias
 #endif
 
 #define	CS_MODELS				32

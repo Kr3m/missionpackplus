@@ -1116,8 +1116,9 @@ typedef struct {
 	int				atdAttackingTeam;		// GT_CTFS: TEAM_RED or TEAM_BLUE (from CS_FLAGSTATUS[2])
 #ifdef MISSIONPACK
 	int				atdCompletedRounds;		// GT_CTFS: number of completed half-rounds
-	int				atdRoundScoresRed[MAX_ATD_ROUNDS];
-	int				atdRoundScoresBlue[MAX_ATD_ROUNDS];
+	int				atdRoundOffset;			// GT_CTFS: absolute half-index of atdRoundScoresRed[0]
+	int				atdRoundScoresRed[MAX_ATD_ROUNDS_WINDOW];
+	int				atdRoundScoresBlue[MAX_ATD_ROUNDS_WINDOW];
 	int				atdRoundStartTime;		// GT_CTFS: server time (ms) when the current round went live
 #endif
 

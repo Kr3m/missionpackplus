@@ -89,6 +89,13 @@ DLLEXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2 ) {
 	return -1;
 }
 
+static int CG_NormalizeAutoActionMode( int mode ) {
+	if ( mode < 0 ) {
+		return 0;
+	}
+	return mode & ( CG_AUTOACTION_DEMO | CG_AUTOACTION_SCREENSHOT );
+}
+
 
 cg_t				cg;
 cgs_t				cgs;
@@ -116,16 +123,12 @@ static const cvarTable_t cvarTable[] = {
 };
 
 static qboolean CG_AutoActionWantsDemo( void ) {
-	int mode = cg_autoAction.integer;
-	/* Clamp to max mode 3 */
-	if ( mode > 3 ) mode = 3;
+	int mode = CG_NormalizeAutoActionMode( cg_autoAction.integer );
 	return ( mode == CG_AUTOACTION_DEMO || mode == ( CG_AUTOACTION_DEMO | CG_AUTOACTION_SCREENSHOT ) );
 }
 
 static qboolean CG_AutoActionWantsScreenshot( void ) {
-	int mode = cg_autoAction.integer;
-	/* Clamp to max mode 3 */
-	if ( mode > 3 ) mode = 3;
+	int mode = CG_NormalizeAutoActionMode( cg_autoAction.integer );
 	return ( mode == CG_AUTOACTION_SCREENSHOT || mode == ( CG_AUTOACTION_DEMO | CG_AUTOACTION_SCREENSHOT ) );
 }
 
@@ -1595,6 +1598,48 @@ static int CG_FeederCount(float feederID) {
 	return count;
 }
 
+/*
+=================
+CG_TeamRankedScoreIndex
+
+Returns the cg.scores[] index for the Nth ranked player on a team
+sorted by score descending (ties keep lower original index first).
+=================
+*/
+static int CG_TeamRankedScoreIndex( int team, int rank ) {
+	qboolean used[MAX_CLIENTS];
+	int pick, i, r;
+
+	memset( used, 0, sizeof( used ) );
+
+	for ( r = 0; r <= rank; r++ ) {
+		pick = -1;
+		for ( i = 0; i < cg.numScores; i++ ) {
+			if ( used[i] ) {
+				continue;
+			}
+			if ( cg.scores[i].team != team ) {
+				continue;
+			}
+			if ( pick == -1 || cg.scores[i].score > cg.scores[pick].score ) {
+				pick = i;
+			}
+		}
+
+		if ( pick < 0 ) {
+			return -1;
+		}
+
+		if ( r == rank ) {
+			return pick;
+		}
+
+		used[pick] = qtrue;
+	}
+
+	return -1;
+}
+
 
 void CG_SetScoreSelection(void *p) {
 	menuDef_t *menu = (menuDef_t*)p;
@@ -1634,6 +1679,14 @@ void CG_SetScoreSelection(void *p) {
 static clientInfo_t * CG_InfoFromScoreIndex(int index, int team, int *scoreIndex) {
 	int i, count;
 	if ( cgs.gametype >= GT_TEAM ) {
+		/* Always present team lists sorted by score descending. */
+		i = CG_TeamRankedScoreIndex( team, index );
+		if ( i >= 0 ) {
+			*scoreIndex = i;
+			return &cgs.clientinfo[cg.scores[i].client];
+		}
+
+		/* Fallback: preserve legacy walk order if rank lookup fails. */
 		count = 0;
 		for (i = 0; i < cg.numScores; i++) {
 			if (cg.scores[i].team == team) {
@@ -1719,13 +1772,13 @@ static const char *CG_FeederItemText(float feederID, int index, int column, qhan
 				return va("%i", info->score);
 			break;
 			case 5:
-				return va("%4i", sp->time);
+				return va("%i", sp->time);
 			break;
 			case 6:
 				if ( sp->ping == -1 ) {
 					return "connecting";
 				}
-				return va("%4i", sp->ping);
+				return va("%i", sp->ping);
 			break;
 		}
 	}
