@@ -949,6 +949,21 @@ int Pickup_Team( gentity_t *ent, gentity_t *other ) {
 	gclient_t *cl = other->client;
 
 #ifdef MISSIONPACK
+	/* GT_CTFS: block all flag touch logic unless the round is actively live.
+	   This prevents end-of-round/inter-round race pickups from consuming flags
+	   and corrupting the next half-round state. */
+	if ( g_gametype.integer == GT_CTFS ) {
+		if ( level.intermissiontime || level.intermissionQueued ) {
+			return 0;
+		}
+		if ( level.atdRoundNumber != level.atdRoundNumberStarted ) {
+			return 0;
+		}
+		if ( level.time < level.atdRoundStartTime ) {
+			return 0;
+		}
+	}
+
 	if( g_gametype.integer == GT_OBELISK ) {
 		// there are no team items that can be picked up in obelisk
 		G_FreeEntity( ent );

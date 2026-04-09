@@ -2391,6 +2391,11 @@ static void G_CheckATDRound( void ) {
 
 		/* When warmup expires, officially start the round. */
 		if ( level.time >= level.atdRoundStartTime ) {
+			/* Re-seed both flags at the exact moment the half-round goes live.
+			   This guarantees clean flag state even if any entity logic during
+			   inter-round warmup changed flag entities unexpectedly. */
+			Team_ResetFlags();
+
 			level.atdRoundNumberStarted = level.atdRoundNumber;
 			level.atdRound30SecWarned   = qfalse;
 			level.atdRoundRedPlayers    = G_ATDTeamLivingCount( TEAM_RED );
