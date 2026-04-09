@@ -769,6 +769,9 @@ typedef struct {
 	qhandle_t	lightningShader;
 
 	qhandle_t	friendShader;
+	qhandle_t	friendPOIShader;
+	qhandle_t	friendPOIRedFlagStolenShader;
+	qhandle_t	friendPOIBlueFlagStolenShader;
 
 	qhandle_t	balloonShader;
 	qhandle_t	connectionShader;
@@ -1299,6 +1302,7 @@ void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t headAngles );
 void CG_DrawActive( stereoFrame_t stereoView );
 void CG_DrawFlagPOIs( void );
+void CG_DrawTeammatePOIs( void );
 void CG_ClearFlagPOIs( void );
 void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean force2D );
 void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, int team );

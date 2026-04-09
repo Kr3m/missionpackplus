@@ -2747,6 +2747,7 @@ static void CG_Draw2D( stereoFrame_t stereoFrame )
 	}
 
 	CG_DrawFlagPOIs();
+	CG_DrawTeammatePOIs();
 }
 
 

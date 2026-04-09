@@ -439,8 +439,16 @@ typedef struct {
 	int      count;
 } flagPOICache_t;
 
+typedef struct {
+	vec3_t origin;
+	int    powerups;
+	int    seenFrame;
+	int    valid;
+} teammatePOICache_t;
+
 static flagPOICache_t s_flagPOI[5]; /* [0]=red flag, [1]=blue flag, [2]=neutral flag,
                                        [3]=red obelisk (1FCTF), [4]=blue obelisk (1FCTF) */
+static teammatePOICache_t s_teammatePOI[MAX_CLIENTS];
 
 static void CG_UpdateFlagPOISlot( flagPOICache_t *slot, int entityNum, const vec3_t origin ) {
 	int i;
@@ -488,6 +496,18 @@ static void CG_PruneFlagPOISlotCurrentFrame( flagPOICache_t *slot ) {
 	slot->count = writeIdx;
 }
 
+static void CG_UpdateTeammatePOI( int clientNum, const vec3_t origin, int powerups ) {
+	if ( clientNum < 0 || clientNum >= MAX_CLIENTS ) {
+		return;
+	}
+
+	VectorCopy( origin, s_teammatePOI[clientNum].origin );
+	s_teammatePOI[clientNum].origin[2] += 48.0f;
+	s_teammatePOI[clientNum].powerups = powerups;
+	s_teammatePOI[clientNum].seenFrame = cg.clientFrame;
+	s_teammatePOI[clientNum].valid = qtrue;
+}
+
 static void CG_DrawFlagPOIMarker( const vec3_t origin, qhandle_t shader, const vec4_t color4 ) {
 	vec3_t trans;
 	float py, hf, z, sx, sy;
@@ -525,8 +545,115 @@ static void CG_DrawFlagPOIMarker( const vec3_t origin, qhandle_t shader, const v
 	CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
 }
 
+static qboolean CG_TeammatePOITraceVisible( int entityNum, const vec3_t target ) {
+	trace_t trace;
+
+	CG_Trace( &trace, cg.refdef.vieworg, vec3_origin, vec3_origin, target,
+		cg.snap->ps.clientNum, CONTENTS_SOLID );
+
+	return ( trace.fraction == 1.0f || trace.entityNum == entityNum );
+}
+
+static qboolean CG_TeammatePOIVisible( const centity_t *cent ) {
+	vec3_t target;
+
+	VectorCopy( cent->lerpOrigin, target );
+	target[2] += 48.0f;
+	if ( CG_TeammatePOITraceVisible( cent->currentState.number, target ) ) {
+		return qtrue;
+	}
+
+	VectorCopy( cent->lerpOrigin, target );
+	target[2] += 28.0f;
+	if ( CG_TeammatePOITraceVisible( cent->currentState.number, target ) ) {
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+void CG_DrawTeammatePOIs( void ) {
+	int i;
+	int ourClientNum;
+	int ourTeam;
+	vec4_t color4;
+
+	if ( !cg_drawFriend.integer || !cg.snap || cgs.gametype < GT_TEAM ) {
+		return;
+	}
+
+	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
+		return;
+	}
+
+	if ( !cg.demoPlayback || cg_playback_follow == -1 ) {
+		ourClientNum = cg.snap->ps.clientNum;
+		ourTeam = cg.snap->ps.persistant[PERS_TEAM];
+	} else {
+		ourClientNum = cg_playback_follow;
+		ourTeam = cgs.clientinfo[cg_playback_follow].team;
+	}
+
+	if ( ourTeam != TEAM_RED && ourTeam != TEAM_BLUE ) {
+		return;
+	}
+
+	color4[0] = 1.0f;
+	color4[1] = 1.0f;
+	color4[2] = 1.0f;
+	color4[3] = 1.0f;
+
+	for ( i = 0; i < cgs.maxclients; i++ ) {
+		centity_t *cent;
+		clientInfo_t *ci;
+		teammatePOICache_t *cache;
+		qhandle_t shader;
+
+		if ( i == ourClientNum ) {
+			continue;
+		}
+
+		cent = &cg_entities[i];
+		ci = &cgs.clientinfo[i];
+		cache = &s_teammatePOI[i];
+
+		if ( !ci->infoValid || ci->team != ourTeam ) {
+			continue;
+		}
+
+		if ( cent->currentValid && cent->currentState.eType == ET_PLAYER && !( cent->currentState.eFlags & EF_DEAD ) ) {
+			CG_UpdateTeammatePOI( i, cent->lerpOrigin, cent->currentState.powerups );
+
+			if ( CG_TeammatePOIVisible( cent ) ) {
+				continue;
+			}
+		} else if ( cent->currentValid ) {
+			cache->valid = qfalse;
+			continue;
+		} else if ( !cache->valid ) {
+			continue;
+		}
+
+		if ( !cache->valid ) {
+			continue;
+		}
+
+		shader = cgs.media.friendPOIShader;
+		if ( ourTeam == TEAM_BLUE && ( cache->powerups & ( 1 << PW_REDFLAG ) ) ) {
+			shader = cgs.media.friendPOIRedFlagStolenShader;
+		} else if ( ourTeam == TEAM_RED && ( cache->powerups & ( 1 << PW_BLUEFLAG ) ) ) {
+			shader = cgs.media.friendPOIBlueFlagStolenShader;
+		}
+
+		CG_DrawFlagPOIMarker( cache->origin, shader, color4 );
+	}
+
+	trap_R_SetColor( NULL );
+}
+
 void CG_ClearFlagPOIs( void ) {
 	memset( s_flagPOI, 0, sizeof( s_flagPOI ) );
+	memset( s_teammatePOI, 0, sizeof( s_teammatePOI ) );
 }
 
 /*
