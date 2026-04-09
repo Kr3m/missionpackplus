@@ -60,10 +60,11 @@ void TossClientItems( gentity_t *self ) {
 	float		angle;
 	int			i;
 	gentity_t	*drop;
+	qboolean	dropWeapons = qtrue;
 #ifdef MISSIONPACK
 	/* GT_CTFS: players do not drop weapons on death. */
 	if ( g_gametype.integer == GT_CTFS ) {
-		return;
+		dropWeapons = qfalse;
 	}
 #endif
 
@@ -83,7 +84,7 @@ void TossClientItems( gentity_t *self ) {
 		}
 	}
 
-	if ( weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK &&
+	if ( dropWeapons && weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK &&
 		self->client->ps.ammo[ weapon ] && !g_instagib.integer ) {
 		// find the item type for this weapon
 		item = BG_FindItemForWeapon( weapon );
@@ -99,6 +100,10 @@ void TossClientItems( gentity_t *self ) {
 	if ( g_gametype.integer != GT_TEAM ) {
 		angle = 45;
 		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
+			if ( g_gametype.integer == GT_CTFS &&
+				i != PW_REDFLAG && i != PW_BLUEFLAG ) {
+				continue;
+			}
 			if ( self->client->ps.powerups[ i ] > level.time ) {
 				item = BG_FindItemForPowerup( i );
 				if ( !item ) {

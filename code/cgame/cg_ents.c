@@ -433,12 +433,97 @@ and CTF game rules
 // the snapshot, kept across frames so the icon remains visible through walls
 // and PVS gaps.  Reset only at map initialisation, not per-frame.
 typedef struct {
-	vec3_t   origin;  /* trBase + (0,0,96) — near top of flag model */
-	qboolean valid;   /* has been seen at least once this session   */
+	vec3_t   origins[2];
+	int      entityNums[2];
+	int      seenFrame[2];
+	int      count;
 } flagPOICache_t;
 
 static flagPOICache_t s_flagPOI[5]; /* [0]=red flag, [1]=blue flag, [2]=neutral flag,
                                        [3]=red obelisk (1FCTF), [4]=blue obelisk (1FCTF) */
+
+static void CG_UpdateFlagPOISlot( flagPOICache_t *slot, int entityNum, const vec3_t origin ) {
+	int i;
+
+	for ( i = 0; i < slot->count; i++ ) {
+		if ( slot->entityNums[i] == entityNum ) {
+			VectorCopy( origin, slot->origins[i] );
+			slot->seenFrame[i] = cg.clientFrame;
+			return;
+		}
+	}
+
+	if ( slot->count < 2 ) {
+		slot->entityNums[slot->count] = entityNum;
+		VectorCopy( origin, slot->origins[slot->count] );
+		slot->seenFrame[slot->count] = cg.clientFrame;
+		slot->count++;
+		return;
+	}
+
+	/* Keep behavior predictable when more than 2 entities are present. */
+	slot->entityNums[0] = entityNum;
+	VectorCopy( origin, slot->origins[0] );
+	slot->seenFrame[0] = cg.clientFrame;
+}
+
+static void CG_PruneFlagPOISlotCurrentFrame( flagPOICache_t *slot ) {
+	int readIdx;
+	int writeIdx;
+
+	writeIdx = 0;
+	for ( readIdx = 0; readIdx < slot->count; readIdx++ ) {
+		if ( slot->seenFrame[readIdx] != cg.clientFrame ) {
+			continue;
+		}
+
+		if ( writeIdx != readIdx ) {
+			slot->entityNums[writeIdx] = slot->entityNums[readIdx];
+			slot->seenFrame[writeIdx] = slot->seenFrame[readIdx];
+			VectorCopy( slot->origins[readIdx], slot->origins[writeIdx] );
+		}
+		writeIdx++;
+	}
+
+	slot->count = writeIdx;
+}
+
+static void CG_DrawFlagPOIMarker( const vec3_t origin, qhandle_t shader, const vec4_t color4 ) {
+	vec3_t trans;
+	float py, hf, z, sx, sy;
+	float perspHalf, iconHalf;
+	float above;
+
+	VectorSubtract( origin, cg.refdef.vieworg, trans );
+	z = DotProduct( trans, cg.refdef.viewaxis[0] );
+	if ( z <= 0.1f ) {
+		return;
+	}
+
+	py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
+	hf = 240.0f / ( z * py );
+
+	sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
+	sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
+
+	if ( z > 500.0f ) {
+		iconHalf = 6.25f;
+	} else {
+		perspHalf = 12.0f * hf;
+		iconHalf  = ( perspHalf > 6.25f ) ? perspHalf : 6.25f;
+	}
+
+	above = 1.0f;
+	sy = sy - above - iconHalf * 2.0f;
+
+	if ( sx < iconHalf || sx > 640.0f - iconHalf ||
+	     sy < 0 || sy + iconHalf * 2.0f > 480.0f ) {
+		return;
+	}
+
+	trap_R_SetColor( color4 );
+	CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
+}
 
 void CG_ClearFlagPOIs( void ) {
 	memset( s_flagPOI, 0, sizeof( s_flagPOI ) );
@@ -455,6 +540,7 @@ position to screen space and draws the icon there.
 */
 void CG_DrawFlagPOIs( void ) {
 	int			idx;
+	int			slotIdx;
 	int			ourTeam, ourClientNum;
 	qboolean	hasRedFlag, hasBlueFlag, weHaveFlag;
 	qboolean	redFlagAtBase, blueFlagAtBase;
@@ -476,10 +562,16 @@ void CG_DrawFlagPOIs( void ) {
 		return;
 	}
 
+	/* Keep only anchors refreshed by entity processing this frame. */
+	for ( slotIdx = 0; slotIdx < 5; slotIdx++ ) {
+		CG_PruneFlagPOISlotCurrentFrame( &s_flagPOI[slotIdx] );
+	}
+
 	ourClientNum = cg.snap->ps.clientNum;
 	ourTeam      = cgs.clientinfo[ourClientNum].team;
 
 	if ( cgs.gametype == GT_CTF ) {
+		int entryIdx;
 		hasRedFlag     = cg.snap->ps.powerups[PW_REDFLAG]  != 0;
 		hasBlueFlag    = cg.snap->ps.powerups[PW_BLUEFLAG] != 0;
 		weHaveFlag     = hasRedFlag || hasBlueFlag;
@@ -489,13 +581,9 @@ void CG_DrawFlagPOIs( void ) {
 		for ( idx = 0; idx < 2; idx++ ) {
 			flagPOICache_t	*c = &s_flagPOI[idx];
 			vec4_t			color4;
-			vec3_t			trans;
 			qhandle_t		shader;
-			float			py, hf, z, sx, sy;
-			float			perspHalf, iconHalf;
-			float			above = 1.0f;
 
-			if ( !c->valid ) {
+			if ( c->count <= 0 ) {
 				continue;
 			}
 
@@ -506,7 +594,8 @@ void CG_DrawFlagPOIs( void ) {
 				if ( ourTeam == TEAM_RED ) {
 					if ( weHaveFlag && redFlagAtBase ) {
 						shader = cgs.media.flagCapturePOI;
-					} else if ( redFlagAtBase || cgs.redflag == FLAG_DROPPED ) {
+					} else if ( redFlagAtBase || cgs.redflag == FLAG_DROPPED ||
+					            ( cgs.redflag == FLAG_TAKEN && c->count > 0 ) ) {
 						shader = cgs.media.flagDefendPOI;
 					}
 				} else {
@@ -519,7 +608,8 @@ void CG_DrawFlagPOIs( void ) {
 				if ( ourTeam == TEAM_BLUE ) {
 					if ( weHaveFlag && blueFlagAtBase ) {
 						shader = cgs.media.flagCapturePOI;
-					} else if ( blueFlagAtBase || cgs.blueflag == FLAG_DROPPED ) {
+					} else if ( blueFlagAtBase || cgs.blueflag == FLAG_DROPPED ||
+					            ( cgs.blueflag == FLAG_TAKEN && c->count > 0 ) ) {
 						shader = cgs.media.flagDefendPOI;
 					}
 				} else {
@@ -533,79 +623,44 @@ void CG_DrawFlagPOIs( void ) {
 				continue;
 			}
 
-			/* Project the cached world position (top of flag model) to screen.
-			   Use fov_y-derived focal length for both axes so the icon stays
-			   correct on any aspect ratio.                                    */
-			VectorSubtract( c->origin, cg.refdef.vieworg, trans );
-			z = DotProduct( trans, cg.refdef.viewaxis[0] );
-			if ( z <= 0.1f ) {
-				continue;  /* flag is behind the camera */
+			for ( entryIdx = 0; entryIdx < c->count; entryIdx++ ) {
+				CG_DrawFlagPOIMarker( c->origins[entryIdx], shader, color4 );
 			}
-
-			py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
-			hf = 240.0f / ( z * py );
-
-			sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
-			sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
-
-			/* Fixed compass-marker size beyond 500 units; inside that distance
-			   iconHalf grows with perspective so it matches the flag3 model
-			   half-width (~10 world units) when you're on top of the flag.   */
-			if ( z > 500.0f ) {
-				iconHalf = 6.25f;
-			} else {
-				perspHalf = 12.0f * hf;
-				iconHalf  = ( perspHalf > 6.25f ) ? perspHalf : 6.25f;
-			}
-
-			/* Bottom of icon sits |above| pixels above the projected flag tip. */
-			sy = sy - above - iconHalf * 2.0f;
-
-			if ( sx < iconHalf || sx > 640.0f - iconHalf ||
-			     sy < 0 || sy + iconHalf * 2.0f > 480.0f ) {
-				continue;
-			}
-
-			trap_R_SetColor( color4 );
-			CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
 		}
 	}
 #ifdef MISSIONPACK
 	if ( cgs.gametype == GT_1FCTF ) {
+		int i;
 		flagPOICache_t	*c;
 		flagPOICache_t	*redBase, *blueBase;
 		vec4_t			color4;
-		vec3_t			trans;
 		qhandle_t		shader;
-		float			py, hf, z, sx, sy;
-		float			perspHalf, iconHalf;
-		float			above = 1.0f;
 
 		/* For the capture-target positions, prefer the actual (EF_NODRAW) flag
 		   entity cache; fall back to obelisk positions (+24 already baked in). */
-		redBase  = s_flagPOI[0].valid ? &s_flagPOI[0] : &s_flagPOI[3];
-		blueBase = s_flagPOI[1].valid ? &s_flagPOI[1] : &s_flagPOI[4];
+		redBase  = ( s_flagPOI[0].count > 0 ) ? &s_flagPOI[0] : &s_flagPOI[3];
+		blueBase = ( s_flagPOI[1].count > 0 ) ? &s_flagPOI[1] : &s_flagPOI[4];
 
 		shader = 0;
 		c      = NULL;
 
 		if ( cgs.flagStatus == FLAG_ATBASE || cgs.flagStatus == FLAG_DROPPED ) {
 			/* Neutral flag available at/near its base — show attack POI for both teams. */
-			if ( s_flagPOI[2].valid ) {
+			if ( s_flagPOI[2].count > 0 ) {
 				color4[0] = 1; color4[1] = 1; color4[2] = 1; color4[3] = 1;
 				shader = cgs.media.flagAttackPOI;
 				c = &s_flagPOI[2];
 			}
 		} else if ( ourTeam == TEAM_RED && cgs.flagStatus == FLAG_TAKEN_RED ) {
 			/* Red team carries the neutral flag; show capture POI at blue obelisk. */
-			if ( blueBase->valid ) {
+			if ( blueBase->count > 0 ) {
 				color4[0] = 0; color4[1] = 0.5f; color4[2] = 1; color4[3] = 1;
 				shader = cgs.media.flagCapturePOI;
 				c = blueBase;
 			}
 		} else if ( ourTeam == TEAM_BLUE && cgs.flagStatus == FLAG_TAKEN_BLUE ) {
 			/* Blue team carries the neutral flag; show capture POI at red obelisk. */
-			if ( redBase->valid ) {
+			if ( redBase->count > 0 ) {
 				color4[0] = 1; color4[1] = 0; color4[2] = 0; color4[3] = 1;
 				shader = cgs.media.flagCapturePOI;
 				c = redBase;
@@ -613,29 +668,8 @@ void CG_DrawFlagPOIs( void ) {
 		}
 
 		if ( shader && c ) {
-			VectorSubtract( c->origin, cg.refdef.vieworg, trans );
-			z = DotProduct( trans, cg.refdef.viewaxis[0] );
-			if ( z > 0.1f ) {
-				py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
-				hf = 240.0f / ( z * py );
-
-				sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
-				sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
-
-				if ( z > 500.0f ) {
-					iconHalf = 6.25f;
-				} else {
-					perspHalf = 12.0f * hf;
-					iconHalf  = ( perspHalf > 6.25f ) ? perspHalf : 6.25f;
-				}
-
-				sy = sy - above - iconHalf * 2.0f;
-
-				if ( !(sx < iconHalf || sx > 640.0f - iconHalf ||
-				       sy < 0 || sy + iconHalf * 2.0f > 480.0f) ) {
-					trap_R_SetColor( color4 );
-					CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
-				}
+			for ( i = 0; i < c->count; i++ ) {
+				CG_DrawFlagPOIMarker( c->origins[i], shader, color4 );
 			}
 		}
 	}
@@ -643,6 +677,7 @@ void CG_DrawFlagPOIs( void ) {
 
 #ifdef MISSIONPACK
 	if ( cgs.gametype == GT_CTFS ) {
+		int i;
 		int				defTeam = ( cgs.atdAttackingTeam == TEAM_RED ) ? TEAM_BLUE : TEAM_RED;
 		int				atkFlagIdx = defTeam - 1;	/* 0=red, 1=blue */
 		int				defFlagIdx = ourTeam - 1;
@@ -656,10 +691,14 @@ void CG_DrawFlagPOIs( void ) {
 		shader = 0;
 		if ( ourTeam == defTeam ) {
 			/* Defenders: show flagDefendPOI over their own flag, but only while
-			   the flag is still at base — hide it once the attacker picks it up. */
+			   at least one defending flag entity is still present.  In multi-flag
+			   maps, the global flag status flips to FLAG_TAKEN when any flag is
+			   carried, but remaining base flags should keep their POIs. */
 			int defFlagStatus = ( defTeam == TEAM_RED ) ? cgs.redflag : cgs.blueflag;
 			c = &s_flagPOI[defFlagIdx];
-			if ( c->valid && defFlagStatus == FLAG_ATBASE ) {
+			if ( c->count > 0 &&
+				 ( defFlagStatus == FLAG_ATBASE || defFlagStatus == FLAG_TAKEN ||
+				   defFlagStatus == FLAG_DROPPED ) ) {
 				color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
 				color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
 				color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
@@ -675,7 +714,7 @@ void CG_DrawFlagPOIs( void ) {
 			if ( flagStatus == FLAG_ATBASE ) {
 				/* Flag at base — show attack marker over defender's flag */
 				c = &s_flagPOI[atkFlagIdx];
-				if ( c->valid ) {
+				if ( c->count > 0 ) {
 					color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
 					color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
 					color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
@@ -687,7 +726,7 @@ void CG_DrawFlagPOIs( void ) {
 			} else if ( flagStatus == FLAG_TAKEN ) {
 				/* Flag carried — show capture marker over attacker's own base */
 				c = &s_flagPOI[atkTeamIdx];
-				if ( c->valid ) {
+				if ( c->count > 0 ) {
 					color4[0] = ( cgs.atdAttackingTeam == TEAM_RED ) ? 1.0f : 0.0f;
 					color4[1] = ( cgs.atdAttackingTeam == TEAM_RED ) ? 0.0f : 0.5f;
 					color4[2] = ( cgs.atdAttackingTeam == TEAM_RED ) ? 0.0f : 1.0f;
@@ -701,25 +740,8 @@ void CG_DrawFlagPOIs( void ) {
 		}
 
 		if ( shader && c ) {
-			VectorSubtract( c->origin, cg.refdef.vieworg, trans );
-			z = DotProduct( trans, cg.refdef.viewaxis[0] );
-			if ( z > 0.1f ) {
-				py = tan( cg.refdef.fov_y * ( M_PI / 360.0f ) );
-				hf = 240.0f / ( z * py );
-				sx = 320.0f - DotProduct( trans, cg.refdef.viewaxis[1] ) * hf;
-				sy = 240.0f - DotProduct( trans, cg.refdef.viewaxis[2] ) * hf;
-				if ( z > 500.0f ) {
-					iconHalf = 6.25f;
-				} else {
-					perspHalf = 12.0f * hf;
-					iconHalf  = ( perspHalf > 6.25f ) ? perspHalf : 6.25f;
-				}
-				sy = sy - above - iconHalf * 2.0f;
-				if ( !(sx < iconHalf || sx > 640.0f - iconHalf ||
-				       sy < 0 || sy + iconHalf * 2.0f > 480.0f) ) {
-					trap_R_SetColor( color4 );
-					CG_DrawPic( sx - iconHalf, sy, iconHalf * 2.0f, iconHalf * 2.0f, shader );
-				}
+			for ( i = 0; i < c->count; i++ ) {
+				CG_DrawFlagPOIMarker( c->origins[i], shader, color4 );
 			}
 		}
 	}
@@ -740,6 +762,7 @@ frame.
 */
 static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
 	int	idx;
+	vec3_t pos;
 
 	if ( !cg_flagPOIs.integer ) {
 		return;
@@ -769,9 +792,9 @@ static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
 
 	/* Cache the anchor near the top of the flag model so the projected
 	   position tracks the flag tip rather than the base.            */
-	VectorCopy( cent->currentState.pos.trBase, s_flagPOI[idx].origin );
-	s_flagPOI[idx].origin[2] += 62;
-	s_flagPOI[idx].valid = qtrue;
+	VectorCopy( cent->currentState.pos.trBase, pos );
+	pos[2] += 62;
+	   CG_UpdateFlagPOISlot( &s_flagPOI[idx], cent->currentState.number, pos );
 }
 
 /*
@@ -788,6 +811,7 @@ the obelisk base.
 #ifdef MISSIONPACK
 static void CG_CacheTeamObeliskPOI( centity_t *cent ) {
 	int	idx;
+	vec3_t pos;
 
 	if ( !cg_flagPOIs.integer ) {
 		return;
@@ -803,9 +827,9 @@ static void CG_CacheTeamObeliskPOI( centity_t *cent ) {
 		return;
 	}
 
-	VectorCopy( cent->lerpOrigin, s_flagPOI[idx].origin );
-	s_flagPOI[idx].origin[2] += 24;
-	s_flagPOI[idx].valid = qtrue;
+	VectorCopy( cent->lerpOrigin, pos );
+	pos[2] += 24;
+	CG_UpdateFlagPOISlot( &s_flagPOI[idx], cent->currentState.number, pos );
 }
 #endif
 
