@@ -2254,6 +2254,19 @@ static void G_ATDUpdateRoundScoreCS( void ) {
 	trap_SetConfigstring( CS_ATD_ROUNDSCORES, buf );
 }
 
+static int G_ATDEffectiveScoreLimit( void ) {
+	int scorelimit = atd_scorelimit.integer;
+
+	/* GT_CTFS historically uses scorelimit, but many server configs tune team
+	   limits through capturelimit. Use the higher of both to avoid ending early
+	   when those cvars are out of sync. */
+	if ( g_capturelimit.integer > scorelimit ) {
+		scorelimit = g_capturelimit.integer;
+	}
+
+	return scorelimit;
+}
+
 /*
 ==============
 G_ATDEndRound
@@ -2264,6 +2277,7 @@ Resets flags, advances the round counter, and begins the next warmup.
 */
 void G_ATDEndRound( void ) {
 	int halfIdx;
+	int scorelimit;
 
 	Team_ResetFlags();
 
@@ -2283,13 +2297,14 @@ void G_ATDEndRound( void ) {
 	   two-round pair).  If a team hits the scorelimit on an odd-numbered round
 	   (the other team still needs their matching attack turn), broadcast a
 	   warning and let one more round play out. */
-	if ( atd_scorelimit.integer ) {
+	scorelimit = G_ATDEffectiveScoreLimit();
+	if ( scorelimit > 0 ) {
 		int roundsPlayed  = level.atdRoundNumber - 1;
 		qboolean balanced = ( roundsPlayed % 2 == 0 );
 		int red           = level.teamScores[TEAM_RED];
 		int blue          = level.teamScores[TEAM_BLUE];
 
-		if ( balanced && ( red >= atd_scorelimit.integer || blue >= atd_scorelimit.integer ) ) {
+		if ( balanced && ( red >= scorelimit || blue >= scorelimit ) ) {
 			if ( red > blue ) {
 				G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\n\"" );
 				G_ATDGlobalSound( "sound/vo/red_wins.wav" );
@@ -2302,7 +2317,7 @@ void G_ATDEndRound( void ) {
 				return;
 			}
 			/* Tied at or above scorelimit — continue to next round pair. */
-		} else if ( !balanced && ( red >= atd_scorelimit.integer || blue >= atd_scorelimit.integer ) ) {
+		} else if ( !balanced && ( red >= scorelimit || blue >= scorelimit ) ) {
 			team_t lead = ( red >= blue ) ? TEAM_RED : TEAM_BLUE;
 			G_BroadcastServerCommand( -1, va(
 				"print \"%s has reached the scorelimit — %s gets a final round!\n\"",

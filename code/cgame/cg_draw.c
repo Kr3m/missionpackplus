@@ -2024,6 +2024,15 @@ static void CG_SetCrosshairColor( void ) {
 	trap_R_SetColor( colors[colorNum] );
 }
 
+#ifdef MISSIONPACK
+static qboolean CG_ATDRoundScoreboardVisible( void ) {
+	return ( cgs.gametype == GT_CTFS &&
+		cg.warmup &&
+		cgs.atdCompletedRounds > 0 &&
+		!cg.intermissionStarted );
+}
+#endif
+
 
 /*
 =================
@@ -2048,6 +2057,12 @@ static void CG_DrawCrosshair( void ) {
 	if ( cg.renderingThirdPerson ) {
 		return;
 	}
+
+#ifdef MISSIONPACK
+	if ( CG_ATDRoundScoreboardVisible() ) {
+		return;
+	}
+#endif
 
 	// set color based on health
 	if ( cg_crosshairHealth.integer ) {
@@ -2145,6 +2160,12 @@ static void CG_DrawCrosshairNames( void ) {
 	if ( cg.renderingThirdPerson ) {
 		return;
 	}
+
+#ifdef MISSIONPACK
+	if ( CG_ATDRoundScoreboardVisible() ) {
+		return;
+	}
+#endif
 
 	// scan the known entities to see if the crosshair is sighted on one
 	CG_ScanForCrosshairEntity();

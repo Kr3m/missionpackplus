@@ -621,16 +621,18 @@ void CG_DrawTeammatePOIs( void ) {
 			continue;
 		}
 
-		if ( cent->currentValid && cent->currentState.eType == ET_PLAYER && !( cent->currentState.eFlags & EF_DEAD ) ) {
-			CG_UpdateTeammatePOI( i, cent->lerpOrigin, cent->currentState.powerups );
-
-			if ( CG_TeammatePOIVisible( cent ) ) {
-				continue;
-			}
-		} else if ( cent->currentValid ) {
+		/* If this teammate is not currently represented as a live player entity,
+		   clear stale cache immediately so death POIs do not linger. */
+		if ( !cent->currentValid ||
+		     cent->currentState.eType != ET_PLAYER ||
+		     ( cent->currentState.eFlags & EF_DEAD ) ) {
 			cache->valid = qfalse;
 			continue;
-		} else if ( !cache->valid ) {
+		}
+
+		CG_UpdateTeammatePOI( i, cent->lerpOrigin, cent->currentState.powerups );
+
+		if ( CG_TeammatePOIVisible( cent ) ) {
 			continue;
 		}
 
