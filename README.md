@@ -6,7 +6,7 @@ Special thanks to Ensiform for his amazing help as usual. =D
 
 Special thanks to wiz @q3retro for his help.
 
-Added support for 167 maps found here:  [MAPS.md](MAPS.md)
+Added support for 231 maps found here:  [MAPS.md](MAPS.md)
 
 ## New cvars
 
