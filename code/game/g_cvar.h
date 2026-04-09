@@ -87,7 +87,7 @@ G_CVAR( g_delagMissiles, "g_delagMissiles", "0", CVAR_ARCHIVE, 0, qfalse, qfalse
 G_CVAR( g_delagMissileMaxLatency, "g_delagMissileMaxLatency", "500", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse, qfalse )
 G_CVAR( g_delagMissileBaseNudge, "g_delagMissileBaseNudge", "10", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse, qfalse )
 G_CVAR( g_delagMissileNudgeOnly, "g_delagMissileNudgeOnly", "0", CVAR_ARCHIVE, 0, qfalse, qfalse )
-G_CVAR( g_delagMissileImmediateRun, "g_delagMissileImmediateRun", "1", CVAR_ARCHIVE, 0, qfalse, qfalse )
+G_CVAR( g_delagMissileImmediateRun, "g_delagMissileImmediateRun", "2", CVAR_ARCHIVE, 0, qfalse, qfalse )
 G_CVAR( g_delagMissileDebug, "g_delagMissileDebug", "0", 0, 0, qfalse, qfalse )
 G_CVAR( g_predictPVS, "g_predictPVS", "0", CVAR_ARCHIVE, 0, qfalse, qfalse )
 

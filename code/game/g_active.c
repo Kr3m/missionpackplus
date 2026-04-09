@@ -1086,6 +1086,8 @@ void ClientThink_real( gentity_t *ent ) {
 	// touch other objects
 	ClientImpacts( ent, &pm );
 
+	G_ImmediateRunClientMissiles( ent );
+
 	// save results of triggers and client events
 	if (ent->client->ps.eventSequence != oldEventSequence) {
 		ent->eventTime = level.time;

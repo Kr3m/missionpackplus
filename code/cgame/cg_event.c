@@ -984,6 +984,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position, int entityNum ) {
 	case EV_RAILTRAIL:
 		cent->currentState.weapon = WP_RAILGUN;
 
+		if ( es->clientNum == cg.predictedPlayerState.clientNum &&
+			cgs.delagHitscan && cg_delag.integer >= 1 ) {
+			break;
+		}
+
 		if ( cent->currentState.clientNum == cg.snap->ps.clientNum && !cg_thirdPerson.integer )
 		{
 			VectorCopy( cg.refdef.vieworg, vec );
@@ -1007,15 +1012,27 @@ void CG_EntityEvent( centity_t *cent, vec3_t position, int entityNum ) {
 		break;
 
 	case EV_BULLET_HIT_WALL:
+		if ( es->clientNum == cg.predictedPlayerState.clientNum &&
+			cgs.delagHitscan && cg_delag.integer >= 1 ) {
+			break;
+		}
 		ByteToDir( es->eventParm, dir );
 		CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qfalse, ENTITYNUM_WORLD );
 		break;
 
 	case EV_BULLET_HIT_FLESH:
+		if ( es->clientNum == cg.predictedPlayerState.clientNum &&
+			cgs.delagHitscan && cg_delag.integer >= 1 ) {
+			break;
+		}
 		CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qtrue, es->eventParm );
 		break;
 
 	case EV_SHOTGUN:
+		if ( es->otherEntityNum == cg.predictedPlayerState.clientNum &&
+			cgs.delagHitscan && cg_delag.integer >= 1 ) {
+			break;
+		}
 		CG_ShotgunFire( es );
 		break;
 

@@ -16,7 +16,14 @@ static void G_SetMissileLaunchTime( gentity_t *self, gentity_t *bolt ) {
 		return;
 	}
 
-	launchTime = self->client->attackTime - g_delagMissileBaseNudge.integer;
+	launchTime = self->client->attackTime;
+	if ( launchTime <= 0 ) {
+		launchTime = self->client->lastCmdTime;
+	}
+	if ( launchTime <= 0 ) {
+		launchTime = level.previousTime + self->client->frameOffset;
+	}
+	launchTime -= g_delagMissileBaseNudge.integer;
 	maxLatency = g_delagMissileMaxLatency.integer;
 	if ( maxLatency < 0 ) {
 		maxLatency = 0;
@@ -90,7 +97,7 @@ static void G_MissileRunDelag( gentity_t *ent, int stepmsec ) {
 	}
 }
 
-static void G_ImmediateLaunchMissile( gentity_t *ent ) {
+static void G_ImmediateRunMissile( gentity_t *ent ) {
 	int stepmsec;
 
 	if ( !g_delagMissiles.integer || g_delagMissileImmediateRun.integer <= 0 ) {
@@ -117,6 +124,45 @@ static void G_ImmediateLaunchMissile( gentity_t *ent ) {
 
 	G_RunMissile( ent );
 	ent->missileRan = 1;
+}
+
+static void G_ImmediateLaunchMissile( gentity_t *ent ) {
+	if ( !g_delagMissiles.integer || g_delagMissileImmediateRun.integer <= 0 ) {
+		return;
+	}
+
+	if ( g_delagMissileImmediateRun.integer == 1 || !ent->needsDelag ) {
+		G_ImmediateRunMissile( ent );
+		return;
+	}
+
+	ent->missileRan = -g_delagMissileImmediateRun.integer + 1;
+}
+
+void G_ImmediateRunClientMissiles( gentity_t *client ) {
+	gentity_t *ent;
+	int i;
+
+	if ( !g_delagMissiles.integer || g_delagMissileImmediateRun.integer <= 1 ) {
+		return;
+	}
+
+	for ( i = 0; i < level.num_entities; i++ ) {
+		ent = &g_entities[i];
+		if ( !ent->inuse || ent->freeAfterEvent || ent->s.eType != ET_MISSILE ) {
+			continue;
+		}
+		if ( ent->parent != client ) {
+			continue;
+		}
+
+		if ( ent->missileRan < 0 ) {
+			ent->missileRan++;
+			continue;
+		}
+
+		G_ImmediateRunMissile( ent );
+	}
 }
 
 /*

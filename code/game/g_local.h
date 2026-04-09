@@ -750,6 +750,7 @@ void G_UnTimeShiftAllClients( gentity_t *skip );
 void G_DoTimeShiftFor( gentity_t *ent );
 void G_UndoTimeShiftFor( gentity_t *ent );
 void G_UnTimeShiftClient( gentity_t *client );
+void G_ImmediateRunClientMissiles( gentity_t *client );
 void G_PrintDelagMaxTimeshift( void );
 void G_PredictPlayerMove( gentity_t *ent, float frametime );
 

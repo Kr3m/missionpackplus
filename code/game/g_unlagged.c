@@ -180,6 +180,7 @@ Decide what time to shift everyone back to, and do it
 */
 void G_DoTimeShiftFor( gentity_t *ent ) {
 	int time;
+	int minTime;
 
 	// don't time shift for mistakes or bots
 	if ( !ent->inuse || !ent->client || (ent->r.svFlags & SVF_BOT) ) {
@@ -196,6 +197,14 @@ void G_DoTimeShiftFor( gentity_t *ent ) {
 	} else {
 		// server frame lag compensation
 		time = level.previousTime + ent->client->frameOffset;
+	}
+
+	// Keep rewind target inside available history and never in the future.
+	minTime = level.time - DELAG_MAX_BACKTRACK;
+	if ( time < minTime ) {
+		time = minTime;
+	} else if ( time > level.time ) {
+		time = level.time;
 	}
 
 	G_TimeShiftAllClients( time, ent );
