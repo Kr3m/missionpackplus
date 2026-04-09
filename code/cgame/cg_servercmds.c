@@ -560,6 +560,10 @@ static void CG_MapRestart( void ) {
 	cg.rewardTime = 0;
 	cg.rewardStack = 0;
 	cg.intermissionStarted = qfalse;
+	cg.autoActionIntermissionDone = qfalse;
+	cg.autoActionScreenshotTaken = qfalse;
+	cg.autoActionDemoRecording = qfalse;
+	cg.autoActionNextRecordAttemptTime = 0;
 #ifdef MISSIONPACK
 	cgs.atdCompletedRounds = 0;	/* prevent stale scoreboard on map_restart */
 #endif

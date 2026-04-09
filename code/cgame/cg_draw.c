@@ -2369,6 +2369,7 @@ static void CG_DrawIntermission( void ) {
 #endif
 	cg.scoreFadeTime = cg.time;
 	cg.scoreBoardShowing = CG_DrawScoreboard();
+	CG_HandleAutoActionIntermission();
 }
 
 
@@ -2994,6 +2995,8 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	if ( !cg.demoPlayback ) {
 		CG_CalculatePing();
 	}
+
+	CG_HandleAutoActionRuntime();
 
 	// optionally draw the tournement scoreboard instead
 	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR &&

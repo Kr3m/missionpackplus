@@ -23,15 +23,24 @@ void CG_Shutdown( void );
 // extension interface
 qboolean intShaderTime = qfalse;
 qboolean linearLight = qfalse;
+static qboolean hasDemoRecordingQuery = qfalse;
+static qboolean hasCvarDescriptions = qfalse;
+
+#define CG_AUTOACTION_DEMO        1
+#define CG_AUTOACTION_SCREENSHOT  2
 
 #ifdef Q3_VM
 qboolean (*trap_GetValue)( char *value, int valueSize, const char *key );
 void (*trap_R_AddRefEntityToScene2)( const refEntity_t *re );
 void (*trap_R_AddLinearLightToScene)( const vec3_t start, const vec3_t end, float intensity, float r, float g, float b );
+qboolean (*trap_IsRecordingDemo)( void );
+void (*trap_Cvar_SetDescription)( const char *var_name, const char *description );
 #else
 int dll_com_trapGetValue;
 int dll_trap_R_AddRefEntityToScene2;
 int dll_trap_R_AddLinearLightToScene;
+int dll_trap_IsRecordingDemo;
+int dll_trap_Cvar_SetDescription;
 #endif
 
 /*
@@ -106,6 +115,144 @@ static const cvarTable_t cvarTable[] = {
 
 };
 
+static qboolean CG_AutoActionWantsDemo( void ) {
+	int mode = cg_autoAction.integer;
+	/* Clamp to max mode 3 */
+	if ( mode > 3 ) mode = 3;
+	return ( mode == CG_AUTOACTION_DEMO || mode == ( CG_AUTOACTION_DEMO | CG_AUTOACTION_SCREENSHOT ) );
+}
+
+static qboolean CG_AutoActionWantsScreenshot( void ) {
+	int mode = cg_autoAction.integer;
+	/* Clamp to max mode 3 */
+	if ( mode > 3 ) mode = 3;
+	return ( mode == CG_AUTOACTION_SCREENSHOT || mode == ( CG_AUTOACTION_DEMO | CG_AUTOACTION_SCREENSHOT ) );
+}
+
+static void CG_BuildAutoActionDemoName( char *demoName, int demoNameSize );
+
+static void CG_AutoActionStartDemo( void ) {
+	char demoName[MAX_OSPATH];
+
+	if ( !CG_AutoActionWantsDemo() ) {
+		cg.autoActionDemoRecording = qfalse;
+		return;
+	}
+
+	if ( cg.demoPlayback ) {
+		return;
+	}
+
+	if ( hasDemoRecordingQuery ) {
+		if ( trap_IsRecordingDemo() ) {
+			cg.autoActionDemoRecording = qtrue;
+			return;
+		}
+	} else if ( cg.autoActionDemoRecording ) {
+		return;
+	}
+
+	if ( cg.time < cg.autoActionNextRecordAttemptTime ) {
+		return;
+	}
+
+	trap_SendConsoleCommand( "set cl_drawRecording 0\n" );
+
+	CG_BuildAutoActionDemoName( demoName, sizeof( demoName ) );
+	trap_SendConsoleCommand( va( "record \"%s\"\n", demoName ) );
+
+	if ( !hasDemoRecordingQuery ) {
+		cg.autoActionDemoRecording = qtrue;
+	}
+	cg.autoActionNextRecordAttemptTime = cg.time + 1500;
+}
+
+static void CG_BuildAutoActionDemoName( char *demoName, int demoNameSize ) {
+	qtime_t now;
+	char mapBase[MAX_QPATH];
+	const char *map;
+	char *p;
+
+	trap_RealTime( &now );
+
+	map = cgs.mapname;
+	if ( !map || !map[0] ) {
+		map = "unknownmap";
+	} else if ( !Q_strncmp( map, "maps/", 5 ) ) {
+		map += 5;
+	}
+
+	Q_strncpyz( mapBase, map, sizeof( mapBase ) );
+	COM_StripExtension( mapBase, mapBase, sizeof( mapBase ) );
+
+	Com_sprintf( demoName, demoNameSize, "%04d%02d%02d-%02d%02d%02d-%s",
+		1900 + now.tm_year, 1 + now.tm_mon, now.tm_mday,
+		now.tm_hour, now.tm_min, now.tm_sec, mapBase );
+
+	for ( p = demoName; *p; ++p ) {
+		unsigned char ch = (unsigned char)*p;
+
+		if ( *p == '\n' || *p == '\r' || *p == ';' || *p == '"' || *p == '\'' ) {
+			*p = '_';
+			continue;
+		}
+		if ( *p == '/' || *p == '\\' || *p == '|' || *p == '<' || *p == '>' || *p == ':' || *p == '?' || *p == '*' ) {
+			*p = '_';
+			continue;
+		}
+		if ( ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f' || ch == '\v' || ch < 32 || ch > 126 ) {
+			*p = '_';
+		}
+	}
+}
+
+void CG_HandleAutoActionMapStart( void ) {
+	cg.autoActionIntermissionDone = qfalse;
+	cg.autoActionScreenshotTaken = qfalse;
+	cg.autoActionDemoRecording = qfalse;
+	cg.autoActionNextRecordAttemptTime = 0;
+}
+
+void CG_HandleAutoActionRuntime( void ) {
+	if ( hasDemoRecordingQuery ) {
+		cg.autoActionDemoRecording = trap_IsRecordingDemo();
+	}
+
+	if ( cg.snap && cg.snap->ps.pm_type != PM_INTERMISSION && !cg.loading ) {
+		CG_AutoActionStartDemo();
+	}
+}
+
+void CG_HandleAutoActionIntermission( void ) {
+	if ( cg.autoActionIntermissionDone ) {
+		return;
+	}
+
+	if ( !cg.scoreBoardShowing ) {
+		return;
+	}
+
+	if ( CG_AutoActionWantsScreenshot() && !cg.autoActionScreenshotTaken ) {
+		trap_SendConsoleCommand( "screenshotJPEG\n" );
+		cg.autoActionScreenshotTaken = qtrue;
+	}
+
+	if ( CG_AutoActionWantsDemo() ) {
+		qboolean shouldStop = cg.autoActionDemoRecording;
+
+		if ( hasDemoRecordingQuery ) {
+			shouldStop = trap_IsRecordingDemo();
+		}
+
+		if ( shouldStop ) {
+			trap_SendConsoleCommand( "stoprecord\n" );
+		}
+		cg.autoActionDemoRecording = qfalse;
+	}
+
+	cg.autoActionIntermissionDone = qtrue;
+}
+
 
 /*
 =================
@@ -137,6 +284,15 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	//trap_Cvar_Register(NULL, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	//trap_Cvar_Register(NULL, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE );
+
+	if ( hasCvarDescriptions ) {
+		trap_Cvar_SetDescription( "cg_autoAction",
+			"cg_autoAction [0|1|2|3]\n"
+			"0 = do nothing\n"
+			"1 = enable auto demo recording\n"
+			"2 = enable auto screenshot\n"
+			"3 = enable auto demo recording and auto screenshot" );
+	}
 }
 
 
@@ -1784,6 +1940,14 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 			trap_R_AddLinearLightToScene = (void*)~atoi( value );
 			linearLight = qtrue;
 		}
+		if ( trap_GetValue( value, sizeof( value ), "trap_IsRecordingDemo" ) ) {
+			trap_IsRecordingDemo = (void*)~atoi( value );
+			hasDemoRecordingQuery = qtrue;
+		}
+		if ( trap_GetValue( value, sizeof( value ), "trap_Cvar_SetDescription_Q3E" ) ) {
+			trap_Cvar_SetDescription = (void*)~atoi( value );
+			hasCvarDescriptions = qtrue;
+		}
 #else
 		dll_com_trapGetValue = atoi( value );
 		if ( trap_GetValue( value, sizeof( value ), "trap_R_AddRefEntityToScene2" ) ) {
@@ -1793,6 +1957,14 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 		if ( trap_GetValue( value, sizeof( value ), "trap_R_AddLinearLightToScene_Q3E" ) ) {
 			dll_trap_R_AddLinearLightToScene = atoi( value );
 			linearLight = qtrue;
+		}
+		if ( trap_GetValue( value, sizeof( value ), "trap_IsRecordingDemo" ) ) {
+			dll_trap_IsRecordingDemo = atoi( value );
+			hasDemoRecordingQuery = qtrue;
+		}
+		if ( trap_GetValue( value, sizeof( value ), "trap_Cvar_SetDescription_Q3E" ) ) {
+			dll_trap_Cvar_SetDescription = atoi( value );
+			hasCvarDescriptions = qtrue;
 		}
 #endif
 	}
@@ -1919,6 +2091,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	CG_StartMusic();
 
 	CG_LoadingString( "" );
+
+	CG_HandleAutoActionMapStart();
 
 #ifdef MISSIONPACK
 	CG_InitTeamChat();

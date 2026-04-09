@@ -478,6 +478,10 @@ typedef struct {
 	int			deferredPlayerLoading;
 	qboolean	loading;			// don't defer players at initial startup
 	qboolean	intermissionStarted;	// don't play voice rewards, because game will end shortly
+	qboolean	autoActionIntermissionDone;
+	qboolean	autoActionScreenshotTaken;
+	qboolean	autoActionDemoRecording;
+	int		autoActionNextRecordAttemptTime;
 
 	// there are only one or two snapshot_t that are relevent at a time
 	int			latestSnapshotNum;	// the number of snapshots the client system has received
@@ -1306,6 +1310,9 @@ void CG_DrawActive( stereoFrame_t stereoView );
 void CG_DrawFlagPOIs( void );
 void CG_DrawTeammatePOIs( void );
 void CG_ClearFlagPOIs( void );
+void CG_HandleAutoActionMapStart( void );
+void CG_HandleAutoActionRuntime( void );
+void CG_HandleAutoActionIntermission( void );
 void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean force2D );
 void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, int team );
 void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle);
@@ -1731,11 +1738,17 @@ extern  qboolean linearLight;
 #ifdef Q3_VM
 extern void (*trap_R_AddRefEntityToScene2)( const refEntity_t *re );
 extern void	(*trap_R_AddLinearLightToScene)( const vec3_t start, const vec3_t end, float intensity, float r, float g, float b );
+extern qboolean (*trap_IsRecordingDemo)( void );
+extern void (*trap_Cvar_SetDescription)( const char *var_name, const char *description );
 #else
 qboolean trap_GetValue( char *value, int valueSize, const char *key );
 void trap_R_AddRefEntityToScene2( const refEntity_t *re );
 void trap_R_AddLinearLightToScene( const vec3_t start, const vec3_t end, float intensity, float r, float g, float b );
+qboolean trap_IsRecordingDemo( void );
+void trap_Cvar_SetDescription( const char *var_name, const char *description );
 extern int dll_com_trapGetValue;
 extern int dll_trap_R_AddRefEntityToScene2;
 extern int dll_trap_R_AddLinearLightToScene;
+extern int dll_trap_IsRecordingDemo;
+extern int dll_trap_Cvar_SetDescription;
 #endif

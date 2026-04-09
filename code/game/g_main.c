@@ -2269,6 +2269,26 @@ static int G_ATDEffectiveScoreLimit( void ) {
 
 /*
 ==============
+G_BroadcastScoresToAllClients
+
+Send current scoreboard state to all connected clients.
+Called before game-ending conditions to ensure final scores reach clients
+before intermission is triggered.
+==============
+*/
+static void G_BroadcastScoresToAllClients( void ) {
+	int i;
+
+	for ( i = 0; i < level.numConnectedClients; i++ ) {
+		gclient_t *cl = &level.clients[level.sortedClients[i]];
+		if ( cl->pers.connected != CON_DISCONNECTED ) {
+			DeathmatchScoreboardMessage( &g_entities[level.sortedClients[i]] );
+		}
+	}
+}
+
+/*
+==============
 G_ATDEndRound
 
 Called when an ATD round concludes (cap, elimination, or time).
@@ -2292,37 +2312,54 @@ void G_ATDEndRound( void ) {
 	level.atdRoundNumber++;
 
 	/* Scorelimit check at round boundary.
-	   Games only end when both teams have had equal offensive turns, i.e. when
-	   an even number of rounds have been completed (each team attacks once per
-	   two-round pair).  If a team hits the scorelimit on an odd-numbered round
-	   (the other team still needs their matching attack turn), broadcast a
-	   warning and let one more round play out. */
+	   Blue always attacks last. Determine which team just attacked using the same
+	   formula as G_ATDCheckRules so the two stay in sync.
+	   - After Red's attack: Blue always gets their response turn, never end the game here.
+	     Notify players if Red is already at the scorelimit.
+	   - After Blue's attack: resolve the winner if any team reached the scorelimit.
+	     Blue > Red → Blue wins. Red > Blue → Red wins. Tied → another round pair. */
 	scorelimit = G_ATDEffectiveScoreLimit();
 	if ( scorelimit > 0 ) {
-		int roundsPlayed  = level.atdRoundNumber - 1;
-		qboolean balanced = ( roundsPlayed % 2 == 0 );
-		int red           = level.teamScores[TEAM_RED];
-		int blue          = level.teamScores[TEAM_BLUE];
+		int red  = level.teamScores[TEAM_RED];
+		int blue = level.teamScores[TEAM_BLUE];
+		/* Which team attacked the round that just finished?
+		   Mirror the formula in G_ATDCheckRules (before the increment,
+		   atdRoundNumber was level.atdRoundNumber - 1). */
+		qboolean blueJustAttacked =
+			( ( level.atdEliminationSides + level.atdRoundNumber - 1 ) % 2 != 0 );
 
-		if ( balanced && ( red >= scorelimit || blue >= scorelimit ) ) {
-			if ( red > blue ) {
-				G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\n\"" );
-				G_ATDGlobalSound( "sound/vo/red_wins.wav" );
-				LogExit( "Scorelimit hit." );
-				return;
-			} else if ( blue > red ) {
-				G_BroadcastServerCommand( -1, "print \"^4Blue^7 wins!\n\"" );
-				G_ATDGlobalSound( "sound/vo/blue_wins.wav" );
-				LogExit( "Scorelimit hit." );
-				return;
+		if ( !blueJustAttacked ) {
+			/* Red just attacked — Blue always gets their response round.
+			   Inform players if Red is already at or past the scorelimit. */
+			if ( red >= scorelimit ) {
+				int lead = red - blue;
+				if ( lead > 4 ) {
+					G_BroadcastServerCommand( -1, va(
+						"print \"^1Red^7 has hit the scorelimit with a ^1%i^7-point lead"
+						" — ^4Blue^7 plays a consolation round.\n\"", lead ) );
+				} else {
+					G_BroadcastServerCommand( -1,
+						"print \"^1Red^7 has hit the scorelimit — ^4Blue^7 plays a final round!\n\"" );
+				}
 			}
-			/* Tied at or above scorelimit — continue to next round pair. */
-		} else if ( !balanced && ( red >= scorelimit || blue >= scorelimit ) ) {
-			team_t lead = ( red >= blue ) ? TEAM_RED : TEAM_BLUE;
-			G_BroadcastServerCommand( -1, va(
-				"print \"%s has reached the scorelimit — %s gets a final round!\n\"",
-				( lead == TEAM_RED ) ? "^1Red^7" : "^4Blue^7",
-				( lead == TEAM_RED ) ? "^4Blue^7" : "^1Red^7" ) );
+		} else {
+			/* Blue just attacked — resolve the winner if scorelimit is reached. */
+			if ( red >= scorelimit || blue >= scorelimit ) {
+				if ( blue > red ) {
+					G_BroadcastScoresToAllClients();
+					G_BroadcastServerCommand( -1, "print \"^4Blue^7 wins!\n\"" );
+					G_ATDGlobalSound( "sound/vo/blue_wins.wav" );
+					LogExit( "Scorelimit hit." );
+					return;
+				} else if ( red > blue ) {
+					G_BroadcastScoresToAllClients();
+					G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\n\"" );
+					G_ATDGlobalSound( "sound/vo/red_wins.wav" );
+					LogExit( "Scorelimit hit." );
+					return;
+				}
+				/* Tied at or above scorelimit — play another round pair. */
+			}
 		}
 	}
 

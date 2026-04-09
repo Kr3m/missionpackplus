@@ -140,5 +140,12 @@ CG_CVAR( cg_fovAdjust, "cg_fovAdjust", "0", CVAR_ARCHIVE )
 CG_CVAR( cg_followKiller, "cg_followKiller", "0", CVAR_ARCHIVE )
 CG_CVAR( cg_flagPOIs, "cg_flagPOIs", "1", CVAR_ARCHIVE )
 CG_CVAR( cg_flagStyle, "cg_flagStyle", "1", CVAR_ARCHIVE )
+/*
+0 = do nothing
+1 = enable auto demo recording
+2 = enable auto screenshot
+3 = enable auto demo recording and auto screenshot
+*/
+CG_CVAR( cg_autoAction, "cg_autoAction", "3", CVAR_ARCHIVE )
 
 #undef CG_CVAR
