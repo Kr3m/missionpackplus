@@ -772,6 +772,8 @@ typedef struct {
 	qhandle_t	friendPOIShader;
 	qhandle_t	friendPOIRedFlagStolenShader;
 	qhandle_t	friendPOIBlueFlagStolenShader;
+	qhandle_t	friendPOINeutralFlagCarrierShader;
+	qhandle_t	friendPOIFlagCarrierHitShader;
 
 	qhandle_t	balloonShader;
 	qhandle_t	connectionShader;

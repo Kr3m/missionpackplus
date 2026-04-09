@@ -576,7 +576,7 @@ void CG_DrawTeammatePOIs( void ) {
 	int i;
 	int ourClientNum;
 	int ourTeam;
-	vec4_t color4;
+	vec4_t markerColor;
 
 	if ( !cg_drawFriend.integer || !cg.snap || cgs.gametype < GT_TEAM ) {
 		return;
@@ -598,16 +598,12 @@ void CG_DrawTeammatePOIs( void ) {
 		return;
 	}
 
-	color4[0] = 1.0f;
-	color4[1] = 1.0f;
-	color4[2] = 1.0f;
-	color4[3] = 1.0f;
-
 	for ( i = 0; i < cgs.maxclients; i++ ) {
 		centity_t *cent;
 		clientInfo_t *ci;
 		teammatePOICache_t *cache;
 		qhandle_t shader;
+		qboolean isFlagCarrierPOI;
 
 		if ( i == ourClientNum ) {
 			continue;
@@ -641,13 +637,36 @@ void CG_DrawTeammatePOIs( void ) {
 		}
 
 		shader = cgs.media.friendPOIShader;
+		isFlagCarrierPOI = qfalse;
+		markerColor[0] = 1.0f;
+		markerColor[1] = 1.0f;
+		markerColor[2] = 1.0f;
+		markerColor[3] = 1.0f;
 		if ( ourTeam == TEAM_BLUE && ( cache->powerups & ( 1 << PW_REDFLAG ) ) ) {
 			shader = cgs.media.friendPOIRedFlagStolenShader;
+			isFlagCarrierPOI = qtrue;
+			markerColor[0] = 1.0f;
+			markerColor[1] = 0.0f;
+			markerColor[2] = 0.0f;
 		} else if ( ourTeam == TEAM_RED && ( cache->powerups & ( 1 << PW_BLUEFLAG ) ) ) {
 			shader = cgs.media.friendPOIBlueFlagStolenShader;
+			isFlagCarrierPOI = qtrue;
+			markerColor[0] = 0.0f;
+			markerColor[1] = 0.0f;
+			markerColor[2] = 1.0f;
+		} else if ( cache->powerups & ( 1 << PW_NEUTRALFLAG ) ) {
+			shader = cgs.media.friendPOINeutralFlagCarrierShader;
+			isFlagCarrierPOI = qtrue;
 		}
 
-		CG_DrawFlagPOIMarker( cache->origin, shader, color4 );
+		if ( isFlagCarrierPOI && ( cg.time - cent->pe.painTime ) < 1500 ) {
+			shader = cgs.media.friendPOIFlagCarrierHitShader;
+			markerColor[0] = 1.0f;
+			markerColor[1] = 0.0f;
+			markerColor[2] = 0.0f;
+		}
+
+		CG_DrawFlagPOIMarker( cache->origin, shader, markerColor );
 	}
 
 	trap_R_SetColor( NULL );

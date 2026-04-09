@@ -842,8 +842,10 @@ static void CG_RegisterGraphics( void ) {
 	if ( cgs.gametype >= GT_TEAM || cg_buildScript.integer ) {
 		cgs.media.friendShader = trap_R_RegisterShader( "sprites/foe" );
 		cgs.media.friendPOIShader = trap_R_RegisterShaderNoMip( "sprites/foe2.tga" );
-		cgs.media.friendPOIRedFlagStolenShader = trap_R_RegisterShaderNoMip( "gfx/2d/flag_status/red_flag_stolen.tga" );
-		cgs.media.friendPOIBlueFlagStolenShader = trap_R_RegisterShaderNoMip( "gfx/2d/flag_status/blue_flag_stolen.tga" );
+		cgs.media.friendPOIRedFlagStolenShader = trap_R_RegisterShader( "sprites/flagcarrier" );
+		cgs.media.friendPOIBlueFlagStolenShader = trap_R_RegisterShader( "sprites/flagcarrier" );
+		cgs.media.friendPOINeutralFlagCarrierShader = trap_R_RegisterShader( "sprites/neutralflagcarrier" );
+		cgs.media.friendPOIFlagCarrierHitShader = trap_R_RegisterShader( "sprites/flagcarrier_hit" );
 		cgs.media.redQuadShader = trap_R_RegisterShader("powerups/blueflag" );
 		cgs.media.teamStatusBar = trap_R_RegisterShader( "gfx/2d/colorbar.tga" );
 #ifdef MISSIONPACK
