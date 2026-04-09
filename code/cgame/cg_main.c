@@ -146,27 +146,22 @@ static void CG_AutoActionStartDemo( void ) {
 		return;
 	}
 
-	if ( hasDemoRecordingQuery ) {
-		if ( trap_IsRecordingDemo() ) {
-			cg.autoActionDemoRecording = qtrue;
+	if ( cg.autoActionDemoRecording ) {
+		if ( !hasDemoRecordingQuery || trap_IsRecordingDemo() ) {
 			return;
 		}
-	} else if ( cg.autoActionDemoRecording ) {
-		return;
+		cg.autoActionDemoRecording = qfalse;
 	}
 
 	if ( cg.time < cg.autoActionNextRecordAttemptTime ) {
 		return;
 	}
 
-	trap_SendConsoleCommand( "set cl_drawRecording 0\n" );
-
 	CG_BuildAutoActionDemoName( demoName, sizeof( demoName ) );
+	trap_Cvar_Set( "ui_lastSPDemoName", demoName );
 	trap_SendConsoleCommand( va( "record \"%s\"\n", demoName ) );
 
-	if ( !hasDemoRecordingQuery ) {
-		cg.autoActionDemoRecording = qtrue;
-	}
+	cg.autoActionDemoRecording = qtrue;
 	cg.autoActionNextRecordAttemptTime = cg.time + 1500;
 }
 
@@ -206,6 +201,9 @@ static void CG_BuildAutoActionDemoName( char *demoName, int demoNameSize ) {
 		if ( ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f' || ch == '\v' || ch < 32 || ch > 126 ) {
 			*p = '_';
 		}
+		if ( *p >= 'a' && *p <= 'z' ) {
+			*p = *p - 'a' + 'A';
+		}
 	}
 }
 
@@ -217,8 +215,8 @@ void CG_HandleAutoActionMapStart( void ) {
 }
 
 void CG_HandleAutoActionRuntime( void ) {
-	if ( hasDemoRecordingQuery ) {
-		cg.autoActionDemoRecording = trap_IsRecordingDemo();
+	if ( hasDemoRecordingQuery && cg.autoActionDemoRecording && !trap_IsRecordingDemo() ) {
+		cg.autoActionDemoRecording = qfalse;
 	}
 
 	if ( cg.snap && cg.snap->ps.pm_type != PM_INTERMISSION && !cg.loading ) {

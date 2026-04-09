@@ -133,7 +133,10 @@ void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 
 void UI_LoadBestScores(const char *map, int game) {
 	char		fileName[MAX_QPATH];
+	char		demoBase[MAX_QPATH];
 	fileHandle_t f;
+	int			actualGame;
+	int			demoGame;
 	postGameInfo_t newInfo;
 	memset(&newInfo, 0, sizeof(postGameInfo_t));
 	Com_sprintf(fileName, MAX_QPATH, "games/%s_%i.game", map, game);
@@ -147,12 +150,33 @@ void UI_LoadBestScores(const char *map, int game) {
 	}
 	UI_SetBestScores(&newInfo, qfalse);
 
-	Com_sprintf(fileName, MAX_QPATH, "demos/%s_%d.dm_%d", map, game, (int)trap_Cvar_VariableValue("protocol"));
+	actualGame = (int)trap_Cvar_VariableValue("g_gametype");
+	demoGame = game;
+	if (actualGame >= 0 && actualGame < GT_MAX_GAME_TYPE) {
+		demoGame = actualGame;
+	}
+
+	Com_sprintf(fileName, MAX_QPATH, "demos/%s_%d.dm_%d", map, demoGame, (int)trap_Cvar_VariableValue("protocol"));
+	Com_sprintf(demoBase, MAX_QPATH, "%s_%d", map, demoGame);
 	uiInfo.demoAvailable = qfalse;
 	if (trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0) {
 		uiInfo.demoAvailable = qtrue;
 		trap_FS_FCloseFile(f);
-	} 
+	} else {
+		/* Fallback to the UI-selected gametype naming for compatibility. */
+		Com_sprintf(fileName, MAX_QPATH, "demos/%s_%d.dm_%d", map, game, (int)trap_Cvar_VariableValue("protocol"));
+		Com_sprintf(demoBase, MAX_QPATH, "%s_%d", map, game);
+		if (trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0) {
+			uiInfo.demoAvailable = qtrue;
+			trap_FS_FCloseFile(f);
+		}
+	}
+
+	if (uiInfo.demoAvailable) {
+		trap_Cvar_Set("ui_lastSPDemoName", demoBase);
+	} else {
+		trap_Cvar_Set("ui_lastSPDemoName", "");
+	}
 }
 
 /*
@@ -184,7 +208,7 @@ void UI_ClearScores() {
 			gameFile += len + 1;
 		}
 	}
-	
+
 	UI_SetBestScores(&newInfo, qfalse);
 
 }
@@ -226,7 +250,7 @@ static void UI_CalcPostGameStats() {
 			trap_FS_Read(&oldInfo, sizeof(postGameInfo_t), f);
 		}
 		trap_FS_FCloseFile(f);
-	}					 
+	}
 
 	newInfo.accuracy = atoi(UI_Argv(3));
 	newInfo.impressives = atoi(UI_Argv(4));
@@ -243,7 +267,7 @@ static void UI_CalcPostGameStats() {
 
 	newInfo.time = (time - trap_Cvar_VariableValue("ui_matchStartTime")) / 1000;
 	adjustedTime = uiInfo.mapList[ui_currentMap.integer].timeToBeat[game];
-	if (newInfo.time < adjustedTime) { 
+	if (newInfo.time < adjustedTime) {
 		newInfo.timeBonus = (adjustedTime - newInfo.time) * 10;
 	} else {
 		newInfo.timeBonus = 0;
@@ -279,7 +303,7 @@ static void UI_CalcPostGameStats() {
 	if (newInfo.time < oldInfo.time) {
 		uiInfo.newBestTime = uiInfo.uiDC.realTime + 20000;
 	}
- 
+
 	// put back all the ui overrides
 	trap_Cvar_Set("capturelimit", UI_Cvar_VariableString("ui_saveCaptureLimit"));
 	trap_Cvar_Set("fraglimit", UI_Cvar_VariableString("ui_saveFragLimit"));
@@ -320,7 +344,7 @@ qboolean UI_ConsoleCommand( int realTime ) {
 		UI_Report();
 		return qtrue;
 	}
-	
+
 	if ( Q_stricmp (cmd, "ui_load") == 0 ) {
 		UI_Load();
 		return qtrue;
@@ -417,7 +441,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ) {
 		t0 = 0;
 		t1 = 1;
 	}
-	
+
 	UI_AdjustFrom640( &x, &y, &w, &h );
 	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
 }

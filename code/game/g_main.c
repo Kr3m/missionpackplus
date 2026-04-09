@@ -3,6 +3,8 @@
 
 #include "g_local.h"
 
+#define SCOREBOARD_BROADCAST_MSEC 2000
+
 level_locals_t	level;
 
 typedef struct {
@@ -2660,6 +2662,13 @@ static void G_RunFrame( int levelTime ) {
 
 	// see if it is time to end the level
 	CheckExitRules();
+
+	// Keep scoreboard snapshots flowing so demo playback has recent "scores" packets.
+	if ( !level.intermissiontime
+		&& level.time >= level.lastScoreboardBroadcastTime + SCOREBOARD_BROADCAST_MSEC ) {
+		SendScoreboardMessageToAllClients();
+		level.lastScoreboardBroadcastTime = level.time;
+	}
 
 #ifdef MISSIONPACK
 	// Attack & Defend round management

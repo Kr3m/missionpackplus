@@ -429,6 +429,7 @@ typedef struct {
 	int			intermissiontime;		// time the intermission was started
 	qboolean	readyToExit;			// at least one client wants to exit
 	int			exitTime;
+	int			lastScoreboardBroadcastTime;	// last time we pushed a full "scores" snapshot
 
 	vec3_t		intermission_origin;	// also used for spectator spawns
 	vec3_t		intermission_angle;
