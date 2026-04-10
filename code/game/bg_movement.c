@@ -1266,7 +1266,7 @@ void q3a_WalkMove(void) {
 		return;
 	}
 
-	PM_Friction();
+	core_Friction();
 
 	fmove = pm->cmd.forwardmove;
 	smove = pm->cmd.rightmove;
@@ -1438,9 +1438,9 @@ void vql_init(void) {
 	phy_crouchstepjump       = qtrue;                 // pmove_CrouchStepJump
 	phy_ramp_jump            = qfalse;
 	phy_ramp_jump_scale      = 1.0f;
-	phy_jump_velocity_max    = 700.0f;               // pmove_JumpVelocityMax
-	phy_jump_scale_add       = 0.4f;                 // pmove_JumpVelocityScaleAdd
-	phy_jump_time_threshold  = 500.0f;               // pmove_JumpVelocityTimeThreshold
+	phy_jump_velocity_max    = 275.0f;               // pmove_JumpVelocityMax (no speed scaling)
+	phy_jump_scale_add       = 0;                    // pmove_JumpVelocityScaleAdd
+	phy_jump_time_threshold  = 500.0f;               // pmove_JumpVelocityTimeThreshold (chain-jump window)
 	phy_jump_time_threshold_offset = 0.6f;           // pmove_JumpVelocityTimeThresholdOffset
 	phy_jump_time_delta_min  = 100.0f;               // pmove_JumpTimeDeltaMin
 	// WishSpeed
@@ -1500,9 +1500,9 @@ void pql_init(void) {
 	phy_crouchstepjump       = qtrue;                 // pmove_CrouchStepJump
 	phy_ramp_jump            = qtrue;                 // pmove_RampJump
 	phy_ramp_jump_scale      = 1.25f;                 // pmove_RampJumpScale
-	phy_jump_velocity_max    = 700.0f;               // pmove_JumpVelocityMax
-	phy_jump_scale_add       = 0.4f;
-	phy_jump_time_threshold  = 500.0f;
+	phy_jump_velocity_max    = 270.0f;               // pmove_JumpVelocityMax (no speed scaling)
+	phy_jump_scale_add       = 0;                    // pmove_JumpVelocityScaleAdd
+	phy_jump_time_threshold  = 500.0f;               // pmove_JumpVelocityTimeThreshold (chain-jump window)
 	phy_jump_time_threshold_offset = 0.6f;
 	phy_jump_time_delta_min  = 100.0f;
 	// WishSpeed

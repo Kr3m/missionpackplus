@@ -509,8 +509,15 @@ static void G_UpdateCvars( void ) {
 				cv->modificationCount = cv->vmCvar->modificationCount;
 
 				if ( cv->trackChange ) {
-					G_BroadcastServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
-						cv->cvarName, cv->vmCvar->string ) );
+					if ( cv->vmCvar == &g_moveType ) {
+						static const char *moveTypeNames[] = { "VQ3", "CPM", "CQ3", "VQL", "PQL" };
+						int idx = cv->vmCvar->integer;
+						const char *name = (idx >= 0 && idx <= 4) ? moveTypeNames[idx] : cv->vmCvar->string;
+						G_BroadcastServerCommand( -1, va("print \"^3%s movement enabled\n\"", name) );
+					} else {
+						G_BroadcastServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
+							cv->cvarName, cv->vmCvar->string ) );
+					}
 				}
 
 				if ( cv->vmCvar == &g_runes ) {
