@@ -814,13 +814,13 @@ void cpm_init(void) {
 	phy_water_scale      = 0.5f;                      // pmove_WaterSwimScale
 	phy_water_wade_scale = 0.75f;                     // pmove_WaterWadeScale
 	// Ground
-	phy_ground_accel = 10.0f;                         // pmove_WalkAccel
+	phy_ground_accel = 15.0f;                         // pmove_WalkAccel (ratoa: pm_cpm_accelerate)
 	phy_friction     = 6.0f;                          // pmove_WalkFriction
 	// Air
-	phy_air_accel         = 1.5f;                     // pmove_AirAccel
-	phy_airstopaccelerate = 2.0f;                     // pmove_AirStopAccel
+	phy_air_accel         = 1.0f;                     // pmove_AirAccel (ratoa: pm_cpm_airaccelerate)
+	phy_airstopaccelerate = 2.5f;                     // pmove_AirStopAccel (ratoa: pm_cpm_airstopaccelerate)
 	phy_air_decel         = 2.5f;
-	phy_air_decelAngle    = 100;
+	phy_air_decelAngle    = 0;                        // smooth blend; set >0 via CVAR for legacy threshold
 	// W turning
 	phy_aircontrol        = qtrue;
 	phy_aircontrol_amount = 150;
@@ -837,7 +837,7 @@ void cpm_init(void) {
 	phy_jump_dj_velocity = 100;
 	phy_step_maxvel      = JUMP_VELOCITY + 100;       // 370 (double-jump cap)
 	// Jump behavior flags
-	phy_autohop              = qtrue;                 // pmove_AutoHop
+	phy_autohop              = qfalse;                // pmove_AutoHop
 	phy_bunnyhop             = qfalse;                // pmove_BunnyHop
 	phy_double_jump          = qtrue;                 // pmove_DoubleJump
 	phy_chain_jump           = qfalse;
@@ -1129,7 +1129,9 @@ void q3a_AirMove(void) {
 	vec3_t    wishvel;
 	float     fmove, smove;
 	vec3_t    wishdir;
+	vec3_t    curdir;
 	float     wishspeed, wishspeed2;
+	float     dot;
 	usercmd_t cmd;
 	float     realAccel, realSpeed, realWishSpd;
 	qboolean  doSideMove, doForwMove, doAircontrol;
@@ -1165,10 +1167,25 @@ void q3a_AirMove(void) {
 		realSpeed   = phy_airstrafe_basespeed;
 		realWishSpd = wishspeed * core_CmdScale(&cmd, qfalse);
 	} else {
-		// Standard air: stop-accel when decelerating, air-accel otherwise
-		realAccel   = (DotProduct(pm->ps->velocity, wishdir) < 0) ? phy_airstopaccelerate : phy_air_accel;
 		realSpeed   = pm->ps->speed;
 		realWishSpd = wishspeed * core_CmdScale(&cmd, qfalse);
+		// Smooth-blend accel between phy_air_accel and phy_airstopaccelerate based
+		// on turning angle (ratoa/Xonotic Darkplaces style).
+		// Set phy_air_decelAngle > 0 via CVAR to use the legacy angle threshold instead.
+		if (phy_air_decelAngle > 0) {
+			dot = DotProduct(pm->ps->velocity, wishdir);
+			if (dot < cos(DEG2RAD(phy_air_decelAngle))) {
+				realAccel = phy_air_decel;
+			} else {
+				realAccel = (dot < 0) ? phy_airstopaccelerate : phy_air_accel;
+			}
+		} else {
+			VectorCopy(pm->ps->velocity, curdir);
+			curdir[2] = 0;
+			VectorNormalize(curdir);
+			dot       = -DotProduct(curdir, wishdir);
+			realAccel = phy_air_accel + (phy_airstopaccelerate - phy_air_accel) * (dot > 0.0f ? dot : 0.0f);
+		}
 	}
 
 	wishspeed2 = wishspeed;
@@ -1450,13 +1467,13 @@ void pql_init(void) {
 	phy_water_scale      = 0.6f;                      // pmove_WaterSwimScale
 	phy_water_wade_scale = 0.8f;                      // pmove_WaterWadeScale
 	// Ground
-	phy_ground_accel = 10.0f;                         // pmove_WalkAccel
+	phy_ground_accel = 15.0f;                         // pmove_WalkAccel (ratoa: pm_cpm_accelerate)
 	phy_friction     = 6.0f;                          // pmove_WalkFriction
 	// Air
-	phy_air_accel         = 1.5f;                     // pmove_AirAccel
-	phy_airstopaccelerate = 2.0f;                     // pmove_AirStopAccel
+	phy_air_accel         = 1.0f;                     // pmove_AirAccel (ratoa: pm_cpm_airaccelerate)
+	phy_airstopaccelerate = 2.5f;                     // pmove_AirStopAccel (ratoa: pm_cpm_airstopaccelerate)
 	phy_air_decel         = 2.5f;
-	phy_air_decelAngle    = 100;
+	phy_air_decelAngle    = 0;                        // smooth blend; set >0 via CVAR for legacy threshold
 	// W turning (CPM-style)
 	phy_aircontrol        = qtrue;                    // pmove_AirControl
 	phy_aircontrol_amount = 150;

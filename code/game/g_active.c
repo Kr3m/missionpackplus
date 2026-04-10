@@ -1000,10 +1000,10 @@ void ClientThink_real( gentity_t *ent ) {
 		if (!phy_initialized) {
 			phy_init(pm.movetype);
 		}
-		// Apply non-empty cvars over the corresponding phy_* global.
-		// An empty string means "don't override".
-#define PHYSF(cvar, global) if ((cvar).string[0]) { (global) = atof((cvar).string); }
-#define PHYSI(cvar, global) if ((cvar).string[0]) { (global) = atoi((cvar).string); }
+		// Apply cvars over the corresponding phy_* global when value >= 0.
+		// -1 (the default) means "don't override".
+#define PHYSF(cvar, global) if (atof((cvar).string) >= 0.0f) { (global) = atof((cvar).string); }
+#define PHYSI(cvar, global) if (atoi((cvar).string) >= 0) { (global) = atoi((cvar).string); }
 #define PHYSB(cvar, global) if ((cvar).integer >= 0) { (global) = (cvar).integer ? qtrue : qfalse; }
 		PHYSF( pmove_AirAccel,                        phy_air_accel              )
 		PHYSB( pmove_AirControl,                      phy_aircontrol             )
