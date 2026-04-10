@@ -981,6 +981,8 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.pmove_msec = pmove_msec.integer;
 	pm.grapplePull = g_grapplePull.integer;
 	pm.fastWeaponSwitch = g_fastWeaponSwitch.integer;
+	pm.movetype = g_movementType.integer;
+	pm.fastRail = g_fastRail.integer;
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 

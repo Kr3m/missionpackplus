@@ -190,6 +190,8 @@ G_CVAR( g_loadCustomEnts, "g_loadCustomEnts", "0", 0, 0, qfalse, qfalse)
 
 G_CVAR( g_rotation, "g_rotation", "0", CVAR_ARCHIVE, 0, qfalse, qfalse )
 G_CVAR( g_fastWeaponSwitch, "g_fastWeaponSwitch", "0", CVAR_SERVERINFO, 0, qtrue, qtrue )
+G_CVAR( g_movementType, "g_movementType", "0", CVAR_SYSTEMINFO | CVAR_SERVERINFO, 0, qtrue, qtrue )
+G_CVAR( g_fastRail, "g_fastRail", "0", CVAR_SERVERINFO, 0, qtrue, qtrue )
 
 // Attack & Defend (GT_CTFS)
 G_CVAR( g_roundtimelimit, "roundtimelimit", "90", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue, qfalse )
