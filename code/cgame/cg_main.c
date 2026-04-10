@@ -157,6 +157,8 @@ static void CG_AutoActionStartDemo( void ) {
 		return;
 	}
 
+	trap_SendConsoleCommand( "set cl_drawRecording 0\n" );
+
 	CG_BuildAutoActionDemoName( demoName, sizeof( demoName ) );
 	trap_Cvar_Set( "ui_lastSPDemoName", demoName );
 	trap_SendConsoleCommand( va( "record \"%s\"\n", demoName ) );
