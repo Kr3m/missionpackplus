@@ -243,12 +243,12 @@ endef
 
 define DO_GAME_CC
 $(echo_cmd) "GAME_CC $<"
-$(Q)$(CC) $(MOD_CFLAGS) -DQAGAME $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZE) -o $@ -c $<
+$(Q)$(CC) $(MOD_CFLAGS) -DQAGAME -DMISSIONPACK $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZE) -o $@ -c $<
 endef
 
 define DO_CGAME_CC
 $(echo_cmd) "CGAME_CC $<"
-$(Q)$(CC) $(MOD_CFLAGS) -DCGAME $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZE) -o $@ -c $<
+$(Q)$(CC) $(MOD_CFLAGS) -DCGAME -DMISSIONPACK $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZE) -o $@ -c $<
 endef
 
 define DO_UI_CC
@@ -334,6 +334,7 @@ CGOBJ_ = \
   $(B)/$(MOD)/cgame/bg_lib.o \
   $(B)/$(MOD)/cgame/bg_misc.o \
   $(B)/$(MOD)/cgame/bg_pmove.o \
+  $(B)/$(MOD)/cgame/bg_movement.o \
   $(B)/$(MOD)/cgame/bg_slidemove.o \
   $(B)/$(MOD)/cgame/cg_consolecmds.o \
   $(B)/$(MOD)/cgame/cg_draw.o \
@@ -378,6 +379,7 @@ QAOBJ_ = \
   $(B)/$(MOD)/game/bg_lib.o \
   $(B)/$(MOD)/game/bg_misc.o \
   $(B)/$(MOD)/game/bg_pmove.o \
+  $(B)/$(MOD)/game/bg_movement.o \
   $(B)/$(MOD)/game/bg_slidemove.o \
   $(B)/$(MOD)/game/g_active.o \
   $(B)/$(MOD)/game/g_arenas.o \
