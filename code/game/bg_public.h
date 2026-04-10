@@ -2,6 +2,9 @@
 //
 // bg_public.h -- definitions shared by both the server game and client game modules
 
+#ifndef __BG_PUBLIC_H
+#define __BG_PUBLIC_H
+
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
 
@@ -213,7 +216,8 @@ typedef enum {
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
 	STAT_MAX_HEALTH,							// health / armor limit, changable by handicap
-	STAT_TIME_LASTJUMP						// timestamp of last jump (for CPM double-jump)
+	STAT_TIME_LASTJUMP,						// timestamp of last jump (for CPM double-jump)
+	STAT_SLIDE_TIME							// ms remaining on crouchslide (0 = not sliding)
 } statIndex_t;
 
 
@@ -785,4 +789,4 @@ qboolean replace1( const char match, const char replace, char *str );
 
 qboolean  BigEndian( void );
 
-//#endif // __BG_PUBLIC_H
+#endif // __BG_PUBLIC_H

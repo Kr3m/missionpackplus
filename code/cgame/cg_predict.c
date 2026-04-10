@@ -981,6 +981,7 @@ void CG_PredictPlayerState( void ) {
 	cg_pmove.pmove_fixed = cgs.pmove_fixed;
 	cg_pmove.pmove_msec = cgs.pmove_msec;
 	cg_pmove.grapplePull = cgs.g_grapplePull;
+	cg_pmove.movetype = cgs.g_moveType;
 
 	// Like the comments described above, a player's state is entirely
 	// re-predicted from the last valid snapshot every client frame, which

@@ -1176,6 +1176,7 @@ typedef struct {
 
 	qboolean		pmove_fixed;
 	int				pmove_msec;
+	int				g_moveType;
 
 	qboolean		synchronousClients;
 

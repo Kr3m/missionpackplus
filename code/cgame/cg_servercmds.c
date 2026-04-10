@@ -170,6 +170,7 @@ void CG_ParseSysteminfo( void ) {
 
 	cgs.pmove_fixed = ( atoi( Info_ValueForKey( info, "pmove_fixed" ) ) ) ? qtrue : qfalse;
 	cgs.pmove_msec = atoi( Info_ValueForKey( info, "pmove_msec" ) );
+	cgs.g_moveType = atoi( Info_ValueForKey( info, "g_moveType" ) );
 	if ( cgs.pmove_msec < 8 ) {
 		cgs.pmove_msec = 8;
 	} else if ( cgs.pmove_msec > 33 ) {

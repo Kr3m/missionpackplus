@@ -56,6 +56,7 @@ extern float phy_water_friction;
 extern float phy_slick_accel;
 // Jump behavior flags
 extern qboolean phy_autohop;
+extern qboolean phy_bunnyhop;
 extern qboolean phy_double_jump;
 extern qboolean phy_chain_jump;
 extern float    phy_chain_jump_velocity;
@@ -73,6 +74,10 @@ extern float    phy_jump_time_delta_min;
 extern float phy_water_wade_scale;
 // Velocity ground-hit threshold
 extern float phy_velocity_gh;
+// Crouchslide
+extern qboolean phy_crouch_slide;
+extern float    phy_crouch_slide_friction;
+extern int      phy_crouch_slide_time;
 
 // Physics indexes
 #define VQ3 0  // VQ3

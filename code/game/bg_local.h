@@ -29,6 +29,9 @@ typedef struct {
 	vec3_t		previous_origin;
 	vec3_t		previous_velocity;
 	int			previous_waterlevel;
+
+	qboolean	sliding;     // qtrue while crouchslide is active
+	int			slideTime;   // ms remaining on active crouchslide
 } pml_t;
 
 extern	pmove_t		*pm;

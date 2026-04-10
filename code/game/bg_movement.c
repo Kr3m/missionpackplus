@@ -51,6 +51,7 @@ float       phy_water_friction;
 float       phy_slick_accel;
 // Jump behavior flags (set per movement type in init)
 qboolean phy_autohop;
+qboolean phy_bunnyhop;
 qboolean phy_double_jump;
 qboolean phy_chain_jump;
 float    phy_chain_jump_velocity;
@@ -70,6 +71,10 @@ float phy_water_wade_scale;
 float phy_velocity_gh;
 // Step tracking (set by q3a_WalkMove, consumed by phy_CheckJump)
 static qboolean phy_did_step;
+// Crouchslide
+qboolean phy_crouch_slide;
+float    phy_crouch_slide_friction;
+int      phy_crouch_slide_time;
 
 void phy_PmoveSingle(pmove_t* pmove);
 
@@ -400,8 +405,15 @@ void core_Friction(void) {
 	if (pm->waterlevel <= 1) {
 		if (pml.walking && !(pml.groundTrace.surfaceFlags & SURF_SLICK)) {
 			if (!(pm->ps->pm_flags & PMF_TIME_KNOCKBACK)) {  // if getting knocked back, no friction
-				control = speed < phy_stopspeed ? phy_stopspeed : speed;
-				drop += control * phy_friction * pml.frametime;
+				if (pml.sliding) {
+					// crouchslide: greatly reduced friction
+					drop += speed * phy_crouch_slide_friction * pml.frametime;
+				} else if (phy_bunnyhop && pm->cmd.upmove > 0) {
+					// bunnyhop: skip ground friction when jumping
+				} else {
+					control = speed < phy_stopspeed ? phy_stopspeed : speed;
+					drop += control * phy_friction * pml.frametime;
+				}
 			}
 		}
 	}
@@ -756,6 +768,15 @@ void phy_PmoveSingle(pmove_t* pmove) {
 // Select the type of movement to execute. Flow control only.
 // Behavior happens inside each function
 void phy_move(pmove_t* pmove) {
+#ifdef CGAME
+	// cgame has no g_active.c pre-init; detect movetype changes here so the
+	// correct init (and phy_autohop etc.) fires when g_moveType changes.
+	static int lastCGMovetype = -1;
+	if (lastCGMovetype != pmove->movetype) {
+		phy_initialized  = qfalse;
+		lastCGMovetype   = pmove->movetype;
+	}
+#endif
 	if (!phy_initialized) {
 		phy_init(pmove->movetype);
 	}
@@ -817,6 +838,7 @@ void cpm_init(void) {
 	phy_step_maxvel      = JUMP_VELOCITY + 100;       // 370 (double-jump cap)
 	// Jump behavior flags
 	phy_autohop              = qtrue;                 // pmove_AutoHop
+	phy_bunnyhop             = qfalse;                // pmove_BunnyHop
 	phy_double_jump          = qtrue;                 // pmove_DoubleJump
 	phy_chain_jump           = qfalse;
 	phy_chain_jump_velocity  = 0;
@@ -834,6 +856,10 @@ void cpm_init(void) {
 	phy_wishspeed = 400.0f;                           // pmove_WishSpeed
 	// Extra
 	phy_velocity_gh = 800;
+	// Crouchslide (CPM: enabled)
+	phy_crouch_slide          = qtrue;
+	phy_crouch_slide_friction = 0.5f;
+	phy_crouch_slide_time     = 2000;
 }
 
 void vq3_init(void) {
@@ -868,6 +894,7 @@ void vq3_init(void) {
 	phy_jump_dj_velocity = 0;
 	// Jump behavior flags (all off)
 	phy_autohop              = qfalse;
+	phy_bunnyhop             = qfalse;                // pmove_BunnyHop
 	phy_double_jump          = qfalse;
 	phy_chain_jump           = qfalse;
 	phy_chain_jump_velocity  = 0;
@@ -885,6 +912,10 @@ void vq3_init(void) {
 	phy_wishspeed = 320.0f;                           // pmove_WishSpeed = 320
 	// Extra
 	phy_velocity_gh = 800;
+	// Crouchslide (VQ3: disabled)
+	phy_crouch_slide          = qfalse;
+	phy_crouch_slide_friction = 0.5f;
+	phy_crouch_slide_time     = 2000;
 }
 
 void cq3_init(void) {
@@ -920,6 +951,7 @@ void cq3_init(void) {
 	phy_jump_dj_velocity = 0;
 	// Jump behavior flags (all off)
 	phy_autohop              = qfalse;
+	phy_bunnyhop             = qfalse;                // pmove_BunnyHop
 	phy_double_jump          = qfalse;
 	phy_chain_jump           = qfalse;
 	phy_chain_jump_velocity  = 0;
@@ -937,6 +969,10 @@ void cq3_init(void) {
 	phy_wishspeed = 320.0f;                           // pmove_WishSpeed = 320
 	// Extra
 	phy_velocity_gh = 800;
+	// Crouchslide (CQ3: disabled)
+	phy_crouch_slide          = qfalse;
+	phy_crouch_slide_friction = 0.5f;
+	phy_crouch_slide_time     = 2000;
 }
 
 static qboolean phy_CheckJump(void) {
@@ -1142,6 +1178,9 @@ void q3a_AirMove(void) {
 	core_StepSlideMove(qtrue);
 }
 
+// Minimum horizontal speed (ups) required to enter or maintain a crouchslide
+#define SLIDE_ENTER_SPEED 200.0f
+
 void q3a_WalkMove(void) {
 	int       i;
 	vec3_t    wishvel;
@@ -1152,8 +1191,42 @@ void q3a_WalkMove(void) {
 	usercmd_t cmd;
 	float     accelerate;
 	float     vel;
+	float     horizSpeed;
+	qboolean  wasDucked;
 
 	phy_did_step = qfalse;
+
+	// ---- Crouchslide state machine ----
+	if (phy_crouch_slide) {
+		horizSpeed = (float)sqrt(pm->ps->velocity[0] * pm->ps->velocity[0] +
+		                        pm->ps->velocity[1] * pm->ps->velocity[1]);
+		wasDucked  = (pm->ps->pm_flags & PMF_DUCKED) ? qtrue : qfalse;
+
+		if (pm->ps->stats[STAT_SLIDE_TIME] > 0) {
+			// slide in progress — tick the timer
+			pm->ps->stats[STAT_SLIDE_TIME] -= pml.msec;
+			if (pm->ps->stats[STAT_SLIDE_TIME] < 0) {
+				pm->ps->stats[STAT_SLIDE_TIME] = 0;
+			}
+			// cancel if player stood up, left ground, or slowed below threshold
+			if (!wasDucked || !pml.walking || horizSpeed < SLIDE_ENTER_SPEED * 0.5f) {
+				pm->ps->stats[STAT_SLIDE_TIME] = 0;
+			}
+		} else if (wasDucked && pml.walking && horizSpeed >= SLIDE_ENTER_SPEED) {
+			// slide entry — set timer and give a small entry boost
+			pm->ps->stats[STAT_SLIDE_TIME] = phy_crouch_slide_time;
+			pm->ps->velocity[0] *= 1.1f;
+			pm->ps->velocity[1] *= 1.1f;
+		}
+		pml.sliding    = (pm->ps->stats[STAT_SLIDE_TIME] > 0) ? qtrue : qfalse;
+		pml.slideTime  = pm->ps->stats[STAT_SLIDE_TIME];
+	} else {
+		// movement type has crouchslide disabled — clear any stale state
+		pm->ps->stats[STAT_SLIDE_TIME] = 0;
+		pml.sliding   = qfalse;
+		pml.slideTime = 0;
+	}
+	// ---- end crouchslide state machine ----
 
 	if (pm->waterlevel > 2 && DotProduct(pml.forward, pml.groundTrace.plane.normal) > 0) {
 		PM_WaterMove();  // begin swimming
@@ -1333,6 +1406,7 @@ void vql_init(void) {
 	phy_jump_dj_velocity = 0;
 	// Jump behavior flags
 	phy_autohop              = qtrue;                 // pmove_AutoHop
+	phy_bunnyhop             = qtrue;                 // pmove_BunnyHop
 	phy_double_jump          = qfalse;                // pmove_DoubleJump = 0
 	phy_chain_jump           = qtrue;                 // pmove_ChainJump
 	phy_chain_jump_velocity  = 110.0f;               // pmove_ChainJumpVelocity
@@ -1350,6 +1424,10 @@ void vql_init(void) {
 	phy_wishspeed = 400.0f;                           // pmove_WishSpeed
 	// Extra
 	phy_velocity_gh = 800;
+	// Crouchslide (VQL: enabled)
+	phy_crouch_slide          = qtrue;
+	phy_crouch_slide_friction = 0.5f;
+	phy_crouch_slide_time     = 2000;
 }
 
 void vql_move(pmove_t* pmove) {
@@ -1390,6 +1468,7 @@ void pql_init(void) {
 	phy_jump_dj_velocity = 100;
 	// Jump behavior flags
 	phy_autohop              = qtrue;                 // pmove_AutoHop
+	phy_bunnyhop             = qtrue;                 // pmove_BunnyHop
 	phy_double_jump          = qtrue;                 // pmove_DoubleJump
 	phy_chain_jump           = qtrue;                 // pmove_ChainJump
 	phy_chain_jump_velocity  = 110.0f;
@@ -1407,6 +1486,10 @@ void pql_init(void) {
 	phy_wishspeed = 400.0f;                           // pmove_WishSpeed
 	// Extra
 	phy_velocity_gh = 800;
+	// Crouchslide (PQL: enabled)
+	phy_crouch_slide          = qtrue;
+	phy_crouch_slide_friction = 0.5f;
+	phy_crouch_slide_time     = 2000;
 }
 
 // pql_CheckJump / pql_AirMove / pql_WalkMove replaced by unified phy_CheckJump /

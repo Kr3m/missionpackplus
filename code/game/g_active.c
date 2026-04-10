@@ -2,6 +2,7 @@
 //
 
 #include "g_local.h"
+#include "bg_movement.h"
 
 
 /*
@@ -973,6 +974,10 @@ void ClientThink_real( gentity_t *ent ) {
 	else {
 		pm.tracemask = MASK_PLAYERSOLID;
 	}
+	// strip player-player clipping if requested
+	if (pmove_noPlayerClip.string[0] && atoi(pmove_noPlayerClip.string)) {
+		pm.tracemask &= ~CONTENTS_BODY;
+	}
 	pm.trace = trap_Trace;
 	pm.pointcontents = trap_PointContents;
 	pm.debugLevel = g_debugMove.integer;
@@ -981,8 +986,60 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.pmove_msec = pmove_msec.integer;
 	pm.grapplePull = g_grapplePull.integer;
 	pm.fastWeaponSwitch = g_fastWeaponSwitch.integer;
-	pm.movetype = g_movementType.integer;
+	pm.movetype = g_moveType.integer;
 	pm.fastRail = g_fastRail.integer;
+
+	// Force physics init for this movetype, then apply server-side pmove_* overrides.
+	// This runs every frame so cvar changes take effect immediately without a map restart.
+	{
+		static int lastMoveType = -1;
+		if (lastMoveType != pm.movetype) {
+			phy_initialized = qfalse;
+			lastMoveType    = pm.movetype;
+		}
+		if (!phy_initialized) {
+			phy_init(pm.movetype);
+		}
+		// Apply non-empty cvars over the corresponding phy_* global.
+		// An empty string means "don't override".
+#define PHYSF(cvar, global) if ((cvar).string[0]) { (global) = atof((cvar).string); }
+#define PHYSI(cvar, global) if ((cvar).string[0]) { (global) = atoi((cvar).string); }
+#define PHYSB(cvar, global) if ((cvar).string[0]) { (global) = atoi((cvar).string) ? qtrue : qfalse; }
+		PHYSF( pmove_AirAccel,                        phy_air_accel              )
+		PHYSB( pmove_AirControl,                      phy_aircontrol             )
+		PHYSF( pmove_AirStopAccel,                    phy_airstopaccelerate      )
+		PHYSB( pmove_AutoHop,                         phy_autohop                )
+		PHYSB( pmove_BunnyHop,                        phy_bunnyhop               )
+		PHYSB( pmove_ChainJump,                       phy_chain_jump             )
+		PHYSF( pmove_ChainJumpVelocity,               phy_chain_jump_velocity    )
+		PHYSF( pmove_CircleStrafeFriction,            phy_friction               )
+		PHYSB( pmove_CrouchSlide,                     phy_crouch_slide           )
+		PHYSF( pmove_CrouchSlideFriction,             phy_crouch_slide_friction  )
+		PHYSI( pmove_CrouchSlideTime,                 phy_crouch_slide_time      )
+		PHYSB( pmove_CrouchStepJump,                  phy_crouchstepjump         )
+		PHYSB( pmove_DoubleJump,                      phy_double_jump            )
+		PHYSF( pmove_JumpTimeDeltaMin,                phy_jump_time_delta_min    )
+		PHYSF( pmove_JumpVelocity,                    phy_jump_velocity          )
+		PHYSF( pmove_JumpVelocityMax,                 phy_jump_velocity_max      )
+		PHYSF( pmove_JumpVelocityScaleAdd,            phy_jump_scale_add         )
+		PHYSF( pmove_JumpVelocityTimeThreshold,       phy_jump_time_threshold    )
+		PHYSF( pmove_JumpVelocityTimeThresholdOffset, phy_jump_time_threshold_offset )
+		PHYSB( pmove_RampJump,                        phy_ramp_jump              )
+		PHYSF( pmove_RampJumpScale,                   phy_ramp_jump_scale        )
+		PHYSF( pmove_StepHeight,                      phy_step_size              )
+		PHYSB( pmove_StepJump,                        phy_step_jump              )
+		PHYSF( pmove_StepJumpVelocity,                phy_step_jump_velocity     )
+		PHYSF( pmove_StrafeAccel,                     phy_airstrafe_accel        )
+		PHYSF( pmove_Velocity_gh,                     phy_velocity_gh            )
+		PHYSF( pmove_WalkAccel,                       phy_ground_accel           )
+		PHYSF( pmove_WalkFriction,                    phy_friction               )
+		PHYSF( pmove_WaterSwimScale,                  phy_water_scale            )
+		PHYSF( pmove_WaterWadeScale,                  phy_water_wade_scale       )
+		PHYSF( pmove_WishSpeed,                       phy_wishspeed              )
+#undef PHYSF
+#undef PHYSI
+#undef PHYSB
+	}
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 
