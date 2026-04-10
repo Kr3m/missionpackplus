@@ -856,8 +856,8 @@ void cpm_init(void) {
 	phy_wishspeed = 400.0f;                           // pmove_WishSpeed
 	// Extra
 	phy_velocity_gh = 800;
-	// Crouchslide (CPM: enabled)
-	phy_crouch_slide          = qtrue;
+	// Crouchslide (CPM: off by default; enable via pmove_CrouchSlide 1)
+	phy_crouch_slide          = qfalse;
 	phy_crouch_slide_friction = 0.5f;
 	phy_crouch_slide_time     = 2000;
 }
@@ -1447,8 +1447,8 @@ void vql_init(void) {
 	phy_wishspeed = 400.0f;                           // pmove_WishSpeed
 	// Extra
 	phy_velocity_gh = 800;
-	// Crouchslide (VQL: enabled)
-	phy_crouch_slide          = qtrue;
+	// Crouchslide (VQL: off by default; enable via pmove_CrouchSlide 1)
+	phy_crouch_slide          = qfalse;
 	phy_crouch_slide_friction = 0.5f;
 	phy_crouch_slide_time     = 2000;
 }
@@ -1509,8 +1509,8 @@ void pql_init(void) {
 	phy_wishspeed = 400.0f;                           // pmove_WishSpeed
 	// Extra
 	phy_velocity_gh = 800;
-	// Crouchslide (PQL: enabled)
-	phy_crouch_slide          = qtrue;
+	// Crouchslide (PQL: off by default; enable via pmove_CrouchSlide 1)
+	phy_crouch_slide          = qfalse;
 	phy_crouch_slide_friction = 0.5f;
 	phy_crouch_slide_time     = 2000;
 }
