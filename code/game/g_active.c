@@ -975,7 +975,7 @@ void ClientThink_real( gentity_t *ent ) {
 		pm.tracemask = MASK_PLAYERSOLID;
 	}
 	// strip player-player clipping if requested
-	if (pmove_noPlayerClip.string[0] && atoi(pmove_noPlayerClip.string)) {
+	if (pmove_noPlayerClip.integer > 0) {
 		pm.tracemask &= ~CONTENTS_BODY;
 	}
 	pm.trace = trap_Trace;
@@ -1004,7 +1004,7 @@ void ClientThink_real( gentity_t *ent ) {
 		// An empty string means "don't override".
 #define PHYSF(cvar, global) if ((cvar).string[0]) { (global) = atof((cvar).string); }
 #define PHYSI(cvar, global) if ((cvar).string[0]) { (global) = atoi((cvar).string); }
-#define PHYSB(cvar, global) if ((cvar).string[0]) { (global) = atoi((cvar).string) ? qtrue : qfalse; }
+#define PHYSB(cvar, global) if ((cvar).integer >= 0) { (global) = (cvar).integer ? qtrue : qfalse; }
 		PHYSF( pmove_AirAccel,                        phy_air_accel              )
 		PHYSB( pmove_AirControl,                      phy_aircontrol             )
 		PHYSF( pmove_AirStopAccel,                    phy_airstopaccelerate      )

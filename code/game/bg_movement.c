@@ -449,7 +449,7 @@ static void core_FinishWeaponChange(void) {
 
 	pm->ps->weapon      = weapon;
 	pm->ps->weaponstate = WEAPON_RAISING;
-	pm->ps->weaponTime += pm->movetype == CPM ? 0 : 250;  // Instant weapon switch for cpm
+	pm->ps->weaponTime += pm->fastWeaponSwitch ? 0 : 250;  // Instant weapon switch when enabled
 	PM_StartTorsoAnim(TORSO_RAISE);
 }
 
@@ -466,7 +466,7 @@ static void core_BeginWeaponChange(int weapon) {
 
 	PM_AddEvent(EV_CHANGE_WEAPON);
 	pm->ps->weaponstate = WEAPON_DROPPING;
-	pm->ps->weaponTime += pm->movetype == CPM ? 0 : 250;
+	pm->ps->weaponTime += pm->fastWeaponSwitch ? 0 : 250;
 	PM_StartTorsoAnim(TORSO_DROP);
 }
 
@@ -976,118 +976,124 @@ void cq3_init(void) {
 }
 
 static qboolean phy_CheckJump(void) {
-	float    horizSpeed;
-	float    jumpVel;
-	int      timeDelta;
-	qboolean didCPMDouble;
+    float    horizSpeed;
+    float    jumpVel;
+    int      timeDelta;
+    qboolean didCPMDouble;
 
-	// Can't jump cases
-	if (pm->ps->pm_flags & PMF_RESPAWNED) {
-		return qfalse;
-	}
-	if (pm->cmd.upmove < 10) {
-		// Jump key released: always clear held flag so the next press is recognized
-		pm->ps->pm_flags &= ~PMF_JUMP_HELD;
-		return qfalse;
-	}
-	// Auto-hop: clear PMF_JUMP_HELD when grounded so holding jump keeps hopping
-	if (phy_autohop && pml.walking) {
-		pm->ps->pm_flags &= ~PMF_JUMP_HELD;
-	}
-	if (pm->ps->pm_flags & PMF_JUMP_HELD) {
-		pm->cmd.upmove = 0;
-		return qfalse;
-	}
+    // Can't jump cases
+    if (pm->ps->pm_flags & PMF_RESPAWNED) {
+        return qfalse;
+    }
 
-	// Commit the jump
-	pml.groundPlane          = qfalse;
-	pml.walking              = qfalse;
-	pm->ps->pm_flags        |= PMF_JUMP_HELD;
-	pm->ps->groundEntityNum  = ENTITYNUM_NONE;
+    // Auto-hop: force clear held flag when grounded and jump key held
+    // This allows holding the jump key to continuously re-jump
+    if (phy_autohop && pml.walking && pm->cmd.upmove >= 10) {
+        pm->ps->pm_flags &= ~PMF_JUMP_HELD;
+    }
 
-	// Base jump velocity (with optional horizontal-speed scaling)
-	if (phy_jump_scale_add > 0 && phy_jump_time_threshold > 0) {
-		float threshold = phy_jump_time_threshold * phy_jump_time_threshold_offset;
-		horizSpeed = sqrt(pm->ps->velocity[0] * pm->ps->velocity[0] +
-		                  pm->ps->velocity[1] * pm->ps->velocity[1]);
-		if (horizSpeed > threshold) {
-			jumpVel = (float)phy_jump_velocity + (horizSpeed - threshold) * phy_jump_scale_add;
-			if (jumpVel > phy_jump_velocity_max) {
-				jumpVel = phy_jump_velocity_max;
-			}
-		} else {
-			jumpVel = (float)phy_jump_velocity;
-		}
-	} else {
-		jumpVel = (float)phy_jump_velocity;
-	}
+    // Check if jump key is released
+    if (pm->cmd.upmove < 10) {
+        pm->ps->pm_flags &= ~PMF_JUMP_HELD;
+        return qfalse;
+    }
 
-	// SET or ADD velocity based on double-jump eligibility
-	if (phy_double_jump && pm->ps->velocity[2] > 0) {
-		pm->ps->velocity[2] += jumpVel;  // ADD: double-jump
-	} else {
-		pm->ps->velocity[2] = jumpVel;   // SET: normal jump
-	}
+    // Prevent holding jump from spamming jumps while in air
+    // (auto-hop only works on ground)
+    if (pm->ps->pm_flags & PMF_JUMP_HELD) {
+        pm->cmd.upmove = 0;
+        return qfalse;
+    }
 
-	// Step-jump bonus: rewarded when jumping off a just-stepped ledge
-	if (phy_step_jump && phy_did_step) {
-		if (phy_crouchstepjump || !(pm->ps->pm_flags & PMF_DUCKED)) {
-			pm->ps->velocity[2] += phy_step_jump_velocity;
-			if (pm->debugLevel) {
-				Com_Printf(":: StepJump +%.1f\n", phy_step_jump_velocity);
-			}
-		}
-		phy_did_step = qfalse;
-	}
+    // Commit the jump
+    pml.groundPlane          = qfalse;
+    pml.walking              = qfalse;
+    pm->ps->pm_flags        |= PMF_JUMP_HELD;
+    pm->ps->groundEntityNum  = ENTITYNUM_NONE;
 
-	// Time since last recorded jump (used by CPM timer and chain-jump)
-	timeDelta    = pm->cmd.serverTime - pm->ps->stats[STAT_TIME_LASTJUMP];
-	didCPMDouble = qfalse;
+    // Base jump velocity (with optional horizontal-speed scaling)
+    if (phy_jump_scale_add > 0 && phy_jump_time_threshold > 0) {
+        float threshold = phy_jump_time_threshold * phy_jump_time_threshold_offset;
+        horizSpeed = sqrt(pm->ps->velocity[0] * pm->ps->velocity[0] +
+                          pm->ps->velocity[1] * pm->ps->velocity[1]);
+        if (horizSpeed > threshold) {
+            jumpVel = (float)phy_jump_velocity + (horizSpeed - threshold) * phy_jump_scale_add;
+            if (jumpVel > phy_jump_velocity_max) {
+                jumpVel = phy_jump_velocity_max;
+            }
+        } else {
+            jumpVel = (float)phy_jump_velocity;
+        }
+    } else {
+        jumpVel = (float)phy_jump_velocity;
+    }
 
-	// CPM-style double-jump timer bonus (active when timebuffer > 0)
-	if (phy_jump_timebuffer > 0 && phy_jump_dj_velocity > 0) {
-		qboolean djTimerOn = (timeDelta > 0 && timeDelta <= phy_jump_timebuffer) ? qtrue : qfalse;
-		if (djTimerOn) {
-			pm->ps->velocity[2] += phy_jump_dj_velocity;
-			didCPMDouble = qtrue;
-			if (pm->debugLevel) {
-				Com_Printf(":: DoubleJump +%i timer=%i last=%i now=%i\n",
-				           phy_jump_dj_velocity, timeDelta,
-				           pm->ps->stats[STAT_TIME_LASTJUMP], pm->cmd.serverTime);
-			}
-		}
-	}
+    // SET or ADD velocity based on double-jump eligibility
+    if (phy_double_jump && pm->ps->velocity[2] > 0) {
+        pm->ps->velocity[2] += jumpVel;  // ADD: double-jump
+    } else {
+        pm->ps->velocity[2] = jumpVel;   // SET: normal jump
+    }
 
-	// Chain-jump bonus (independent window, compatible with CPM double-jump)
-	if (phy_chain_jump && phy_chain_jump_velocity > 0) {
-		qboolean inChainWindow = (timeDelta >= (int)phy_jump_time_delta_min &&
-		                          timeDelta <= (int)phy_jump_time_threshold) ? qtrue : qfalse;
-		if (inChainWindow) {
-			pm->ps->velocity[2] += phy_chain_jump_velocity;
-			if (pm->debugLevel) {
-				Com_Printf(":: ChainJump +%.1f timeDelta=%i vel=%.1f\n",
-				           phy_chain_jump_velocity, timeDelta, pm->ps->velocity[2]);
-			}
-		}
-	}
+    // Step-jump bonus: rewarded when jumping off a just-stepped ledge
+    if (phy_step_jump && phy_did_step) {
+        if (phy_crouchstepjump || !(pm->ps->pm_flags & PMF_DUCKED)) {
+            pm->ps->velocity[2] += phy_step_jump_velocity;
+            if (pm->debugLevel) {
+                Com_Printf(":: StepJump +%.1f\n", phy_step_jump_velocity);
+            }
+        }
+        phy_did_step = qfalse;
+    }
 
-	// Record jump time; for CPM double-jumps, NOT updated (prevents triple-stacking)
-	if (!didCPMDouble) {
-		pm->ps->stats[STAT_TIME_LASTJUMP] = pm->cmd.serverTime;
-	}
+    // Time since last recorded jump (used by CPM timer and chain-jump)
+    timeDelta    = pm->cmd.serverTime - pm->ps->stats[STAT_TIME_LASTJUMP];
+    didCPMDouble = qfalse;
 
-	PM_AddEvent(EV_JUMP);
-	if (pm->cmd.forwardmove >= 0) {
-		PM_ForceLegsAnim(LEGS_JUMP);
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	} else {
-		PM_ForceLegsAnim(LEGS_JUMPB);
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
-	if (pm->debugLevel) {
-		Com_Printf("%i:Jump vel=%.1f\n", c_pmove, pm->ps->velocity[2]);
-	}
-	return qtrue;
+    // CPM-style double-jump timer bonus (active when timebuffer > 0)
+    if (phy_jump_timebuffer > 0 && phy_jump_dj_velocity > 0) {
+        qboolean djTimerOn = (timeDelta > 0 && timeDelta <= phy_jump_timebuffer) ? qtrue : qfalse;
+        if (djTimerOn) {
+            pm->ps->velocity[2] += phy_jump_dj_velocity;
+            didCPMDouble = qtrue;
+            if (pm->debugLevel) {
+                Com_Printf(":: DoubleJump +%i timer=%i last=%i now=%i\n",
+                           phy_jump_dj_velocity, timeDelta,
+                           pm->ps->stats[STAT_TIME_LASTJUMP], pm->cmd.serverTime);
+            }
+        }
+    }
+
+    // Chain-jump bonus (independent window, compatible with CPM double-jump)
+    if (phy_chain_jump && phy_chain_jump_velocity > 0) {
+        qboolean inChainWindow = (timeDelta >= (int)phy_jump_time_delta_min &&
+                                  timeDelta <= (int)phy_jump_time_threshold) ? qtrue : qfalse;
+        if (inChainWindow) {
+            pm->ps->velocity[2] += phy_chain_jump_velocity;
+            if (pm->debugLevel) {
+                Com_Printf(":: ChainJump +%.1f timeDelta=%i vel=%.1f\n",
+                           phy_chain_jump_velocity, timeDelta, pm->ps->velocity[2]);
+            }
+        }
+    }
+
+    // Record jump time; for CPM double-jumps, NOT updated (prevents triple-stacking)
+    if (!didCPMDouble) {
+        pm->ps->stats[STAT_TIME_LASTJUMP] = pm->cmd.serverTime;
+    }
+
+    PM_AddEvent(EV_JUMP);
+    if (pm->cmd.forwardmove >= 0) {
+        PM_ForceLegsAnim(LEGS_JUMP);
+        pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+    } else {
+        PM_ForceLegsAnim(LEGS_JUMPB);
+        pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
+    }
+    if (pm->debugLevel) {
+        Com_Printf("%i:Jump vel=%.1f\n", c_pmove, pm->ps->velocity[2]);
+    }
+    return qtrue;
 }
 
 static void q3a_AirControl(vec3_t wishdir, float wishspeed) {
