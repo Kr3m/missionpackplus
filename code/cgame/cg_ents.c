@@ -679,6 +679,72 @@ void CG_ClearFlagPOIs( void ) {
 
 /*
 ===============
+CG_DrawFlagPOIPair
+
+Shared helper: renders POIs for one defending flag and the attacker's
+capture base using the same logic for both GT_CTF and GT_CTFS.
+
+  defTeam       - team that owns/defends this flag (TEAM_RED or TEAM_BLUE)
+  defFlagSlot   - s_flagPOI index for the defending flag (0=red, 1=blue)
+  atkBaseSlot   - s_flagPOI index for the attacker's capture base
+  defFlagStatus - wire-protocol value from cgs.redflag/blueflag
+                  (0=atbase, 1=taken, 2=dropped; NOT the flagStatus_t enum)
+  ourTeam       - local player's team
+
+Defenders see DEFEND on visible flag entities.
+Attackers see ATTACK on visible flag entities, plus CAPTURE at their own
+base while the flag is being carried (defFlagStatus == 1).
+===============
+*/
+static void CG_DrawFlagPOIPair( int defTeam, int defFlagSlot, int atkBaseSlot,
+                                int defFlagStatus, int ourTeam ) {
+	int				i;
+	int				atkTeam;
+	vec4_t			defColor, atkColor;
+	qhandle_t		shader;
+	flagPOICache_t	*defFlags = &s_flagPOI[defFlagSlot];
+	flagPOICache_t	*atkBase  = &s_flagPOI[atkBaseSlot];
+
+	atkTeam = ( defTeam == TEAM_RED ) ? TEAM_BLUE : TEAM_RED;
+
+	defColor[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
+	defColor[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
+	defColor[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
+	defColor[3] = 1.0f;
+
+	atkColor[0] = ( atkTeam == TEAM_RED ) ? 1.0f : 0.0f;
+	atkColor[1] = ( atkTeam == TEAM_RED ) ? 0.0f : 0.5f;
+	atkColor[2] = ( atkTeam == TEAM_RED ) ? 0.0f : 1.0f;
+	atkColor[3] = 1.0f;
+
+	if ( ourTeam == defTeam ) {
+		/* Own flag: defend POI on every visible flag entity.
+		   When the flag is carried the entity leaves the snapshot so
+		   count falls to zero automatically — no explicit status check needed. */
+		shader = cgs.media.flagDefendPOI;
+		for ( i = 0; i < defFlags->count; i++ ) {
+			CG_DrawFlagPOIMarker( defFlags->origins[i], shader, defColor );
+		}
+	} else {
+		/* Enemy flag: attack POI on every visible flag entity. */
+		shader = cgs.media.flagAttackPOI;
+		for ( i = 0; i < defFlags->count; i++ ) {
+			CG_DrawFlagPOIMarker( defFlags->origins[i], shader, defColor );
+		}
+
+		/* While a teammate is carrying the enemy flag, show capture POI at
+		   our own base.  defFlagStatus == 1 is "taken" in the wire protocol. */
+		if ( defFlagStatus == FLAG_TAKEN && atkBase->count > 0 ) {
+			shader = cgs.media.flagCapturePOI;
+			for ( i = 0; i < atkBase->count; i++ ) {
+				CG_DrawFlagPOIMarker( atkBase->origins[i], shader, atkColor );
+			}
+		}
+	}
+}
+
+/*
+===============
 CG_DrawFlagPOIs
 
 Called from CG_Draw2D (after trap_R_RenderScene) so the 2D overlay
@@ -687,11 +753,8 @@ position to screen space and draws the icon there.
 ===============
 */
 void CG_DrawFlagPOIs( void ) {
-	int			idx;
 	int			slotIdx;
 	int			ourTeam, ourClientNum;
-	qboolean	hasRedFlag, hasBlueFlag, weHaveFlag;
-	qboolean	redFlagAtBase, blueFlagAtBase;
 
 	if ( !cg_flagPOIs.integer ) {
 		return;
@@ -719,62 +782,11 @@ void CG_DrawFlagPOIs( void ) {
 	ourTeam      = cgs.clientinfo[ourClientNum].team;
 
 	if ( cgs.gametype == GT_CTF ) {
-		int entryIdx;
-		hasRedFlag     = cg.snap->ps.powerups[PW_REDFLAG]  != 0;
-		hasBlueFlag    = cg.snap->ps.powerups[PW_BLUEFLAG] != 0;
-		weHaveFlag     = hasRedFlag || hasBlueFlag;
-		redFlagAtBase  = ( cgs.redflag  == FLAG_ATBASE );
-		blueFlagAtBase = ( cgs.blueflag == FLAG_ATBASE );
-
-		for ( idx = 0; idx < 2; idx++ ) {
-			flagPOICache_t	*c = &s_flagPOI[idx];
-			vec4_t			color4;
-			qhandle_t		shader;
-
-			if ( c->count <= 0 ) {
-				continue;
-			}
-
-			/* Determine which icon to show for this flag. */
-			shader = 0;
-			if ( idx == 0 ) {  /* red flag */
-				color4[0] = 1; color4[1] = 0; color4[2] = 0; color4[3] = 1;
-				if ( ourTeam == TEAM_RED ) {
-					if ( weHaveFlag && redFlagAtBase ) {
-						shader = cgs.media.flagCapturePOI;
-					} else if ( redFlagAtBase || cgs.redflag == FLAG_DROPPED ||
-					            ( cgs.redflag == FLAG_TAKEN && c->count > 0 ) ) {
-						shader = cgs.media.flagDefendPOI;
-					}
-				} else {
-					if ( !weHaveFlag ) {
-						shader = cgs.media.flagAttackPOI;
-					}
-				}
-			} else {  /* blue flag */
-				color4[0] = 0; color4[1] = 0.5f; color4[2] = 1; color4[3] = 1;
-				if ( ourTeam == TEAM_BLUE ) {
-					if ( weHaveFlag && blueFlagAtBase ) {
-						shader = cgs.media.flagCapturePOI;
-					} else if ( blueFlagAtBase || cgs.blueflag == FLAG_DROPPED ||
-					            ( cgs.blueflag == FLAG_TAKEN && c->count > 0 ) ) {
-						shader = cgs.media.flagDefendPOI;
-					}
-				} else {
-					if ( !weHaveFlag ) {
-						shader = cgs.media.flagAttackPOI;
-					}
-				}
-			}
-
-			if ( !shader ) {
-				continue;
-			}
-
-			for ( entryIdx = 0; entryIdx < c->count; entryIdx++ ) {
-				CG_DrawFlagPOIMarker( c->origins[entryIdx], shader, color4 );
-			}
-		}
+		/* Both teams attack and defend simultaneously.  Treat each flag
+		   independently: red team defends red flag and attacks blue flag,
+		   blue team defends blue flag and attacks red flag. */
+		CG_DrawFlagPOIPair( TEAM_RED,  0, 1, cgs.redflag,  ourTeam );
+		CG_DrawFlagPOIPair( TEAM_BLUE, 1, 0, cgs.blueflag, ourTeam );
 	}
 #ifdef MISSIONPACK
 	if ( cgs.gametype == GT_1FCTF ) {
@@ -821,62 +833,15 @@ void CG_DrawFlagPOIs( void ) {
 			}
 		}
 	}
-#endif
 
-#ifdef MISSIONPACK
 	if ( cgs.gametype == GT_CTFS ) {
-		int i;
-		int				atkTeam = cgs.atdAttackingTeam;
-		int				defTeam = ( atkTeam == TEAM_RED ) ? TEAM_BLUE : TEAM_RED;
-		int				defFlagIdx = defTeam - 1;	/* 0=red, 1=blue */
-		int				atkBaseIdx = atkTeam - 1;
-		vec4_t			color4;
-		qhandle_t		shader;
-		flagPOICache_t	*visibleDefFlags = &s_flagPOI[defFlagIdx];
-		flagPOICache_t	*atkBase = &s_flagPOI[atkBaseIdx];
-		int				defFlagStatus = ( defTeam == TEAM_RED ) ? cgs.redflag : cgs.blueflag;
+		/* One flag contested per round: the defending team's flag. */
+		int defTeam       = ( cgs.atdAttackingTeam == TEAM_RED ) ? TEAM_BLUE : TEAM_RED;
+		int defFlagIdx    = defTeam - 1;   /* TEAM_RED=1 → 0, TEAM_BLUE=2 → 1 */
+		int atkBaseIdx    = cgs.atdAttackingTeam - 1;
+		int defFlagStatus = ( defTeam == TEAM_RED ) ? cgs.redflag : cgs.blueflag;
 
-		if ( ourTeam == defTeam ) {
-			/* Defenders: any still-visible defending flag entity should keep a defend
-			   POI regardless of the global flag state.  On multi-flag maps the shared
-			   state flips when one flag is touched, but remaining world flags still
-			   need markers. */
-			if ( visibleDefFlags->count > 0 ) {
-				color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
-				color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
-				color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
-				color4[3] = 1.0f;
-				shader = cgs.media.flagDefendPOI;
-				for ( i = 0; i < visibleDefFlags->count; i++ ) {
-					CG_DrawFlagPOIMarker( visibleDefFlags->origins[i], shader, color4 );
-				}
-			}
-		} else {
-			/* Attackers: any still-visible defending flag entity should keep an attack
-			   POI.  If one flag is being carried, also show the capture POI over the
-			   attacker's own base. */
-			if ( visibleDefFlags->count > 0 ) {
-				color4[0] = ( defTeam == TEAM_RED ) ? 1.0f : 0.0f;
-				color4[1] = ( defTeam == TEAM_RED ) ? 0.0f : 0.5f;
-				color4[2] = ( defTeam == TEAM_RED ) ? 0.0f : 1.0f;
-				color4[3] = 1.0f;
-				shader = cgs.media.flagAttackPOI;
-				for ( i = 0; i < visibleDefFlags->count; i++ ) {
-					CG_DrawFlagPOIMarker( visibleDefFlags->origins[i], shader, color4 );
-				}
-			}
-
-			if ( defFlagStatus == FLAG_TAKEN && atkBase->count > 0 ) {
-				color4[0] = ( atkTeam == TEAM_RED ) ? 1.0f : 0.0f;
-				color4[1] = ( atkTeam == TEAM_RED ) ? 0.0f : 0.5f;
-				color4[2] = ( atkTeam == TEAM_RED ) ? 0.0f : 1.0f;
-				color4[3] = 1.0f;
-				shader = cgs.media.flagCapturePOI;
-				for ( i = 0; i < atkBase->count; i++ ) {
-					CG_DrawFlagPOIMarker( atkBase->origins[i], shader, color4 );
-				}
-			}
-		}
+		CG_DrawFlagPOIPair( defTeam, defFlagIdx, atkBaseIdx, defFlagStatus, ourTeam );
 	}
 #endif
 
