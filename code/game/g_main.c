@@ -2376,12 +2376,14 @@ void G_ATDEndRound( void ) {
 			/* Blue just attacked — resolve the winner if scorelimit is reached. */
 			if ( red >= scorelimit || blue >= scorelimit ) {
 				if ( blue > red ) {
+					CalculateRanks();
 					G_BroadcastScoresToAllClients();
 					G_BroadcastServerCommand( -1, "print \"^4Blue^7 wins!\n\"" );
 					G_ATDGlobalSound( "sound/vo/blue_wins.wav" );
 					LogExit( "Scorelimit hit." );
 					return;
 				} else if ( red > blue ) {
+					CalculateRanks();
 					G_BroadcastScoresToAllClients();
 					G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\n\"" );
 					G_ATDGlobalSound( "sound/vo/red_wins.wav" );
