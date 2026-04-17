@@ -460,6 +460,7 @@ typedef struct {
 	int			atdRoundNumberStarted;	// matches atdRoundNumber once round is live
 	int			atdRoundStartTime;		// level.time when warmup ends and round goes live
 	qboolean	atdRoundRespawned;		// players have been respawned for this warmup phase
+	int			atdRoundFreezeTime;		// level.time after which players are frozen (small settling delay post-respawn)
 	int			atdEliminationSides;	// random seed: (sides+round)%2==0 => RED attacks
 	int			atdRoundRedPlayers;		// red players alive at round start (for elim check)
 	int			atdRoundBluePlayers;	// blue players alive at round start

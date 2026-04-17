@@ -2029,6 +2029,7 @@ static qboolean CG_ATDRoundScoreboardVisible( void ) {
 	return ( cgs.gametype == GT_CTFS &&
 		cg.warmup &&
 		cgs.atdCompletedRounds > 0 &&
+		cgs.atdRoundRespawned &&
 		!cg.intermissionStarted );
 }
 #endif

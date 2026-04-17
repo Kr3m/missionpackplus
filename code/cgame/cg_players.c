@@ -1543,6 +1543,21 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 
 	ci = &cgs.clientinfo[ clientNum ];
 
+#ifdef MISSIONPACK
+	/* GT_CTFS: play idle/stand animations during the inter-round warmup freeze window. */
+	if ( cgs.gametype == GT_CTFS && cgs.atdRoundRespawned && cg.time >= cgs.atdRoundFreezeTime ) {
+		CG_RunLerpFrame( ci, &cent->pe.legs,  LEGS_IDLE,   1 );
+		CG_RunLerpFrame( ci, &cent->pe.torso, TORSO_STAND, 1 );
+		*legsOld       = cent->pe.legs.oldFrame;
+		*legs          = cent->pe.legs.frame;
+		*legsBackLerp  = cent->pe.legs.backlerp;
+		*torsoOld      = cent->pe.torso.oldFrame;
+		*torso         = cent->pe.torso.frame;
+		*torsoBackLerp = cent->pe.torso.backlerp;
+		return;
+	}
+#endif
+
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE ) {
 		CG_RunLerpFrame( ci, &cent->pe.legs, LEGS_TURN, speedScale );

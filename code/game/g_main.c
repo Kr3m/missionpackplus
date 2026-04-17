@@ -2398,6 +2398,7 @@ void G_ATDEndRound( void ) {
 
 	level.atdRoundStartTime   = level.time + atd_rounddelay.integer * 1000;
 	level.atdRoundRespawned   = qfalse;
+	level.atdRoundFreezeTime  = 0;
 	level.atdRoundRedPlayers  = 0;
 	level.atdRoundBluePlayers = 0;
 	level.atdRound30SecWarned = qfalse;
@@ -2450,8 +2451,9 @@ static void G_CheckATDRound( void ) {
 		/* Halfway through warmup, respawn everyone so they start at their spawns. */
 		if ( !level.atdRoundRespawned &&
 		     level.time >= level.atdRoundStartTime - ( atd_rounddelay.integer * 500 ) ) {
-			level.atdRoundRespawned = qtrue;
-			trap_SetConfigstring( CS_ATD_RESPAWNED, "1" );
+			level.atdRoundRespawned  = qtrue;
+			level.atdRoundFreezeTime = level.time + 500;
+			trap_SetConfigstring( CS_ATD_RESPAWNED, va( "%i", level.atdRoundFreezeTime ) );
 			for ( i = 0; i < level.maxclients; i++ ) {
 				ent = g_entities + i;
 				if ( !ent->inuse || !ent->client ) {

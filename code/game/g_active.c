@@ -1066,6 +1066,8 @@ void ClientThink_real( gentity_t *ent ) {
 		     level.warmupTime == 0 &&
 		     level.atdRoundNumber != level.atdRoundNumberStarted &&
 		     level.atdRoundRespawned &&
+		     level.atdRoundFreezeTime > 0 &&
+		     level.time >= level.atdRoundFreezeTime &&
 		     client->ps.pm_type == PM_NORMAL ) {
 			client->ps.pm_type = PM_FREEZE;
 			Pmove( &pm );	/* returns immediately — no movement, no events */
