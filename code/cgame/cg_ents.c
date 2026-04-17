@@ -876,6 +876,15 @@ static void CG_DrawFlagPOI( centity_t *cent, const gitem_t *item ) {
 		return;
 	}
 
+#ifdef MISSIONPACK
+	/* GT_CTFS: don't update flag POI cache between round end and warmup start.
+	   The positions are meaningless during the inter-round period (flags reset)
+	   and would corrupt the display for the next round. */
+	if ( cgs.gametype == GT_CTFS && cg.warmup && !cgs.atdRoundRespawned ) {
+		return;
+	}
+#endif
+
 	if ( item->giTag == PW_REDFLAG ) {
 		idx = 0;
 	} else if ( item->giTag == PW_BLUEFLAG ) {
