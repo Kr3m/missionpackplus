@@ -1164,6 +1164,15 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 #ifdef MISSIONPACK
 		if ( g_gametype.integer == GT_CTFS ) {
+			/* Bots stay on-team when dead; after the body-sink timeout
+			   unlink the entity so the corpse disappears like a body
+			   que entry would.  The entity is relinked by ClientSpawn
+			   at the start of the next round. */
+			if ( ( ent->r.svFlags & SVF_BOT ) &&
+			     ent->r.linked &&
+			     level.time > client->respawnTime + 11500 ) {
+				trap_UnlinkEntity( ent );
+			}
 			return;
 		}
 #endif

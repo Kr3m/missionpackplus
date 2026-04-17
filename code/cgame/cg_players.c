@@ -1545,7 +1545,8 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 
 #ifdef MISSIONPACK
 	/* GT_CTFS: play idle/stand animations during the inter-round warmup freeze window. */
-	if ( cgs.gametype == GT_CTFS && cgs.atdRoundRespawned && cg.time >= cgs.atdRoundFreezeTime ) {
+	if ( cgs.gametype == GT_CTFS && cgs.atdRoundRespawned && cg.time >= cgs.atdRoundFreezeTime
+	     && !( cent->currentState.eFlags & EF_DEAD ) ) {
 		CG_RunLerpFrame( ci, &cent->pe.legs,  LEGS_IDLE,   1 );
 		CG_RunLerpFrame( ci, &cent->pe.torso, TORSO_STAND, 1 );
 		*legsOld       = cent->pe.legs.oldFrame;
