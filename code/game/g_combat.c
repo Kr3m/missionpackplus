@@ -37,6 +37,11 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	if ( level.warmupTime ) {
 		return;
 	}
+	// no frag scoring between round end and the next round going live (GT_CTFS)
+	if ( g_gametype.integer == GT_CTFS &&
+	     level.atdRoundNumber != level.atdRoundNumberStarted ) {
+		return;
+	}
 	// show score plum
 	ScorePlum(ent, origin, score);
 	//
