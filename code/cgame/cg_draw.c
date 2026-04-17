@@ -2592,6 +2592,7 @@ static void CG_DrawWarmup( void ) {
 #ifdef MISSIONPACK
 	if ( cgs.gametype == GT_CTFS &&
 	     cgs.atdCompletedRounds > 0 &&
+	     ( cgs.atdRoundStartTime || cgs.atdRoundRespawned ) &&
 	     !cg.intermissionStarted ) {
 		CG_DrawATDRoundScores( 1.0f );
 	}

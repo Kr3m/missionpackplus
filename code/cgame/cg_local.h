@@ -1120,6 +1120,7 @@ typedef struct {
 	int				atdRoundScoresRed[MAX_ATD_ROUNDS_WINDOW];
 	int				atdRoundScoresBlue[MAX_ATD_ROUNDS_WINDOW];
 	int				atdRoundStartTime;		// GT_CTFS: server time (ms) when the current round went live
+	qboolean		atdRoundRespawned;		// GT_CTFS: players have been respawned for warmup (scoreboard visible)
 #endif
 
 	qboolean  newHud;

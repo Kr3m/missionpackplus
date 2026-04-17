@@ -735,6 +735,7 @@ static void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		/* Clear the round score configstring so clients start fresh. */
 		trap_SetConfigstring( CS_ATD_ROUNDSCORES, "" );
 		trap_SetConfigstring( CS_ATD_ROUNDSTART, "0" );
+		trap_SetConfigstring( CS_ATD_RESPAWNED, "0" );
 		/* CS_WARMUP will be set after the initial match warmup ends (G_ATDEndRound). */
 	}
 #endif
@@ -2402,6 +2403,7 @@ void G_ATDEndRound( void ) {
 	level.atdRound30SecWarned = qfalse;
 	/* Clear the active-round timer on clients — round is now in warmup phase. */
 	trap_SetConfigstring( CS_ATD_ROUNDSTART, "0" );
+	trap_SetConfigstring( CS_ATD_RESPAWNED, "0" );
 	/* Show a countdown to all clients during the inter-round freeze. */
 	trap_SetConfigstring( CS_WARMUP, va( "%i", level.atdRoundStartTime ) );
 	/* Re-init flags so Team_SetFlagStatus fires with the new round's attacking team
@@ -2449,6 +2451,7 @@ static void G_CheckATDRound( void ) {
 		if ( !level.atdRoundRespawned &&
 		     level.time >= level.atdRoundStartTime - ( atd_rounddelay.integer * 500 ) ) {
 			level.atdRoundRespawned = qtrue;
+			trap_SetConfigstring( CS_ATD_RESPAWNED, "1" );
 			for ( i = 0; i < level.maxclients; i++ ) {
 				ent = g_entities + i;
 				if ( !ent->inuse || !ent->client ) {

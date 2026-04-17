@@ -315,7 +315,8 @@ void CG_SetConfigValues( void ) {
 		cgs.blueflag         = s[1] - '0';
 		cgs.atdAttackingTeam = s[2] - '0';
 		CG_ParseATDRoundScores( CG_ConfigString( CS_ATD_ROUNDSCORES ) );
-		cgs.atdRoundStartTime = atoi( CG_ConfigString( CS_ATD_ROUNDSTART ) );
+		cgs.atdRoundStartTime  = atoi( CG_ConfigString( CS_ATD_ROUNDSTART ) );
+		cgs.atdRoundRespawned  = !!atoi( CG_ConfigString( CS_ATD_RESPAWNED ) );
 	}
 #endif
 	CG_ParseWarmup();
@@ -432,6 +433,8 @@ static void CG_ConfigStringModified( void ) {
 		CG_ParseATDRoundScores( str );
 	} else if ( num == CS_ATD_ROUNDSTART ) {
 		cgs.atdRoundStartTime = atoi( str );
+	} else if ( num == CS_ATD_RESPAWNED ) {
+		cgs.atdRoundRespawned = !!atoi( str );
 #endif
 	} else if ( num >= CS_MODELS && num < CS_MODELS+MAX_MODELS ) {
 		cgs.gameModels[ num-CS_MODELS ] = trap_R_RegisterModel( str );
