@@ -1065,6 +1065,7 @@ void ClientThink_real( gentity_t *ent ) {
 		if ( g_gametype.integer == GT_CTFS &&
 		     level.warmupTime == 0 &&
 		     level.atdRoundNumber != level.atdRoundNumberStarted &&
+		     level.atdRoundRespawned &&
 		     client->ps.pm_type == PM_NORMAL ) {
 			client->ps.pm_type = PM_FREEZE;
 			Pmove( &pm );	/* returns immediately — no movement, no events */
