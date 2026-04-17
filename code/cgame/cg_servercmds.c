@@ -146,6 +146,7 @@ void CG_ParseServerinfo( void ) {
 	cgs.g_grapplePull = atoi(Info_ValueForKey(info, "g_grapplePull"));
 	cgs.g_sgPelletSpread = atoi(Info_ValueForKey(info, "g_sgPelletSpread"));
 	cgs.g_sgPellets = atoi(Info_ValueForKey(info, "g_sgPellets"));
+	cgs.g_threewave = atoi(Info_ValueForKey(info, "g_threewave"));
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
 

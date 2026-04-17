@@ -648,6 +648,7 @@ static void Team_TakeFlagSound( gentity_t *ent, team_t team ) {
 	else {
 		te->s.eventParm = GTS_BLUE_TAKEN;
 	}
+	te->s.otherEntityNum = ENTITYNUM_NONE; // no specific bonus toucher
 	te->r.svFlags |= SVF_BROADCAST;
 }
 
@@ -808,10 +809,11 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	}
 #endif
 
-	// Increase the team's score — GT_CTFS awards 3 pts for a cap and ends the round
+	// Increase the team's score — GT_CTFS awards 3 pts for a cap (2 with g_threewave) and ends the round
 #ifdef MISSIONPACK
 	if ( g_gametype.integer == GT_CTFS ) {
-		AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, 3);
+		int capScore = ( g_threewave.integer ) ? 2 : 3;
+		AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, capScore);
 	} else {
 #endif
 	AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, 1);
@@ -836,6 +838,21 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 	// GT_CTFS: cap ends the round immediately
 	if ( g_gametype.integer == GT_CTFS ) {
 		team_t	atkTeam = other->client->sess.sessionTeam;
+		/* g_threewave safe carrier bonus: same player who first picked up from base,
+		   held the flag for at least 8 seconds. Awards +1 team point. */
+		if ( g_threewave.integer &&
+		     other->s.clientNum == level.atdFlagToucherNum &&
+		     level.atdFlagToucherNum >= 0 &&
+		     ( level.time - (int)other->client->pers.teamState.flagsince ) >= 8000 ) {
+			AddTeamScore( ent->s.pos.trBase, atkTeam, 1 );
+			trap_SendServerCommand( other->s.clientNum,
+				"cp \"Safe Carrier!\n+1 Bonus Point\"" );
+			G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " is a Safe Carrier! Attackers score 1 bonus point!\n\"",
+				cl->pers.netname ) );
+			other->client->ps.eFlags &= ~EF_AWARDS;
+			other->client->ps.eFlags |= EF_AWARD_DEFEND;
+			other->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+		}
 		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " captured the flag! Attackers score!\n\"",
 			cl->pers.netname ) );
 		G_ATDEndRound();
@@ -932,6 +949,7 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 	// Re-picking a dropped flag does not score again.
 	if ( g_gametype.integer == GT_CTFS && !( ent->flags & FL_DROPPED_ITEM ) && !level.atdTouchScored ) {
 		level.atdTouchScored = qtrue;
+		level.atdFlagToucherNum = other->s.clientNum;
 		AddTeamScore( ent->s.pos.trBase, other->client->sess.sessionTeam, 1 );
 		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " touched the flag! Attackers score 1 point!\n\"",
 			cl->pers.netname ) );
@@ -962,6 +980,38 @@ int Pickup_Team( gentity_t *ent, gentity_t *other ) {
 		}
 		if ( level.time < level.atdRoundStartTime ) {
 			return 0;
+		}
+		/* g_threewave post-elimination touch window: defenders are all dead and
+		   the 3-second grace period is active. Allow attackers to touch the base
+		   flag once for +1 bonus point. The flag does NOT enter their possession. */
+		if ( g_threewave.integer && level.atdElimTime > 0 ) {
+			team_t atkTeam = ((level.atdEliminationSides + level.atdRoundNumber) % 2 == 0)
+			               ? TEAM_RED : TEAM_BLUE;
+			/* Determine flag team from classname to skip dropped flags. */
+			int flagTeamTag = -1;
+			if ( strcmp(ent->classname, "team_CTF_redflag") == 0 )
+				flagTeamTag = TEAM_RED;
+			else if ( strcmp(ent->classname, "team_CTF_blueflag") == 0 )
+				flagTeamTag = TEAM_BLUE;
+			if ( cl->sess.sessionTeam == atkTeam && !level.atdElimTouchScored
+			     && !(ent->flags & FL_DROPPED_ITEM) && flagTeamTag >= 0 ) {
+				level.atdElimTouchScored = qtrue;
+				AddTeamScore( ent->s.pos.trBase, atkTeam, 1 );
+				G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE
+					" touches the flag! Attackers score 1 bonus point!\n\"",
+					cl->pers.netname ) );
+				/* Fire GTS flag-taken sound with the toucher's clientNum so
+				   cgame can play "you have the flag" for them specifically. */
+				{
+					gentity_t *te;
+					te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_TEAM_SOUND );
+					te->s.eventParm = ( flagTeamTag == TEAM_BLUE ) ? GTS_RED_TAKEN : GTS_BLUE_TAKEN;
+					te->s.otherEntityNum = other->s.clientNum;
+					te->r.svFlags |= SVF_BROADCAST;
+				}
+				CalculateRanks();
+			}
+			return 0; /* never give the flag to the player during elim window */
 		}
 	}
 

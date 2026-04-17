@@ -986,6 +986,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 #ifdef MISSIONPACK
+	// GT_CTFS: no damage to players while the round hasn't gone live yet
+	if ( g_gametype.integer == GT_CTFS && targ->client &&
+	     level.atdRoundNumber != level.atdRoundNumberStarted ) {
+		return;
+	}
 	if ( targ->client && mod != MOD_JUICED) {
 		if ( targ->client->invulnerabilityTime > level.time) {
 			if ( dir && point ) {

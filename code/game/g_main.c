@@ -514,6 +514,8 @@ static void G_UpdateCvars( void ) {
 						int idx = cv->vmCvar->integer;
 						const char *name = (idx >= 0 && idx <= 4) ? moveTypeNames[idx] : cv->vmCvar->string;
 						G_BroadcastServerCommand( -1, va("print \"^3%s movement enabled\n\"", name) );
+					} else if ( cv->vmCvar == &g_threewave ) {
+						G_BroadcastServerCommand( -1, va("print \"^3g_threewave change will take effect after map restart.\n\"") );
 					} else {
 						G_BroadcastServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
 							cv->cvarName, cv->vmCvar->string ) );
@@ -730,6 +732,9 @@ static void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		level.atdRoundBluePlayers   = 0;
 		level.atdRoundStartRed      = 0;
 		level.atdRoundStartBlue     = 0;
+		level.atdFlagToucherNum     = -1;
+		level.atdElimTime           = 0;
+		level.atdElimTouchScored    = qfalse;
 		Com_Memset( level.atdRoundScoresRed,  0, sizeof( level.atdRoundScoresRed  ) );
 		Com_Memset( level.atdRoundScoresBlue, 0, sizeof( level.atdRoundScoresBlue ) );
 		/* Clear the round score configstring so clients start fresh. */
@@ -1733,6 +1738,7 @@ static void ClearBodyQue( void ) {
 	for ( i = 0 ; i < BODY_QUEUE_SIZE ; i++ ) {
 		ent = level.bodyQue[ i ];
 		if ( ent->r.linked || ent->physicsObject ) {
+			GibEntity( ent, 0 );
 			trap_UnlinkEntity( ent );
 			ent->physicsObject = qfalse;
 		}
@@ -2329,8 +2335,29 @@ Resets flags, advances the round counter, and begins the next warmup.
 void G_ATDEndRound( void ) {
 	int halfIdx;
 	int scorelimit;
+	int i;
+	gclient_t *cl;
 
 	Team_ResetFlags();
+	ClearBodyQue();
+
+	/* Reset health and armor for all active players so they enter the warmup
+	   at full health rather than carrying over end-of-round damage. */
+	for ( i = 0; i < level.maxclients; i++ ) {
+		cl = &level.clients[i];
+		if ( cl->pers.connected != CON_CONNECTED ) {
+			continue;
+		}
+		if ( cl->sess.sessionTeam == TEAM_SPECTATOR ) {
+			continue;
+		}
+		if ( g_entities[i].health <= 0 ) {
+			continue;
+		}
+		g_entities[i].health =
+			cl->ps.stats[STAT_HEALTH] = cl->ps.stats[STAT_MAX_HEALTH];
+		cl->ps.stats[STAT_ARMOR]  = cl->ps.stats[STAT_MAX_HEALTH];
+	}
 
 	/* Record this half-round's per-team score delta before advancing the counter. */
 	halfIdx = level.atdRoundNumber - 1; /* 0-based */
@@ -2402,6 +2429,9 @@ void G_ATDEndRound( void ) {
 	level.atdRoundRedPlayers  = 0;
 	level.atdRoundBluePlayers = 0;
 	level.atdRound30SecWarned = qfalse;
+	level.atdFlagToucherNum   = -1;
+	level.atdElimTime         = 0;
+	level.atdElimTouchScored  = qfalse;
 	/* Clear the active-round timer on clients — round is now in warmup phase. */
 	trap_SetConfigstring( CS_ATD_ROUNDSTART, "0" );
 	trap_SetConfigstring( CS_ATD_RESPAWNED, "0" );
@@ -2476,6 +2506,10 @@ static void G_CheckATDRound( void ) {
 				}
 				respawn( ent );
 			}
+			/* respawn() -> ClientSpawn() -> CopyToBodyQue() creates fresh body
+			   entities for each dead player.  Clear them now so no corpse
+			   leftovers are visible for the rest of the warmup. */
+			ClearBodyQue();
 		}
 
 		/* When warmup expires, officially start the round. */
@@ -2543,15 +2577,33 @@ static void G_CheckATDRound( void ) {
 		return;
 	}
 
-	/* 4. Entire defending team wiped — attackers earn 2 pts. */
+	/* 4. Entire defending team wiped — attackers earn 2 pts.
+	   g_threewave: defer 3 seconds to allow a final flag touch for +1 before ending. */
 	if ( liesDef == 0 ) {
-		G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Attackers score 2 points!\n\"" );
-		AddTeamScore( level.intermission_origin, atkTeam, 2 );
-		G_ATDEndRound();
-		if ( !level.intermissionQueued ) {
-			G_ATDGlobalSound( atkTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
+		if ( g_threewave.integer && level.atdElimTime == 0 ) {
+			/* First frame of elimination: start the 3-second touch window. */
+			level.atdElimTime = level.time;
+			G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Touch the flag for a bonus point!\n\"" );
 		}
-		return;
+		/* Wait out the 3-second window before ending the round. */
+		if ( level.atdElimTime > 0 && level.time >= level.atdElimTime + 3000 ) {
+			AddTeamScore( level.intermission_origin, atkTeam, 2 );
+			G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Attackers score 2 points!\n\"" );
+			G_ATDEndRound();
+			if ( !level.intermissionQueued ) {
+				G_ATDGlobalSound( atkTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
+			}
+			return;
+		}
+		if ( !g_threewave.integer ) {
+			G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Attackers score 2 points!\n\"" );
+			AddTeamScore( level.intermission_origin, atkTeam, 2 );
+			G_ATDEndRound();
+			if ( !level.intermissionQueued ) {
+				G_ATDGlobalSound( atkTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
+			}
+			return;
+		}
 	}
 }
 #endif /* MISSIONPACK */

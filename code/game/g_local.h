@@ -473,6 +473,11 @@ typedef struct {
 	qboolean	atdRound30SecWarned;	// qtrue once the 30-second warning sound has fired this round
 	qboolean	atdTouchScored;		// qtrue once the base-flag +1 has been awarded this half-round
 
+	// g_threewave safe-carrier and post-elimination touch bonus tracking
+	int			atdFlagToucherNum;	// clientNum of the attacker who first touched the base flag this round (-1 = none)
+	int			atdElimTime;		// level.time when defending team was eliminated (0 = not eliminated yet)
+	qboolean	atdElimTouchScored;	// qtrue once the post-elimination touch bonus has been awarded
+
 } level_locals_t;
 
 
@@ -562,6 +567,7 @@ void G_Damage (gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod);
 int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t impactpoint, vec3_t bouncedir );
 void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
+void GibEntity( gentity_t *self, int killer );
 void TossClientItems( gentity_t *self );
 #ifdef MISSIONPACK
 void TossClientPersistantPowerups( gentity_t *self );

@@ -236,5 +236,6 @@ G_CVAR( pmove_noPlayerClip,                     "pmove_noPlayerClip",           
 G_CVAR( g_roundtimelimit, "roundtimelimit", "90", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue, qfalse )
 G_CVAR( atd_rounddelay,   "atd_rounddelay", "10", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue, qfalse )
 G_CVAR( atd_scorelimit, "scorelimit",      "10",  CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue, qfalse )
+G_CVAR( g_threewave, "g_threewave", "0", CVAR_SYSTEMINFO | CVAR_SERVERINFO | CVAR_LATCH, 0, qtrue, qfalse )
 
 #undef G_CVAR

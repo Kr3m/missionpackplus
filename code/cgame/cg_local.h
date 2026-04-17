@@ -1179,6 +1179,7 @@ typedef struct {
 	qboolean		pmove_fixed;
 	int				pmove_msec;
 	int				g_moveType;
+	unsigned int	g_threewave;
 
 	qboolean		synchronousClients;
 
