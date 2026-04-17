@@ -470,6 +470,7 @@ typedef struct {
 	int			atdRoundStartRed;	// teamScores[RED] at the start of the current half
 	int			atdRoundStartBlue;	// teamScores[BLUE] at the start of the current half
 	qboolean	atdRound30SecWarned;	// qtrue once the 30-second warning sound has fired this round
+	qboolean	atdTouchScored;		// qtrue once the base-flag +1 has been awarded this half-round
 
 } level_locals_t;
 

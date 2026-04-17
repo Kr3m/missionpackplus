@@ -558,33 +558,32 @@ void CG_DrawOldTourneyScoreboard( void ) {
 CG_DrawATDRoundScores
 
 Draws the round-score panel during inter-round warmup.
-Geometry mirrors the menudef layout (640x120 panel at the top of screen):
+Geometry (640x120 panel centred vertically on the 480px screen):
 
-  rect 0   0  640 120  -- panel
-  rect 2   2  636 116  -- border
-  rect 114 2    2 116  -- left divider (after label column)
-  rect 2  40  636   2  -- header divider
-  "Round"  / round numbers  at y=10 h=20  scale 0.30
-  Red label / red scores    at y=55 h=20  scale 0.35 / 0.30
-  Blue label / blue scores  at y=85 h=20  scale 0.35 / 0.30
+  x=2..85   (84px)  label column  — wide enough for the longest team name
+  x=86..87  (2px)   left divider
+  x=88..587 (500px) 10 round columns × 50px each  (scroll when >10 rounds)
+  x=588..589 (2px)  right divider before T column
+  x=590..635 (46px) T (total) column — fixed, always shows full-game totals
+  x=636..638         right border
 
-  10 score columns, pitch 53px, first column left-edge at x=140, cell width 40.
-  Numbers are centered within their 40px cell.
-  Shows "-" for unplayed rounds; shifts window left once more than 10 rounds.
+  "Round" / round numbers  at y=10 h=20  scale 0.28
+  Red label / red scores   at y=55 h=20  scale 0.33 / 0.28
+  Blue label / blue scores at y=85 h=20  scale 0.33 / 0.28
+
+  Numbers are centered within their column cell.
+  Shows "-" for unplayed rounds; oldest round drops off the left once the
+  visible window exceeds DISP_COLS.  The T column always shows cgs.scores1/2.
 =================
 */
 void CG_DrawATDRoundScores( float fade ) {
-	/*
-	 * Layout: 640x120 panel centred vertically on the 480px screen.
-	 * Label column: x=2..114 (112px).  Score area: x=116..638 (522px).
-	 * 10 columns, each 52px wide (522/10 = 52.2 → 52).
-	 * COL0_LEFT=116, PITCH=52, centering uses the full 52px slot.
-	 */
 	static const float	SCALE_NUM  = 0.28f;	/* round numbers + score values */
 	static const float	SCALE_LBL  = 0.33f;	/* team name labels */
-	static const float	COL_PITCH  = 52.0f;
-	static const float	COL0_LEFT  = 116.0f;
-	static const float	LABEL_X    = 10.0f;
+	static const float	COL_PITCH  = 50.0f;	/* width of each round column */
+	static const float	COL0_LEFT  = 88.0f;	/* left edge of first round column */
+	static const float	TCOL_LEFT  = 590.0f;	/* left edge of T (total) column */
+	static const float	TCOL_W     = 46.0f;	/* width of T column */
+	static const float	LABEL_X    = 5.0f;	/* indent for team-name / "Round" labels */
 	static const float	PANEL_H    = 120.0f;
 	static const float	PANEL_Y    = ( 480.0f - 120.0f ) * 0.5f;
 	static const int	DISP_COLS  = 10;
@@ -616,24 +615,32 @@ void CG_DrawATDRoundScores( float fade ) {
 	CG_FillRect( 0,   PANEL_Y,            640,  PANEL_H,       cBg );
 	CG_DrawRect( 2,   PANEL_Y + 2,        636,  PANEL_H - 4,   1.0f, cBorder );
 	/* vertical divider after label column */
-	CG_FillRect( 114, PANEL_Y + 2,        2,    PANEL_H - 4,   cBorder );
+	CG_FillRect( 86,  PANEL_Y + 2,        2,    PANEL_H - 4,   cBorder );
+	/* vertical divider before T column */
+	CG_FillRect( 588, PANEL_Y + 2,        2,    PANEL_H - 4,   cBorder );
 	/* horizontal divider below header */
 	CG_FillRect( 2,   PANEL_Y + 40,       636,  2,             cBorder );
 
 	/* --- header row (y=10, h=20) --- */
 	baseY = PANEL_Y + 10.0f + ( 20.0f + textH ) * 0.5f;
-	CG_Text_Paint( LABEL_X, baseY, SCALE_NUM, cWhite, "Round", 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	cx = 2.0f + ( 84.0f - (float)CG_Text_Width( "Round", SCALE_NUM, 0 ) ) * 0.5f;
+	CG_Text_Paint( cx, baseY, SCALE_NUM, cWhite, "Round", 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 	for ( i = 0; i < DISP_COLS; i++ ) {
 		s  = va( "%i", windowStart + i + 1 );
 		cx = COL0_LEFT + (float)i * COL_PITCH
 		     + ( COL_PITCH - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
 		CG_Text_Paint( cx, baseY, SCALE_NUM, cWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 	}
+	/* T column header */
+	s  = "T";
+	cx = TCOL_LEFT + ( TCOL_W - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
+	CG_Text_Paint( cx, baseY, SCALE_NUM, cWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 
 	/* --- red row (y=55, h=20) --- */
 	baseY = PANEL_Y + 55.0f + ( 20.0f + textH ) * 0.5f;
 	s = cgs.redTeam[0] ? cgs.redTeam : DEFAULT_REDTEAM_NAME;
-	CG_Text_Paint( LABEL_X, baseY, SCALE_LBL, cRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	cx = 2.0f + ( 84.0f - (float)CG_Text_Width( s, SCALE_LBL, 0 ) ) * 0.5f;
+	CG_Text_Paint( cx, baseY, SCALE_LBL, cRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 	for ( i = 0; i < DISP_COLS; i++ ) {
 		half0 = ( windowStart + i ) * 2;
 		half1 = half0 + 1;
@@ -647,11 +654,16 @@ void CG_DrawATDRoundScores( float fade ) {
 		     + ( COL_PITCH - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
 		CG_Text_Paint( cx, baseY, SCALE_NUM, cRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 	}
+	/* T column: red team total (same source as main scoreboard red score) */
+	s  = cgs.scores1 != SCORE_NOT_PRESENT ? va( "%i", cgs.scores1 ) : "-";
+	cx = TCOL_LEFT + ( TCOL_W - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
+	CG_Text_Paint( cx, baseY, SCALE_NUM, cRed, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 
 	/* --- blue row (y=85, h=20) --- */
 	baseY = PANEL_Y + 85.0f + ( 20.0f + textH ) * 0.5f;
 	s = cgs.blueTeam[0] ? cgs.blueTeam : DEFAULT_BLUETEAM_NAME;
-	CG_Text_Paint( LABEL_X, baseY, SCALE_LBL, cBlu, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
+	cx = 2.0f + ( 84.0f - (float)CG_Text_Width( s, SCALE_LBL, 0 ) ) * 0.5f;
+	CG_Text_Paint( cx, baseY, SCALE_LBL, cBlu, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 	for ( i = 0; i < DISP_COLS; i++ ) {
 		half0 = ( windowStart + i ) * 2;
 		half1 = half0 + 1;
@@ -665,5 +677,9 @@ void CG_DrawATDRoundScores( float fade ) {
 		     + ( COL_PITCH - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
 		CG_Text_Paint( cx, baseY, SCALE_NUM, cBlu, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 	}
+	/* T column: blue team total (same source as main scoreboard blue score) */
+	s  = cgs.scores2 != SCORE_NOT_PRESENT ? va( "%i", cgs.scores2 ) : "-";
+	cx = TCOL_LEFT + ( TCOL_W - (float)CG_Text_Width( s, SCALE_NUM, 0 ) ) * 0.5f;
+	CG_Text_Paint( cx, baseY, SCALE_NUM, cBlu, s, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
 }
 #endif /* MISSIONPACK */

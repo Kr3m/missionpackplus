@@ -2480,6 +2480,7 @@ static void G_CheckATDRound( void ) {
 
 			level.atdRoundNumberStarted = level.atdRoundNumber;
 			level.atdRound30SecWarned   = qfalse;
+			level.atdTouchScored        = qfalse;
 			level.atdRoundRedPlayers    = G_ATDTeamLivingCount( TEAM_RED );
 			level.atdRoundBluePlayers   = G_ATDTeamLivingCount( TEAM_BLUE );
 			level.atdRoundStartRed      = level.teamScores[TEAM_RED];

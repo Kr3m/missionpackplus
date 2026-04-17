@@ -930,7 +930,8 @@ static int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, team_t team ) 
 
 	// GT_CTFS (Attack & Defend): 1 point for the initial flag pickup from base only.
 	// Re-picking a dropped flag does not score again.
-	if ( g_gametype.integer == GT_CTFS && !( ent->flags & FL_DROPPED_ITEM ) ) {
+	if ( g_gametype.integer == GT_CTFS && !( ent->flags & FL_DROPPED_ITEM ) && !level.atdTouchScored ) {
+		level.atdTouchScored = qtrue;
 		AddTeamScore( ent->s.pos.trBase, other->client->sess.sessionTeam, 1 );
 		G_BroadcastServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " touched the flag! Attackers score 1 point!\n\"",
 			cl->pers.netname ) );
