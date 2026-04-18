@@ -687,6 +687,8 @@ void QDECL G_LogPrintf( const char *fmt, ... );
 void QDECL G_Printf( const char *fmt, ... );
 void QDECL G_Error( const char *fmt, ... );
 void G_BroadcastServerCommand( int ignoreClient, const char *command );
+void LogExit( const char *string );
+void ClearBodyQue( void );
 
 //
 // g_client.c
@@ -715,11 +717,14 @@ void Team_InitGame( void );
 void Team_DirtyFlagStatus( void );
 
 //
-// g_main.c (ATD helpers, called from g_team.c)
+// g_and.c (Attack & Defend)
 //
+void G_ATDInitGame( void );
+void G_ATDWarmupEnd( void );
 void G_ATDEndRound( void );
 void G_ATDGlobalSound( const char *path );
 void G_ATDClientSound( int clientNum, const char *path );
+void G_CheckATDRound( void );
 void G_ATDCycleTeammateFollow( gentity_t *ent );
 int  G_LastAliveOnTeam( team_t team );
 void G_CheckLastTeamStanding( gentity_t *self );

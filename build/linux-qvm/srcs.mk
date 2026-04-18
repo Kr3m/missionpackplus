@@ -1,5 +1,5 @@
 QA_SRC = \
- g_main $(QADIR)/g_syscalls.asm \
+ g_main g_and $(QADIR)/g_syscalls.asm \
  bg_misc bg_lib bg_pmove bg_movement bg_slidemove \
  q_math q_shared \
  ai_dmnet ai_dmq3 ai_team ai_main ai_chat ai_cmd ai_vcmd \

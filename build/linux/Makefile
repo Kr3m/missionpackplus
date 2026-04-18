@@ -369,6 +369,7 @@ $(B)/$(MOD)/cgame$(SHLIBNAME): $(CGOBJ)
 
 QAOBJ_ = \
   $(B)/$(MOD)/game/g_main.o \
+  $(B)/$(MOD)/game/g_and.o \
   $(B)/$(MOD)/game/ai_chat.o \
   $(B)/$(MOD)/game/ai_cmd.o \
   $(B)/$(MOD)/game/ai_dmnet.o \
