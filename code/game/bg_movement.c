@@ -38,7 +38,7 @@ int phy_step_maxvel;  // When set, it limits the maximum vertical speed at which
 // Jump
 int phy_jump_type;         // Jump type selection. Available VQ3, CPM
 int phy_jump_velocity;     // Vertical velocity that will be set/added when jumping (default = JUMP_VELOCITY = 270)
-int phy_jump_timebuffer;   // Amount of time(ms) since last jump, where CPM dj behavior can happen. (default CPM = 400)
+int phy_jump_timebuffer;   // Amount of time(ms) since last jump, where CPM dj behavior can happen. (default CPM = 500)
 int phy_jump_dj_velocity;  // Amount of velocity to add to CPM dj behavior. (default CPM = 100)
 // Powerups
 // float phy_haste_factor;           // Multiplier to apply during haste powerup (q3 default = 1.3)
@@ -811,8 +811,8 @@ void cpm_init(void) {
 	phy_slick_accel = 15;                             // CPM: full ground accel on slick surfaces
 	// Water
 	phy_water_friction   = 0.5f;
-	phy_water_scale      = 0.5f;                      // pmove_WaterSwimScale
-	phy_water_wade_scale = 0.75f;                     // pmove_WaterWadeScale
+	phy_water_scale      = 0.5f;                      // pmove_WaterSwimScale (QVM struct +0x64 = 0.5)
+	phy_water_wade_scale = 5.0f;                      // QVM struct +0x68 = 5.0 (unrestricted wading)
 	// Ground
 	phy_ground_accel = 15.0f;                         // pmove_WalkAccel (ratoa: pm_cpm_accelerate)
 	phy_friction     = 6.0f;                          // pmove_WalkFriction
@@ -833,7 +833,7 @@ void cpm_init(void) {
 	// Jump
 	phy_jump_type        = CPM;
 	phy_jump_velocity    = JUMP_VELOCITY;             // pmove_JumpVelocity = 270
-	phy_jump_timebuffer  = 400;
+	phy_jump_timebuffer  = 500;                       // QVM struct +0x2C = 500ms
 	phy_jump_dj_velocity = 100;
 	phy_step_maxvel      = JUMP_VELOCITY + 100;       // 370 (double-jump cap)
 	// Jump behavior flags
@@ -919,16 +919,18 @@ void vq3_init(void) {
 }
 
 void cq3_init(void) {
-	// CQ3: identical pmove_ values as VQ3; physics corrections do not affect parameters
+	// CQ3: Challenge Quake3 — VQ3 base with CPMA physics fixes.
+	// Differs from VQ3: ground_accel=10.5, friction=5.6, water_scale=0.75, water_wade=5.0
+	// Enables: double_jump (timebuffer=1000ms), ramp_jump (scale=1.25) — no CPM dj_velocity bonus
 	// Slick
 	phy_slick_accel = 1;
 	// Water
 	phy_water_friction   = pm_waterfriction;
-	phy_water_scale      = 0.5f;                      // pmove_WaterSwimScale
-	phy_water_wade_scale = 0.75f;                     // pmove_WaterWadeScale
+	phy_water_scale      = 0.75f;                     // pmove_WaterSwimScale (QVM struct +0x64 = 0.75)
+	phy_water_wade_scale = 5.0f;                      // QVM struct +0x68 = 5.0
 	// Ground
-	phy_ground_accel = 10.0f;                         // pmove_WalkAccel
-	phy_friction     = 6.0f;                          // pmove_WalkFriction
+	phy_ground_accel = 10.5f;                         // pmove_WalkAccel (QVM: 0x41280000 = 10.5)
+	phy_friction     = 5.6f;                          // pmove_WalkFriction (QVM CQ3 path: 6.0 - 0.4)
 	// Air
 	phy_air_accel         = 1.0f;                     // pmove_AirAccel
 	phy_airstopaccelerate = 1.0f;                     // pmove_AirStopAccel
@@ -947,19 +949,19 @@ void cq3_init(void) {
 	// Jump
 	phy_jump_type        = VQ3;
 	phy_jump_velocity    = JUMP_VELOCITY;             // pmove_JumpVelocity = 270
-	phy_jump_timebuffer  = 0;
+	phy_jump_timebuffer  = 1000;                      // QVM struct +0x2c = 1000ms
 	phy_jump_dj_velocity = 0;
-	// Jump behavior flags (all off)
+	// Jump behavior flags
 	phy_autohop              = qfalse;
 	phy_bunnyhop             = qfalse;                // pmove_BunnyHop
-	phy_double_jump          = qfalse;
+	phy_double_jump          = qtrue;                 // QVM struct +0x10 = 1.0
 	phy_chain_jump           = qfalse;
 	phy_chain_jump_velocity  = 0;
 	phy_step_jump            = qfalse;
 	phy_step_jump_velocity   = 0;
 	phy_crouchstepjump       = qfalse;
-	phy_ramp_jump            = qfalse;
-	phy_ramp_jump_scale      = 1.0f;
+	phy_ramp_jump            = qtrue;                 // QVM struct +0x14 = 1.0
+	phy_ramp_jump_scale      = 1.25f;                 // QVM struct +0x74 = 1.25 (inherited from CPM template)
 	phy_jump_velocity_max    = JUMP_VELOCITY;
 	phy_jump_scale_add       = 0;
 	phy_jump_time_threshold  = 0;
@@ -1108,12 +1110,15 @@ static void q3a_AirControl(vec3_t wishdir, float wishspeed) {
 	pm->ps->velocity[2] = 0;
 	speed         = VectorLength(pm->ps->velocity);
 	VectorNormalize(pm->ps->velocity);
-	k = 32;  // Magic constant. Why 32?
+	k = 32;  // Base constant (matches CPMA/ratoa reference)
 
 	// Calculate turning amount
 	dot = DotProduct(pm->ps->velocity, wishdir);
 
 	if (dot > 0) {
+		// k = 32 * aircontrol_amount * dot^power * frametime
+		// VectorMAM(speed, vel_norm, k, wishdir) = speed*vel_norm + k*wishdir
+		// Equivalent to ratoa: VectorMA(origin,speed,vel) then VectorMA(vel,k,wishdir)
 		k = k * phy_aircontrol_amount * Q_powf(dot, phy_aircontrol_power) * pml.frametime;
 		VectorMAM(speed, pm->ps->velocity, k, wishdir, pm->ps->velocity);
 		VectorNormalize(pm->ps->velocity);

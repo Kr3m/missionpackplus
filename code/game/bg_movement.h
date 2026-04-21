@@ -42,7 +42,7 @@ extern int phy_step_maxvel;  // When set, it limits the maximum vertical speed a
 // Jump
 extern int phy_jump_type;         // Jump type selection. Available VQ3, CPM
 extern int phy_jump_velocity;     // Vertical velocity that will be set/added when jumping (default = JUMP_VELOCITY = 270)
-extern int phy_jump_timebuffer;   // Amount of time(ms) since last jump, where CPM dj behavior can happen. (default CPM = 400)
+extern int phy_jump_timebuffer;   // Amount of time(ms) since last jump, where CPM dj behavior can happen. (default CPM = 500)
 extern int phy_jump_dj_velocity;  // Amount of velocity to add to CPM dj behavior. (default CPM = 100)
 // Powerups
 // extern float phy_haste_factor;           // Multiplier to apply during haste powerup (q3 default = 1.3)
