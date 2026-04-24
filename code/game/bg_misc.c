@@ -1133,12 +1133,12 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 			// GT_CTFS: same grab rules as GT_CTF; server-side Pickup_Team enforces
 			// that only the attacking team may interact with flags.
 			if (ps->persistant[PERS_TEAM] == TEAM_RED) {
-				if (item->giTag == PW_BLUEFLAG ||
+				if ((item->giTag == PW_BLUEFLAG && !ps->powerups[PW_BLUEFLAG]) ||
 					(item->giTag == PW_REDFLAG && ent->modelindex2) ||
 					(item->giTag == PW_REDFLAG && ps->powerups[PW_BLUEFLAG]) )
 					return qtrue;
 			} else if (ps->persistant[PERS_TEAM] == TEAM_BLUE) {
-				if (item->giTag == PW_REDFLAG ||
+				if ((item->giTag == PW_REDFLAG && !ps->powerups[PW_REDFLAG]) ||
 					(item->giTag == PW_BLUEFLAG && ent->modelindex2) ||
 					(item->giTag == PW_BLUEFLAG && ps->powerups[PW_REDFLAG]) )
 					return qtrue;
