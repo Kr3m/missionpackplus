@@ -861,8 +861,8 @@ static int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, team_t team ) {
 		   G_ATDEndRound already played the game-over sound. */
 		if ( !level.intermissionQueued ) {
 			G_ATDGlobalSound( atkTeam == TEAM_RED
-				? "sound/vo/red_wins_round.wav"
-				: "sound/vo/blue_wins_round.wav" );
+				? "sound/vo_evil/red_wins_round.wav"
+				: "sound/vo_evil/blue_wins_round.wav" );
 		}
 	}
 #endif

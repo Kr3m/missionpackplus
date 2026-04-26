@@ -253,14 +253,14 @@ void G_ATDEndRound( void ) {
 					CalculateRanks();
 					G_BroadcastScoresToAllClients();
 					G_BroadcastServerCommand( -1, "print \"^4Blue^7 wins!\n\"" );
-					G_ATDGlobalSound( "sound/vo/blue_wins.wav" );
+					G_ATDGlobalSound( "sound/vo_evil/blue_wins.wav" );
 					LogExit( "Scorelimit hit." );
 					return;
 				} else if ( red > blue ) {
 					CalculateRanks();
 					G_BroadcastScoresToAllClients();
 					G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\n\"" );
-					G_ATDGlobalSound( "sound/vo/red_wins.wav" );
+					G_ATDGlobalSound( "sound/vo_evil/red_wins.wav" );
 					LogExit( "Scorelimit hit." );
 					return;
 				}
@@ -418,7 +418,7 @@ void G_CheckATDRound( void ) {
 		G_BroadcastServerCommand( -1, "print \"Attacking team eliminated! Round over.\n\"" );
 		G_ATDEndRound();
 		if ( !level.intermissionQueued ) {
-			G_ATDGlobalSound( defTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
+			G_ATDGlobalSound( defTeam == TEAM_RED ? "sound/vo_evil/red_wins_round.wav" : "sound/vo_evil/blue_wins_round.wav" );
 		}
 		return;
 	}
@@ -437,7 +437,7 @@ void G_CheckATDRound( void ) {
 			G_BroadcastServerCommand( -1, "print \"Defending team eliminated! Attackers score 2 points!\n\"" );
 			G_ATDEndRound();
 			if ( !level.intermissionQueued ) {
-				G_ATDGlobalSound( atkTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
+				G_ATDGlobalSound( atkTeam == TEAM_RED ? "sound/vo_evil/red_wins_round.wav" : "sound/vo_evil/blue_wins_round.wav" );
 			}
 			return;
 		}
@@ -446,7 +446,7 @@ void G_CheckATDRound( void ) {
 			AddTeamScore( level.intermission_origin, atkTeam, 2 );
 			G_ATDEndRound();
 			if ( !level.intermissionQueued ) {
-				G_ATDGlobalSound( atkTeam == TEAM_RED ? "sound/vo/red_wins_round.wav" : "sound/vo/blue_wins_round.wav" );
+				G_ATDGlobalSound( atkTeam == TEAM_RED ? "sound/vo_evil/red_wins_round.wav" : "sound/vo_evil/blue_wins_round.wav" );
 			}
 			return;
 		}
