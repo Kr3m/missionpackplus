@@ -1166,6 +1166,25 @@ void CG_PredictPlayerState( void ) {
 		if ( cg_pmove.pmove_fixed ) {
 			cg_pmove.cmd.serverTime = ((cg_pmove.cmd.serverTime + cg_pmove.pmove_msec-1) / cg_pmove.pmove_msec) * cg_pmove.pmove_msec;
 		}
+
+		/* GT_CTFS: mirror server-side settle/freeze logic so prediction matches
+		   authoritative movement during inter-round warmup. */
+#ifdef MISSIONPACK
+		if ( cgs.gametype == GT_CTFS &&
+		     cg.warmup != 0 &&
+		     cgs.atdRoundRespawned &&
+		     cgs.atdRoundFreezeTime > 0 &&
+		     cg_pmove.ps->pm_type == PM_NORMAL ) {
+			if ( cg_pmove.cmd.serverTime >= cgs.atdRoundFreezeTime ) {
+				cg_pmove.ps->pm_type = PM_FREEZE;
+			} else {
+				cg_pmove.cmd.forwardmove = 0;
+				cg_pmove.cmd.rightmove   = 0;
+				cg_pmove.cmd.upmove      = 0;
+				cg_pmove.cmd.buttons    &= ~BUTTON_ATTACK;
+			}
+		}
+#endif
 #if 0
 		if ( !cg_optimizePrediction.integer ) {
 			Pmove (&cg_pmove);

@@ -47,12 +47,15 @@ void G_ATDInitGame( void ) {
 	level.atdFlagToucherNum     = -1;
 	level.atdElimTime           = 0;
 	level.atdElimTouchScored    = qfalse;
+	level.atdTimelimitHit       = qfalse;
+	level.atdAccumulatedPlayMs  = 0;
 	Com_Memset( level.atdRoundScoresRed,  0, sizeof( level.atdRoundScoresRed  ) );
 	Com_Memset( level.atdRoundScoresBlue, 0, sizeof( level.atdRoundScoresBlue ) );
 	/* Clear the round score configstring so clients start fresh. */
 	trap_SetConfigstring( CS_ATD_ROUNDSCORES, "" );
 	trap_SetConfigstring( CS_ATD_ROUNDSTART, "0" );
 	trap_SetConfigstring( CS_ATD_RESPAWNED, "0" );
+	trap_SetConfigstring( CS_ATD_ACCUMULATED, "0" );
 	/* CS_WARMUP will be set after the initial match warmup ends (G_ATDEndRound). */
 }
 
@@ -181,29 +184,9 @@ Resets flags, advances the round counter, and begins the next warmup.
 void G_ATDEndRound( void ) {
 	int halfIdx;
 	int scorelimit;
-	int i;
-	gclient_t *cl;
 
 	Team_ResetFlags();
 	ClearBodyQue();
-
-	/* Reset health and armor for all active players so they enter the warmup
-	   at full health rather than carrying over end-of-round damage. */
-	for ( i = 0; i < level.maxclients; i++ ) {
-		cl = &level.clients[i];
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		if ( cl->sess.sessionTeam == TEAM_SPECTATOR ) {
-			continue;
-		}
-		if ( g_entities[i].health <= 0 ) {
-			continue;
-		}
-		g_entities[i].health =
-			cl->ps.stats[STAT_HEALTH] = cl->ps.stats[STAT_MAX_HEALTH];
-		cl->ps.stats[STAT_ARMOR]  = cl->ps.stats[STAT_MAX_HEALTH];
-	}
 
 	/* Record this half-round's per-team score delta before advancing the counter. */
 	halfIdx = level.atdRoundNumber - 1; /* 0-based */
@@ -269,6 +252,52 @@ void G_ATDEndRound( void ) {
 		}
 	}
 
+	/* Match timelimit check — mirrors scorelimit: Blue always gets a response round.
+	   atdTimelimitHit stays set during overtime so CheckExitRules never calls LogExit. */
+	if ( level.atdTimelimitHit ) {
+		int red2  = level.teamScores[TEAM_RED];
+		int blue2 = level.teamScores[TEAM_BLUE];
+		qboolean blueJustAttacked2 =
+			( ( level.atdEliminationSides + level.atdRoundNumber - 1 ) % 2 != 0 );
+
+		if ( blueJustAttacked2 ) {
+			if ( blue2 > red2 ) {
+				CalculateRanks();
+				G_BroadcastScoresToAllClients();
+				G_BroadcastServerCommand( -1, "print \"^4Blue^7 wins!\n\"" );
+				G_ATDGlobalSound( "sound/vo_evil/blue_wins.wav" );
+				LogExit( "Timelimit hit." );
+				return;
+			} else if ( red2 > blue2 ) {
+				CalculateRanks();
+				G_BroadcastScoresToAllClients();
+				G_BroadcastServerCommand( -1, "print \"^1Red^7 wins!\n\"" );
+				G_ATDGlobalSound( "sound/vo_evil/red_wins.wav" );
+				LogExit( "Timelimit hit." );
+				return;
+			}
+			/* Tied — overtime: atdTimelimitHit stays set, play another round pair. */
+			G_BroadcastServerCommand( -1,
+				"print \"Overtime! Scores tied - playing another round!\n\"" );
+		}
+	}
+
+	/* Accumulate the play time from the round that just ended. */
+	{
+		int prevRoundStart = level.atdRoundStartTime;
+		int roundElapsed = level.time - prevRoundStart;
+		if ( g_roundtimelimit.integer > 0 ) {
+			int cap = g_roundtimelimit.integer * 1000;
+			if ( roundElapsed > cap ) {
+				roundElapsed = cap;
+			}
+		}
+		if ( roundElapsed < 0 ) {
+			roundElapsed = 0;
+		}
+		level.atdAccumulatedPlayMs += roundElapsed;
+	}
+
 	level.atdRoundStartTime   = level.time + atd_rounddelay.integer * 1000;
 	level.atdRoundRespawned   = qfalse;
 	level.atdRoundFreezeTime  = 0;
@@ -278,6 +307,12 @@ void G_ATDEndRound( void ) {
 	level.atdFlagToucherNum   = -1;
 	level.atdElimTime         = 0;
 	level.atdElimTouchScored  = qfalse;
+
+	/* Broadcast the accumulated total and freeze the visible game clock during warmup. */
+	trap_SetConfigstring( CS_ATD_ACCUMULATED, va( "%i", level.atdAccumulatedPlayMs ) );
+	level.startTime = level.time - level.atdAccumulatedPlayMs;
+	trap_SetConfigstring( CS_LEVEL_START_TIME, va( "%i", level.startTime ) );
+
 	/* Clear the active-round timer on clients — round is now in warmup phase. */
 	trap_SetConfigstring( CS_ATD_ROUNDSTART, "0" );
 	trap_SetConfigstring( CS_ATD_RESPAWNED, "0" );
@@ -372,6 +407,9 @@ void G_CheckATDRound( void ) {
 			level.atdRoundBluePlayers   = G_ATDTeamLivingCount( TEAM_BLUE );
 			level.atdRoundStartRed      = level.teamScores[TEAM_RED];
 			level.atdRoundStartBlue     = level.teamScores[TEAM_BLUE];
+			/* Count only active round time on the game clock and timelimit checks. */
+			level.startTime = level.atdRoundStartTime - level.atdAccumulatedPlayMs;
+			trap_SetConfigstring( CS_LEVEL_START_TIME, va( "%i", level.startTime ) );
 			/* Publish the exact round-start time so clients can render the countdown. */
 			trap_SetConfigstring( CS_ATD_ROUNDSTART, va( "%i", level.atdRoundStartTime ) );
 			/* Clear the inter-round countdown and unfreeze players. */
@@ -380,6 +418,34 @@ void G_CheckATDRound( void ) {
 				( level.atdRoundNumber + 1 ) / 2,
 				( atkTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7",
 				( defTeam == TEAM_RED ) ? "^1Red^7" : "^4Blue^7" ) );
+
+			/* Respawn everyone at round live so warmup damage never carries into play. */
+			{
+				int spIdx;
+				for ( spIdx = 0; spIdx < level.maxclients; spIdx++ ) {
+					gentity_t *sp = g_entities + spIdx;
+					if ( !sp->inuse || !sp->client ) continue;
+					if ( sp->client->pers.connected != CON_CONNECTED ) continue;
+					if ( sp->client->atdDeadSpecTeam != TEAM_FREE ) {
+						sp->client->sess.sessionTeam     = sp->client->atdDeadSpecTeam;
+						sp->client->sess.spectatorState  = SPECTATOR_NOT;
+						sp->client->atdDeadSpecTeam      = TEAM_FREE;
+						sp->client->sess.spectatorClient = spIdx;
+					}
+					if ( sp->client->sess.sessionTeam == TEAM_SPECTATOR ) continue;
+					respawn( sp );
+				}
+				if ( g_spawnProtection.integer > 0 ) {
+					for ( spIdx = 0; spIdx < level.maxclients; spIdx++ ) {
+						gentity_t *sp = g_entities + spIdx;
+						if ( !sp->inuse || !sp->client ) continue;
+						if ( sp->client->pers.connected != CON_CONNECTED ) continue;
+						if ( sp->client->sess.sessionTeam == TEAM_SPECTATOR ) continue;
+						sp->client->ps.powerups[PW_SPAWNPROTECTION] = level.time + ( g_spawnProtection.integer * 1000 );
+					}
+				}
+				ClearBodyQue();
+			}
 		}
 		return;
 	}

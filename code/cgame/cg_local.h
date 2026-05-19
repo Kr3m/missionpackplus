@@ -824,6 +824,9 @@ typedef struct {
 	qhandle_t	regenShader;
 	qhandle_t	battleSuitShader;
 	qhandle_t	battleWeaponShader;
+	qhandle_t	spawnProtectionShader;
+	qhandle_t	spawnProtectionWeaponShader;
+	qhandle_t	spawnProtectionIcon;
 	qhandle_t	hastePuffShader;
 #ifdef MISSIONPACK
 	qhandle_t	redKamikazeShader;
@@ -1088,6 +1091,7 @@ typedef struct {
 	int				capturelimit;
 	int				timelimit;
 	int				atdRoundTimelimit;	// GT_CTFS: round time limit in seconds (from "roundtimelimit" serverinfo)
+	int				atdScorelimit;		// GT_CTFS: score limit in rounds (from "scorelimit" serverinfo)
 	int				maxclients;
 	int			delagHitscan;
 	int			delagMissileMaxLatency;
@@ -1122,6 +1126,7 @@ typedef struct {
 	int				atdRoundStartTime;		// GT_CTFS: server time (ms) when the current round went live
 	qboolean		atdRoundRespawned;		// GT_CTFS: players have been respawned for warmup (scoreboard visible)
 	int				atdRoundFreezeTime;		// GT_CTFS: cg.time after which player freeze + anim freeze apply
+	int				atdAccumulatedPlayMs;	// GT_CTFS: total play time (ms) from completed rounds (frozen during warmup)
 #endif
 
 	qboolean  newHud;

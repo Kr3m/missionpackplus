@@ -1217,11 +1217,23 @@ static float CG_DrawScores( float y ) {
 			}
 		}
 #endif
-		if ( cgs.gametype >= GT_CTF ) {
+		if ( cgs.gametype == GT_CTF
+#ifdef MISSIONPACK
+			|| cgs.gametype == GT_1FCTF
+			|| cgs.gametype == GT_OBELISK
+			|| cgs.gametype == GT_HARVESTER
+			|| cgs.gametype == GT_CTFS
+#endif
+		) {
 			v = cgs.capturelimit;
 		} else {
 			v = cgs.fraglimit;
 		}
+#ifdef MISSIONPACK
+		if ( cgs.gametype == GT_CTFS && cgs.atdScorelimit > 0 ) {
+			v = cgs.atdScorelimit;
+		}
+#endif
 		if ( v ) {
 			s = va( "%2i", v );
 			CG_DrawString( x-4, y, s, colorWhite, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0, DS_SHADOW | DS_RIGHT );

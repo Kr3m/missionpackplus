@@ -1630,7 +1630,26 @@ static void CheckExitRules( void ) {
 	}
 
 	if ( g_timelimit.integer && !level.warmupTime ) {
-		if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
+		if ( g_gametype.integer == GT_CTFS ) {
+			/* GT_CTFS: only live-round play time counts against the match timelimit.
+			   Blue always gets to finish on offense; match resolution happens in G_ATDEndRound. */
+			if ( level.atdRoundNumber == level.atdRoundNumberStarted && !level.atdTimelimitHit ) {
+				int playMs = level.atdAccumulatedPlayMs + ( level.time - level.atdRoundStartTime );
+				if ( playMs >= g_timelimit.integer * 60000 ) {
+					qboolean blueAttacking =
+						( ( level.atdEliminationSides + level.atdRoundNumber ) % 2 != 0 );
+					level.atdTimelimitHit = qtrue;
+					if ( !blueAttacking ) {
+						G_ATDGlobalSound( "sound/vo_evil/overtime.wav" );
+						G_BroadcastServerCommand( -1,
+							"print \"Match timelimit! ^4Blue^7 gets a final offensive round!\n\"" );
+					} else {
+						G_BroadcastServerCommand( -1,
+							"print \"Match timelimit! Finishing Blue's round...\n\"" );
+					}
+				}
+			}
+		} else if ( level.time - level.startTime >= g_timelimit.integer*60000 ) {
 			G_BroadcastServerCommand( -1, "print \"Timelimit hit.\n\"");
 			LogExit( "Timelimit hit." );
 			return;

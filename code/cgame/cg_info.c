@@ -305,11 +305,22 @@ void CG_DrawInformation( void ) {
 		}
 	}
 
-	if (cgs.gametype >= GT_CTF) {
-		value = atoi( Info_ValueForKey( info, "capturelimit" ) );
-		if ( value ) {
-			UI_DrawProportionalString( 320, y, va( "capturelimit %i", value ),
-				UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
+	if (cgs.gametype >= GT_CTF)
+	{
+		const char *limitLabel = "capturelimit";
+
+		value = atoi(Info_ValueForKey(info, "capturelimit"));
+#ifdef MISSIONPACK
+		if(cgs.gametype == GT_CTFS)
+		{
+			value = atoi(Info_ValueForKey(info, "scorelimit"));
+			limitLabel = "scorelimit";
+		}
+#endif
+		if (value)
+		{
+			UI_DrawProportionalString(320, y, va("%s %i", limitLabel, value),
+			                          UI_CENTER | UI_SMALLFONT | UI_DROPSHADOW, colorWhite);
 			y += PROP_HEIGHT;
 		}
 	}

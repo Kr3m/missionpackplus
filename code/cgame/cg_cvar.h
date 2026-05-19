@@ -146,6 +146,6 @@ CG_CVAR( cg_flagStyle, "cg_flagStyle", "1", CVAR_ARCHIVE )
 2 = enable auto screenshot
 3 = enable auto demo recording and auto screenshot
 */
-CG_CVAR( cg_autoAction, "cg_autoAction", "3", CVAR_ARCHIVE )
+CG_CVAR( cg_autoAction, "cg_autoAction", "0", CVAR_ARCHIVE )
 
 #undef CG_CVAR

@@ -1136,6 +1136,7 @@ void ClientSpawn(gentity_t *ent) {
 	ent->client = &level.clients[index];
 	ent->inuse = qtrue;
 	ent->classname = "player";
+	ent->r.svFlags &= ~SVF_NOCLIENT;
 	if ( isSpectator ) {
 		ent->takedamage = qfalse;
 		ent->r.contents = 0;
@@ -1224,6 +1225,10 @@ void ClientSpawn(gentity_t *ent) {
 	client->respawnTime = level.time;
 	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	client->latched_buttons = 0;
+
+	if ( g_spawnProtection.integer > 0 && g_gametype.integer != GT_CTFS ) {
+		ent->client->ps.powerups[PW_SPAWNPROTECTION] = ent->client->respawnTime + ( g_spawnProtection.integer * 1000 );
+	}
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;

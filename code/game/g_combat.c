@@ -37,9 +37,11 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	if ( level.warmupTime ) {
 		return;
 	}
-	// no frag scoring between round end and the next round going live (GT_CTFS)
+	// no frag scoring between round end and the next round going live (GT_CTFS),
+	// unless threewave mode is enabled
 	if ( g_gametype.integer == GT_CTFS &&
-	     level.atdRoundNumber != level.atdRoundNumberStarted ) {
+	     level.atdRoundNumber != level.atdRoundNumberStarted &&
+	     !g_threewave.integer ) {
 		return;
 	}
 	// show score plum
@@ -818,13 +820,18 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		self->client->sess.sessionTeam    = TEAM_SPECTATOR;
 		self->client->sess.spectatorState = SPECTATOR_FREE;
 		self->client->atdDeadSpecTeam     = origTeam;
+		/* Hide the dead player entity while they are round-spectating. */
+		self->r.svFlags |= SVF_NOCLIENT;
+		trap_UnlinkEntity( self );
 		/* Force the player to follow a living teammate. */
 		G_ATDCycleTeammateFollow( self );
 	}
 	G_CheckLastTeamStanding( self );
 #endif
 
-	trap_LinkEntity (self);
+	if ( !( self->r.svFlags & SVF_NOCLIENT ) ) {
+		trap_LinkEntity (self);
+	}
 
 }
 
@@ -986,11 +993,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 #ifdef MISSIONPACK
-	// GT_CTFS: no damage to players while the round hasn't gone live yet
-	if ( g_gametype.integer == GT_CTFS && targ->client &&
-	     level.atdRoundNumber != level.atdRoundNumberStarted ) {
-		return;
-	}
+	/* GT_CTFS: damage is allowed during inter-round warmup; scoring is
+	   suppressed separately in AddScore. */
 	if ( targ->client && mod != MOD_JUICED) {
 		if ( targ->client->invulnerabilityTime > level.time) {
 			if ( dir && point ) {
@@ -1005,6 +1009,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 	if ( !attacker ) {
 		attacker = &g_entities[ENTITYNUM_WORLD];
+	}
+
+	/* spawn protection: immune to damage (except telefrag) */
+	if ( targ && targ->client && targ->client->ps.powerups[PW_SPAWNPROTECTION] > level.time && mod != MOD_TELEFRAG ) {
+		return;
+	}
+	if ( attacker && attacker->client && attacker->client->ps.powerups[PW_SPAWNPROTECTION] > level.time && mod != MOD_TELEFRAG ) {
+		return;
 	}
 
 	// shootable doors / buttons don't actually have any health

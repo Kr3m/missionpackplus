@@ -138,6 +138,7 @@ void CG_ParseServerinfo( void ) {
 	cgs.capturelimit = atoi( Info_ValueForKey( info, "capturelimit" ) );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.atdRoundTimelimit = atoi( Info_ValueForKey( info, "roundtimelimit" ) );
+	cgs.atdScorelimit = atoi( Info_ValueForKey( info, "scorelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.delagHitscan = atoi( Info_ValueForKey( info, "g_delagHitscan" ) );
 	cgs.delagMissileMaxLatency = atoi( Info_ValueForKey( info, "g_delagMissileMaxLatency" ) );
@@ -319,6 +320,7 @@ void CG_SetConfigValues( void ) {
 		cgs.atdRoundStartTime  = atoi( CG_ConfigString( CS_ATD_ROUNDSTART ) );
 		cgs.atdRoundFreezeTime = atoi( CG_ConfigString( CS_ATD_RESPAWNED ) );
 		cgs.atdRoundRespawned  = cgs.atdRoundFreezeTime > 0;
+		cgs.atdAccumulatedPlayMs = atoi( CG_ConfigString( CS_ATD_ACCUMULATED ) );
 	}
 #endif
 	CG_ParseWarmup();
@@ -438,6 +440,8 @@ static void CG_ConfigStringModified( void ) {
 	} else if ( num == CS_ATD_RESPAWNED ) {
 		cgs.atdRoundFreezeTime = atoi( str );
 		cgs.atdRoundRespawned  = cgs.atdRoundFreezeTime > 0;
+	} else if ( num == CS_ATD_ACCUMULATED ) {
+		cgs.atdAccumulatedPlayMs = atoi( str );
 #endif
 	} else if ( num >= CS_MODELS && num < CS_MODELS+MAX_MODELS ) {
 		cgs.gameModels[ num-CS_MODELS ] = trap_R_RegisterModel( str );

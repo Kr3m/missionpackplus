@@ -2163,6 +2163,11 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.flightSound );
 	}
 
+	// spawn protection gives a red dlight
+	if ( powerups & ( 1 << PW_SPAWNPROTECTION ) ) {
+		trap_R_AddLightToScene( cent->lerpOrigin, ( POWERUP_GLOW_RADIUS + (rand() & POWERUP_GLOW_RADIUS_MOD) ), 1.0f, 0.2f, 0.2f );
+	}
+
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
@@ -2503,6 +2508,10 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 		}
 		if ( state->powerups & ( 1 << PW_BATTLESUIT ) ) {
 			ent->customShader = cgs.media.battleSuitShader;
+			trap_R_AddRefEntityToScene( ent );
+		}
+		if ( state->powerups & ( 1 << PW_SPAWNPROTECTION ) ) {
+			ent->customShader = cgs.media.spawnProtectionShader;
 			trap_R_AddRefEntityToScene( ent );
 		}
 	}

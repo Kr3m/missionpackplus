@@ -76,6 +76,7 @@
 #define CS_ATD_ROUNDSCORES		29		// GT_CTFS: space-delimited red/blue score pairs per completed half-round
 #define CS_ATD_ROUNDSTART		30		// GT_CTFS: server time (ms) when the current round went live; "0" if not active
 #define CS_ATD_RESPAWNED		31		// GT_CTFS: "1" once players are respawned to spawns during inter-round warmup; "0" otherwise
+#define CS_ATD_ACCUMULATED		28		// GT_CTFS: total play time (ms) accumulated from completed rounds; "0" otherwise
 #define MAX_ATD_ROUNDS_STORED	500		// max half-rounds stored server-side (250 display rounds)
 #define MAX_ATD_ROUNDS_WINDOW	22		// half-rounds transmitted in CS sliding window (11 display rounds)
 #define MAX_ATD_ROUNDS			MAX_ATD_ROUNDS_STORED	// backward-compat alias
@@ -298,6 +299,7 @@ typedef enum {
 	PW_DOUBLER,
 	PW_AMMOREGEN,
 	PW_INVULNERABILITY,
+	PW_SPAWNPROTECTION,		// spawn protection timer
 
 	PW_NUM_POWERUPS
 

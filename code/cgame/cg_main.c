@@ -96,6 +96,15 @@ static int CG_NormalizeAutoActionMode( int mode ) {
 	return mode & ( CG_AUTOACTION_DEMO | CG_AUTOACTION_SCREENSHOT );
 }
 
+static void CG_ClampAutoActionCvar( void ) {
+	int clamped = CG_NormalizeAutoActionMode( cg_autoAction.integer );
+
+	if ( clamped != cg_autoAction.integer ) {
+		trap_Cvar_Set( "cg_autoAction", va( "%i", clamped ) );
+		trap_Cvar_Update( &cg_autoAction );
+	}
+}
+
 
 cg_t				cg;
 cgs_t				cgs;
@@ -214,6 +223,18 @@ void CG_HandleAutoActionMapStart( void ) {
 	cg.autoActionScreenshotTaken = qfalse;
 	cg.autoActionDemoRecording = qfalse;
 	cg.autoActionNextRecordAttemptTime = 0;
+
+	if ( CG_AutoActionWantsDemo() ) {
+		qboolean shouldStop = qtrue;
+
+		if ( hasDemoRecordingQuery ) {
+			shouldStop = trap_IsRecordingDemo();
+		}
+
+		if ( shouldStop ) {
+			trap_SendConsoleCommand( "stoprecord\n" );
+		}
+	}
 }
 
 void CG_HandleAutoActionRuntime( void ) {
@@ -271,6 +292,12 @@ void CG_RegisterCvars( void ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 			cv->defaultString, cv->cvarFlags );
 	}
+	/* If cg_autoAction already exists from a prior VM build/session, its
+	   reset/default string can remain stale. Force-reset it to the current
+	   registration default (0) without changing behavior. */
+	trap_Cvar_Register( NULL, "cg_autoAction", "0", CVAR_ARCHIVE | CVAR_USER_CREATED );
+	trap_Cvar_Register( &cg_autoAction, "cg_autoAction", "0", CVAR_ARCHIVE );
+	CG_ClampAutoActionCvar();
 
 	// see if we are also running the server on this machine
 	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
@@ -379,6 +406,7 @@ void CG_UpdateCvars( void ) {
 	for ( i = 0, cv = cvarTable ; i < ARRAY_LEN( cvarTable ) ; i++, cv++ ) {
 		trap_Cvar_Update( cv->vmCvar );
 	}
+	CG_ClampAutoActionCvar();
 
 	// check for modications here
 
@@ -928,6 +956,9 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.battleWeaponShader = trap_R_RegisterShader("powerups/battleWeapon" );
 	cgs.media.invisShader = trap_R_RegisterShader("powerups/invisibility" );
 	cgs.media.regenShader = trap_R_RegisterShader("powerups/regen" );
+	cgs.media.spawnProtectionShader = trap_R_RegisterShader("powerups/spawnprotect" );
+	cgs.media.spawnProtectionWeaponShader = trap_R_RegisterShader("powerups/spawnProtectWeapon" );
+	cgs.media.spawnProtectionIcon = trap_R_RegisterShaderNoMip("icons/spawnprotection" );
 	cgs.media.hastePuffShader = trap_R_RegisterShader("hasteSmokePuff" );
 
 #ifdef MISSIONPACK
